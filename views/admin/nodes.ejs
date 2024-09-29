@@ -3,50 +3,51 @@
    <div class="bg-transparent">
       <div class="sm:flex sm:items-center px-8 pt-4">
          <div class="sm:flex-auto">
-           <h1 class="text-base font-medium leading-6 text-white"><%= req.translations.nodes %></h1>
-           <p class="mt-1 tracking-tight text-sm text-neutral-500"><%= req.translations.nodesText %></p>
+           <h1 class="text-base font-medium leading-6 text-white mb-4"><%= req.translations.nodes %></h1>
          </div>
          <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-           <button id="createButton" type="button" class="block rounded-xl <%= theme['button-color'] %> px-3 py-2 text-center text-sm font-medium shadow-lg transition focus:outline focus:outline-2 focus:outline-offset-2">
-            <%= req.translations.createNewNode %>
-          </button>
+          
          </div>
        </div>
-      <% if (req.query.err == "none") { %>
-      <div class="mt-6 w-full">
-        <div class="rounded-xl bg-emerald-800/10 px-4 py-6 mt-8 ml-8 mb-8 mr-8">
+       <% if (req.query.err=="none" ) { %>
+        <div class="bg-green-900/50 border-l-4 border-green-400 rounded-lg text-green-100 px-4 py-3 relative" role="alert">
           <div class="flex">
-             <div class="flex-shrink-0 ml-1.5">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 mt-2 text-emerald-400">
-                  <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
-                </svg>                
-             </div>
-             <div class="ml-5">
-                <h3 class="text-sm font-medium text-emerald-400">Success!</h3>
-                <div class="text-sm text-emerald-400/50">
-                   <p>The action was successfully completed.</p>
-                </div>
-             </div>
+            <div class="py-1">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-green-400 mr-3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div>
+              <p class="font-bold">Node Created </p>
+              <p class="text-sm relative">The Node has been Created</p>
+            </div>
+            <span onclick="location.href = '../admin/nodes';" class="absolute top-0 bottom-0 right-0 px-4 py-3">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-green-400">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </span>
           </div>
-       </div>
-<% } %>
+        </div>
+        <% } %>
     <% if (req.query.err == "EDITED") { %>
-      <div class="mt-6 w-full">
-        <div class="rounded-xl bg-emerald-800/10 px-4 py-6 mt-8 ml-8 mb-8 mr-8">
-          <div class="flex">
-             <div class="flex-shrink-0 ml-1.5">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 mt-2 text-emerald-400">
-                  <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
-                </svg>                
-             </div>
-             <div class="ml-5">
-                <h3 class="text-sm font-medium text-emerald-400">Success!</h3>
-                <div class="text-sm text-emerald-400/50">
-                   <p>The node was edited successfully.</p>
-                </div>
-             </div>
+      <div class="bg-green-900/50 border-l-4 border-green-400 rounded-lg text-green-100 px-4 py-3 relative" role="alert">
+        <div class="flex">
+          <div class="py-1">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-green-400 mr-3">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
           </div>
-       </div>	      
+          <div>
+            <p class="font-bold">Node Edited</p>
+            <p class="text-sm relative">The Node has been Edited Successfully</p>
+          </div>
+          <span onclick="location.href = '../admin/nodes';" class="absolute top-0 bottom-0 right-0 px-4 py-3">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-green-400">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </span>
+        </div>
+      </div>
       <% } %>
       <table id="nodeTable" class="mt-6 w-full whitespace-nowrap text-left">
         <colgroup>
@@ -56,120 +57,96 @@
           <col class="lg:w-1/12">
           <col class="lg:w-1/12">
         </colgroup>
-        <thead class="border-b border-white/5 text-sm leading-6 text-white">
+        <thead class="bg-gray-700/25">
           <tr>
-            <th scope="col" class="py-2 pl-0 pr-8 font-medium sm:pl-80 lg:pl-8"><%= req.translations.name %></th>
-            <th scope="col" class="py-2 pl-0 pr-8 font-medium sm:table-cell"><%= req.translations.connection %></th>
-            <th scope="col" class="py-2 pl-0 pr-8 font-medium md:table-cell lg:pr-20"><%= req.translations.instances %></th>
-			<th scope="col" class="py-2 pl-0 pr-8 font-medium md:table-cell lg:pr-20"><%= req.translations.actions %></th>
+            
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><%= req.translations.name %></th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><%= req.translations.connection %></th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><%= req.translations.configure %></th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><%= req.translations.edit %></th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><%= req.translations.remove %></th>
+            <th> <button id="createButton" type="button" class=" transition px-4 py-2 text-sm font-medium text-white bg-blue-500 border border-blue-500 rounded-lg hover:bg-blue-600 hover:text-white focus:z-10 focus:ring-2 focus:ring-blue-600 focus:text-white">
+              <%= req.translations.createNewNode %>
+            </button></th>
+
           </tr>
+          
         </thead>
         <tbody class="divide-y divide-white/5">
          <% nodes.forEach(function(node) { %>
           <tr>
-            <td class="py-4 pl-4 pr-8 sm:pl-8 lg:pl-8">
-			  <div class="flex items-center gap-x-4">
-			  <% if (node.status == "Online") { %>
-				  <div class="flex items-center justify-end gap-x-2 sm:justify-start">
-					<div class="flex-none rounded-full p-1 text-emerald-400 bg-emerald-600/10">
-					  <div class="h-1.5 w-1.5 rounded-full bg-current"></div>
-					</div>
-				  </div>
-				<% } else if (node.status == "Offline") { %>
-				   <div class="flex items-center justify-end gap-x-2 sm:justify-start">
-					  <div class="flex-none rounded-full p-1 text-neutral-600 bg-neutral-600/10">
-						<div class="h-1.5 w-1.5 rounded-full bg-current"></div>
-					  </div>
-				   </div>
-				<% } else { %>
-				   <div class="flex items-center justify-end gap-x-2 sm:justify-start">
-					  <div class="flex-none rounded-full p-1 text-neutral-400 bg-neutral-400/10">
-						 <div class="h-1.5 w-1.5 rounded-full bg-current"></div>
-					  </div>
-				   </div>
-				<% } %>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white"><%= node.name %></td>
+            <% if (node.status == "Online") { %>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium status-online">Online</td> 
+          <% } else if (node.status == "Offline") { %>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium status-offline">Offline</td> 
+          <% } else { %>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium status-unknown">unknown</td> 
+          <% } %>         
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400"><%= node.address %>:<%= node.port %></td>
+            <td> <button onclick="configure('<%= node.id %>')" type="button" class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+              <%= req.translations.configure %>
+            </button></td>
+            <td><a href="./node/<%= node.id %>" class="px-6 py-4 whitespace-nowrap text-sm text-gray-400"> <%= req.translations.edit %></a></td>
+            <td><button onclick="deletenode('<%= node.id %>')"  type="button" class="px-6 py-4 whitespace-nowrap text-sm text-gray-400" data-user-id="<%= user.userId %>"> <%= req.translations.remove %></button></td>
 
-                <div class="truncate text-sm font-medium leading-6 text-white"><%= node.name %></div>
-              </div>
-            </td>
-            <td class="hidden py-4 pl-0 pr-4 sm:table-cell sm:pr-8">
-              <div class="flex gap-x-3">
-                <div class="font-mono text-sm leading-6 text-neutral-400"><%= node.address %><span class="text-neutral-500">:<%= node.port %></span></div>
-                <div class="rounded-xl bg-neutral-800/40 px-2 py-1 text-xs font-medium text-neutral-400 ring-1 ring-inset ring-white/10"><%= node.versionRelease || 'unknown' %></div>
-              </div>
-            </td>
-            <td class="hidden py-4 pl-0 pr-8 text-sm leading-6 text-neutral-400 md:table-cell lg:pr-20"><%= set[node.id] || 0 %></td>
-			<td class="py-4 pl-0 pr-4 text-sm leading-6 sm:pr-8 lg:pr-20 flex gap-3">
-        <div class="inner"><button onclick="configure('<%= node.id %>')" type="button" class="block rounded-xl <%= theme['button-color'] %> px-3 py-2 text-center text-sm font-medium shadow-lg transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-          <%= req.translations.configure %>
-        </button>
-      </div>
-				<div class="inner"><a href="./node/<%= node.id %>"><button id="editButton" type="button" class="block rounded-xl <%= theme['button-color'] %> px-3 py-2 text-center text-sm font-medium shadow-lg transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-          <%= req.translations.edit %>
-        </button>
-      </a>
-    </div>
-				<div class="inner"><button id="removeButton" onclick="deletenode('<%= node.id %>')" type="button" class="block rounded-xl bg-red-600 px-3 py-2 text-center text-sm font-medium text-white shadow-lg hover:bg-red-500 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-          <%= req.translations.remove %>
-        </button>
-      </div>
           </tr>
           <% }); %>
         </tbody>
       </table>
-      <div id="notification" class="fixed bottom-5 right-5 bg-white/5 text-white px-4 py-2 rounded-xl shadow-lg transform transition-all duration-300 tranneutral-y-full opacity-0">
-        Command copied to clipboard!
-      </div>
+    
       </div>
       <div id="nodeForm" class="mt-6 px-8 w-full hidden">
-        <div class="p-3 bg-transparent shadow-xl border border-white/5 rounded-xl overflow-hidden sm:p-6 lg:p-10 card" style="width: 800px;">
-          <form>
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label for="nodeName" class="text-neutral-400 text-sm tracking-tight mb-2"><%= req.translations.name %>:</label>
-                <input id="nodeName" class="rounded-xl focus:ring-transparent focus:border-transparent text-white text-sm mt-2 mb-4 w-full hover:bg-white/5 px-4 py-2 bg-neutral-600/20 placeholder:text-white/20 border border-white/5" placeholder="My node">
-              </div>
-      
-              <div>
-                <label for="nodeRam" class="text-neutral-400 text-sm tracking-tight mb-2"><%= req.translations.ram %> (GB):</label>
-                <input id="nodeRam" class="rounded-xl focus:ring-transparent focus:border-transparent text-white text-sm mt-2 mb-6 w-full hover:bg-white/5 px-4 py-2 bg-neutral-600/20 placeholder:text-white/20 border border-white/5" placeholder="This is only for information purposes.">
-              </div>
-      
-              <div>
-                <label for="nodeDisk" class="text-neutral-400 text-sm tracking-tight mb-2"><%= req.translations.disk %> (GB):</label>
-                <input id="nodeDisk" class="rounded-xl focus:ring-transparent focus:border-transparent text-white text-sm mt-2 mb-6 w-full hover:bg-white/5 px-4 py-2 bg-neutral-600/20 placeholder:text-white/20 border border-white/5" placeholder="This is only for information purposes.">
-              </div>
-      
-              <div>
-                <label for="nodeProcessor" class="text-neutral-400 text-sm tracking-tight mb-2"><%= req.translations.cpu %>:</label>
-                <input id="nodeProcessor" class="rounded-xl focus:ring-transparent focus:border-transparent text-white text-sm mt-2 mb-6 w-full hover:bg-white/5 px-4 py-2 bg-neutral-600/20 placeholder:text-white/20 border border-white/5" placeholder="This is only for information purposes.">
-              </div>
-      
-              <div>
-                <label for="nodeAddress" class="text-neutral-400 text-sm tracking-tight mb-2"><%= req.translations.addressIP %>:</label>
-                <input id="nodeAddress" class="rounded-xl focus:ring-transparent focus:border-transparent text-white text-sm mt-2 mb-6 w-full hover:bg-white/5 px-4 py-2 bg-neutral-600/20 placeholder:text-white/20 border border-white/5" placeholder="192.168.1.1 or my.hostnamehere.com">
-              </div>
-      
-              <div>
-                <label for="nodePort" class="text-neutral-400 text-sm tracking-tight mb-2"><%= req.translations.deamonPort %>:</label>
-                <input id="nodePort" class="rounded-xl focus:ring-transparent focus:border-transparent text-white text-sm mt-2 mb-6 w-full hover:bg-white/5 px-4 py-2 bg-neutral-600/20 placeholder:text-white/20 border border-white/5" placeholder="3000">
-              </div>
-      
-              <div class="col-span-2">
-                <label for="tagInput" class="text-neutral-400 text-sm tracking-tight mb-2"><%= req.translations.tags %>:</label>
-                <div id="tagContainer" class="flex flex-wrap gap-2 mb-2"></div>
-                <input id="tagInput" class="rounded-xl focus:ring-transparent focus:border-transparent text-white text-sm mt-2 mb-6 w-full hover:bg-white/5 px-4 py-2 bg-neutral-600/20 placeholder:text-white/20 border border-white/5" placeholder="Add a tag and press Enter">
-              </div>
-      
-              <div class="col-span-2">
-                <button id="createNodeBtn" type="button" class="block rounded-xl <%= theme['button-color'] %> px-3 py-2 text-center text-sm font-medium shadow-lg transition focus:outline focus:outline-2 focus:outline-offset-2">
-                  <%= req.translations.create %>
-                </button>
-              </div>
-            </div>
-          </form>
+        <div class="p-3 bg-transparent shadow-xl rounded-xl overflow-hidden sm:p-6 lg:p-10 card" style="width: 800px;">
+            <form>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="nodeName" class="text-white text-sm tracking-tight mb-2"><%= req.translations.name %>:</label>
+                        <input id="nodeName" class="rounded-xl focus:ring-transparent focus:border-transparent text-white text-sm mt-2 mb-4 w-full hover:bg-gray-700 px-4 py-2 bg-gray-700 placeholder:text-white/50 border border-white/5" placeholder="My node">
+                    </div>
+    
+                    <div>
+                        <label for="nodeRam" class="text-white text-sm tracking-tight mb-2"><%= req.translations.ram %> (GB):</label>
+                        <input id="nodeRam" class="rounded-xl focus:ring-transparent focus:border-transparent text-white text-sm mt-2 mb-6 w-full hover:bg-gray-700 px-4 py-2 bg-gray-700 placeholder:text-white/50 border border-white/5" placeholder="This is only for information purposes.">
+                    </div>
+    
+                    <div>
+                        <label for="nodeDisk" class="text-white text-sm tracking-tight mb-2"><%= req.translations.disk %> (GB):</label>
+                        <input id="nodeDisk" class="rounded-xl focus:ring-transparent focus:border-transparent text-white text-sm mt-2 mb-6 w-full hover:bg-gray-700 px-4 py-2 bg-gray-700 placeholder:text-white/50 border border-white/5" placeholder="This is only for information purposes.">
+                    </div>
+    
+                    <div>
+                        <label for="nodeProcessor" class="text-white text-sm tracking-tight mb-2"><%= req.translations.cpu %>:</label>
+                        <input id="nodeProcessor" class="rounded-xl focus:ring-transparent focus:border-transparent text-white text-sm mt-2 mb-6 w-full hover:bg-gray-700 px-4 py-2 bg-gray-700 placeholder:text-white/50 border border-white/5" placeholder="This is only for information purposes.">
+                    </div>
+    
+                    <div>
+                        <label for="nodeAddress" class="text-white text-sm tracking-tight mb-2"><%= req.translations.addressIP %>:</label>
+                        <input id="nodeAddress" class="rounded-xl focus:ring-transparent focus:border-transparent text-white text-sm mt-2 mb-6 w-full hover:bg-gray-700 px-4 py-2 bg-gray-700 placeholder:text-white/50 border border-white/5" placeholder="192.168.1.1 or my.hostnamehere.com">
+                    </div>
+    
+                    <div>
+                        <label for="nodePort" class="text-white text-sm tracking-tight mb-2"><%= req.translations.deamonPort %>:</label>
+                        <input id="nodePort" class="rounded-xl focus:ring-transparent focus:border-transparent text-white text-sm mt-2 mb-6 w-full hover:bg-gray-700 px-4 py-2 bg-gray-700 placeholder:text-white/50 border border-white/5" placeholder="3000">
+                    </div>
+    
+                    <div class="col-span-2">
+                        <label for="tagInput" class="text-white text-sm tracking-tight mb-2"><%= req.translations.tags %>:</label>
+                        <div id="tagContainer" class="flex flex-wrap gap-2 mb-2"></div>
+                        <input id="tagInput" class="rounded-xl focus:ring-transparent focus:border-transparent text-white text-sm mt-2 mb-6 w-full hover:bg-gray-700 px-4 py-2 bg-gray-700 placeholder:text-white/50 border border-white/5" placeholder="Add a tag and press Enter">
+                    </div>
+    
+                    <div class="col-span-2">
+                        <button id="createNodeBtn" type="button" class="transition px-4 py-2 text-sm font-medium text-white bg-blue-500 border border-blue-500 rounded-lg hover:bg-blue-600 hover:text-white focus:z-10 focus:ring-2 focus:ring-blue-600 focus:text-white">
+                            <%= req.translations.create %>
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
-      </div>
+    </div>
+    
       
 </main>
 <script>
@@ -250,18 +227,28 @@ async function deletenode(nodeId) {
     popup.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.1)';
     popup.style.backgroundColor = '#fff';
 
-    popup.classList.add('text-white', 'border', 'border-white/5', 'rounded-xl', 'shadow-xl');
+    popup.classList.add('text-black', 'rounded-xl', 'shadow-xl');
 
     popup.innerHTML = `
         <div class="flex justify-center items-center mb-2" style="margin-top: 75px;">
-<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100" viewBox="0 0 48 48">
-<linearGradient id="1ayUTr30BaMDjOG69N2fSa_xTkoPEFGI0P7_gr1" x1="21.241" x2="3.541" y1="39.241" y2="21.541" gradientUnits="userSpaceOnUse"><stop offset=".108" stop-color="#0d7044"></stop><stop offset=".433" stop-color="#11945a"></stop></linearGradient><path fill="url(#1ayUTr30BaMDjOG69N2fSa_xTkoPEFGI0P7_gr1)" d="M16.599,41.42L1.58,26.401c-0.774-0.774-0.774-2.028,0-2.802l4.019-4.019	c0.774-0.774,2.028-0.774,2.802,0L23.42,34.599c0.774,0.774,0.774,2.028,0,2.802l-4.019,4.019	C18.627,42.193,17.373,42.193,16.599,41.42z"></path><linearGradient id="1ayUTr30BaMDjOG69N2fSb_xTkoPEFGI0P7_gr2" x1="-15.77" x2="26.403" y1="43.228" y2="43.228" gradientTransform="rotate(134.999 21.287 38.873)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#2ac782"></stop><stop offset="1" stop-color="#21b876"></stop></linearGradient><path fill="url(#1ayUTr30BaMDjOG69N2fSb_xTkoPEFGI0P7_gr2)" d="M12.58,34.599L39.599,7.58c0.774-0.774,2.028-0.774,2.802,0l4.019,4.019	c0.774,0.774,0.774,2.028,0,2.802L19.401,41.42c-0.774,0.774-2.028,0.774-2.802,0l-4.019-4.019	C11.807,36.627,11.807,35.373,12.58,34.599z"></path>
-</svg>
-        </div>
-        <p class="font-bold mb-2 mt-3 text-black" style="font-size:30px; text-align:center">Token created.</p>
-        <h3 class="mb-5 text-neutral-600" style="text-align:center; margin-top: 25px;">To auto-configure your node, run the following command:</h3>
-        <pre class="bg-neutral-800 p-3 rounded-xl mb-4 mt-3" style="overflow-x: scroll"><code id="commandCode" class="text-emerald-500">${command}</code></pre>
-        <button id="doneBtn" class="block rounded-xl bg-black text-white px-3 py-2 text-center text-sm font-medium text-neutral-800 shadow-lg hover:bg-neutral-200 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 mt-4">Done</button>
+    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100" viewBox="0 0 48 48">
+        <linearGradient id="1ayUTr30BaMDjOG69N2fSa_xTkoPEFGI0P7_gr1" x1="21.241" x2="3.541" y1="39.241" y2="21.541" gradientUnits="userSpaceOnUse">
+            <stop offset=".108" stop-color="#0d7044"></stop>
+            <stop offset=".433" stop-color="#11945a"></stop>
+        </linearGradient>
+        <path fill="url(#1ayUTr30BaMDjOG69N2fSa_xTkoPEFGI0P7_gr1)" d="M16.599,41.42L1.58,26.401c-0.774-0.774-0.774-2.028,0-2.802l4.019-4.019c0.774-0.774,2.028-0.774,2.802,0L23.42,34.599c0.774,0.774,0.774,2.028,0,2.802l-4.019,4.019C18.627,42.193,17.373,42.193,16.599,41.42z"></path>
+        <linearGradient id="1ayUTr30BaMDjOG69N2fSb_xTkoPEFGI0P7_gr2" x1="-15.77" x2="26.403" y1="43.228" y2="43.228" gradientTransform="rotate(134.999 21.287 38.873)" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#2ac782"></stop>
+            <stop offset="1" stop-color="#21b876"></stop>
+        </linearGradient>
+        <path fill="url(#1ayUTr30BaMDjOG69N2fSb_xTkoPEFGI0P7_gr2)" d="M12.58,34.599L39.599,7.58c0.774-0.774,2.028-0.774,2.802,0l4.019,4.019c0.774,0.774,0.774,2.028,0,2.802L19.401,41.42c-0.774,0.774-2.028,0.774-2.802,0l-4.019-4.019C11.807,36.627,11.807,35.373,12.58,34.599z"></path>
+    </svg>
+</div>
+<p class="font-bold mb-2 mt-3 text-black" style="font-size:30px; text-align:center">Token created.</p>
+<h3 class="mb-5 text-black" style="text-align:center; margin-top: 25px;">To auto-configure your node, run the following command:</h3>
+<pre class="status-gray p-3 rounded-xl mb-4 mt-3" style="overflow-x: scroll"><code id="commandCode" class="text-black">${command}</code></pre>
+<button id="doneBtn" class="block rounded-xl bg-white text-black px-3 py-2 text-center text-sm font-medium shadow-lg hover:bg-neutral-200 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 mt-4">Done</button>
+
     `;
     document.body.appendChild(popup);
 

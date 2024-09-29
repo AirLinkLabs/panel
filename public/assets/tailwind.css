@@ -1778,4 +1778,13 @@ select {
     padding-left: 2rem;
     padding-right: 2rem;
   }
-}
+    .status-online {
+        color: green;
+    }
+    .status-offline {
+        color: red;
+    }
+    .status-unknown {
+        color: gray;
+    }
+  }

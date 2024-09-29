@@ -4,117 +4,90 @@
     <div class="sm:flex sm:items-center px-8 pt-4">
       <div class="sm:flex-auto">
         <h1 class="text-base font-medium leading-6 text-white"><%= req.translations.APIKeys %></h1>
-        <p class="mt-1 tracking-tight text-sm text-neutral-500">
+        <p class="mt-1 tracking-tight text-sm text-white">
           <%= req.translations.APIKeysText %>
         </p>
       </div>
       <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-        <button
-          id="createButton"
-          type="button"
-          class="block rounded-xl <%= theme['button-color'] %> px-3 py-2 text-center text-sm font-medium shadow-lg transition focus:outline focus:outline-2 focus:outline-offset-2"
-        >
-        <%= req.translations.createNewAPIKey %>
-        </button>
+        
       </div>
     </div>
     <% if (req.query.err == "CREATED") { %>
-      <div class="mt-6 w-full">
-        <div class="rounded-xl bg-emerald-800/10 px-4 py-6 mt-8 ml-8 mb-8 mr-8">
-          <div class="flex">
-             <div class="flex-shrink-0 ml-1.5">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 mt-2 text-emerald-400">
-                  <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
-                </svg>                
-             </div>
-             <div class="ml-5">
-                <h3 class="text-sm font-medium text-emerald-400"><%= req.translations.created %></h3>
-                <div class="text-sm text-emerald-400/50">
-                   <p><%= req.translations.apiKeySuccessCreated %></p>
-                </div>
-             </div>
+      <div class="bg-green-900/50 border-l-4 border-green-400 rounded-lg text-green-100 px-4 py-3 relative" role="alert">
+        <div class="flex">
+          <div class="py-1">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-green-400 mr-3">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
           </div>
-       </div>
+          <div>
+            <p class="font-bold">API-key CREATED</p>
+            <p class="text-sm relative">The ApiKey has been CREATED Successfully</p>
+          </div>
+          <span onclick="location.href = '../admin/apikeys';" class="absolute top-0 bottom-0 right-0 px-4 py-3">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-green-400">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </span>
+        </div>
+      </div>
+<% } %> 
+<% if (req.query.err == "DELETED") { %>
+  <div class="bg-green-900/50 border-l-4 border-green-400 rounded-lg text-green-100 px-4 py-3 relative" role="alert">
+    <div class="flex">
+      <div class="py-1">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-green-400 mr-3">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+      <div>
+        <p class="font-bold">ApiKey DELETED</p>
+        <p class="text-sm relative">The API-KEY has been Deleted Successfully</p>
+      </div>
+      <span onclick="location.href = '../admin/apikeys';" class="absolute top-0 bottom-0 right-0 px-4 py-3">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-green-400">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </span>
+    </div>
+  </div>
 <% } %> 
     <div id="nodeTable" class="mt-6 w-full">
-      <table class="mt-6 w-full whitespace-nowrap text-left">
+      <table id="nodeTable" class="mt-6 w-full whitespace-nowrap text-left">
         <colgroup>
-          <col class="w-full sm:w-4/12" />
-          <col class="lg:w-4/12" />
-          <col class="lg:w-2/12" />
-          <col class="lg:w-1/12" />
-          <col class="lg:w-1/12" />
+          <col class="w-full sm:w-4/12">
+          <col class="lg:w-4/12">
+          <col class="lg:w-2/12">
+          <col class="lg:w-1/12">
+          <col class="lg:w-1/12">
         </colgroup>
-        <thead class="border-b border-white/5 text-sm leading-6 text-white">
+        <thead class="bg-gray-700/25">
           <tr>
-            <th
-              scope="col"
-              class="py-2 pl-0 pr-8 font-medium sm:pl-80 lg:pl-8"
-            >
-              <%= req.translations.id %>
-            </th>
-            <th scope="col" class="py-2 pl-0 pr-8 font-medium sm:table-cell">
-              <%= req.translations.key %>
-            </th>
-            <th
-              scope="col"
-              class="py-2 pl-0 pr-8 font-medium md:table-cell lg:pr-20"
-            >
-            <%= req.translations.createdAt %>
-            </th>
-            <th
-              scope="col"
-              class="py-2 pl-0 pr-8 font-medium md:table-cell lg:pr-20"
-            >
-            <%= req.translations.actions %>
-            </th>
+            
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Key</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created at</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><%= req.translations.remove %></th>
+            <th> <button id="createButton" type="button" class=" transition px-4 py-2 text-sm font-medium text-white bg-blue-500 border border-blue-500 rounded-lg hover:bg-blue-600 hover:text-white focus:z-10 focus:ring-2 focus:ring-blue-600 focus:text-white">
+              <%= req.translations.createNewAPIKey %>
+            </button></th>
+
           </tr>
+          
         </thead>
         <tbody class="divide-y divide-white/5">
           <% apiKeys.forEach(function(key) { %>
-          <tr>
-            <td class="py-4 pl-4 pr-8 sm:pl-8 lg:pl-8">
-              <div class="flex items-center gap-x-4">
-                <div class="truncate text-sm font-medium leading-6 text-white">
-                  <%= key.id %>
-                </div>
-              </div>
-            </td>
-            <td class="hidden py-4 pl-0 pr-4 sm:table-cell sm:pr-8">
-              <div class="flex gap-x-3">
-                <div
-                  class="rounded-xl font-mono bg-neutral-800/40 px-2 py-1 text-xs font-medium text-neutral-400 ring-1 ring-inset ring-white/10"
-                >
-                  <%= key.key %>
-                </div>
-              </div>
-            </td>
-
-            <td class="hidden py-4 pl-0 pr-4 sm:table-cell sm:pr-8">
-                <div class="flex gap-x-3">
-                  <div
-                    class="rounded-xl bg-neutral-800/40 px-2 py-1 text-xs font-medium text-neutral-400 ring-1 ring-inset ring-white/10"
-                  >
-                    <%= key.createdAt %>
-                  </div>
-                </div>
-              </td>
-            <td
-              class="py-4 pl-0 pr-4 text-sm leading-6 sm:pr-8 lg:pr-20 flex gap-3"
-            >
-              <div class="inner">
-                <button
-                  id="removeButton"
-                  type="button"
-                  class="removeButton block rounded-xl bg-red-600 px-3 py-2 text-center text-sm font-medium text-white shadow-lg hover:bg-red-500 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                  data-keyid="<%= key.id %>"                
-                  >
-                  <%= req.translations.remove %>
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white"><%= key.id %></td>    
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400"><%= key.key %></td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400"><%= key.createdAt %></td>
+              <td>
+                <button id="removeButton" type="button" class="px-6 py-4 whitespace-nowrap text-sm text-gray-400 removeButton" data-keyid="<%= key.id %>">
+                    <%= req.translations.remove %>
                 </button>
-              </div>
             </td>
-          </tr>
-          <% }); %>
+            </tr>
+            <% }); %>
         </tbody>
       </table>
     </div>
@@ -165,7 +138,7 @@
         .then((data) => {
           console.log("key created:", data);
           alert('<%= req.translations.apiKeySuccessCreated %>');
-          window.location.reload();
+          window.location.href = '/admin/apikeys?err=CREATED';
         })
         .catch(error => alert('<%= req.translations.apiKeyErrorCreated %>: ' + error.message));
     });
@@ -186,7 +159,7 @@
       .then(response => {
         if (response.ok) {
           console.log('API KEY DELETED');
-          window.location.href = '../admin/apikeys?err=CREATED'
+          window.location.href = '../admin/apikeys?err=DELETED'
         } else {
           throw new Error('Failed to delete key');
         }

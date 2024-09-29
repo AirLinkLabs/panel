@@ -3,13 +3,11 @@
    <div class="bg-transparent">
       <div class="sm:flex sm:items-center px-8 pt-4">
          <div class="sm:flex-auto">
-           <h1 class="text-base font-medium leading-6 text-white"><%= req.translations.images %></h1>
-           <p class="mt-1 tracking-tight text-sm text-neutral-500"><%= req.translations.imagesText %></p>
+           <h1 class="text-base font-medium leading-6 text-white mb-4"><%= req.translations.images %></h1>
+           <p class="mt-1 tracking-tight text-sm text-white"><%= req.translations.imagesText %></p>
          </div>
          <div class="mt-4 sm:ml-8 sm:mt-0 sm:flex-none">
-          <button id="uploadimage" type="button" class="block rounded-xl <%= theme['button-color'] %> px-3 py-2 text-center text-sm font-medium shadow-lg transition focus:outline focus:outline-2 focus:outline-offset-2">
-            <%= req.translations.importImage %>
-          </button>
+        
         </div>
        </div>
       <div style="display: block;" id="nodeTable" class="mt-6 w-full">
@@ -23,37 +21,29 @@
         </colgroup>
         <thead class="border-b border-white/5 text-sm leading-6 text-white">
           <tr>
-            <th scope="col" class="py-2 pl-4 pr-8 font-medium sm:pl-6 lg:pl-8"><%= req.translations.name %></th>
-            <th scope="col" class="py-2 pl-0 pr-8 font-medium sm:table-cell"><%= req.translations.author %></th>
-            <th scope="col" class="py-2 pl-0 pr-8 font-medium sm:table-cell"><%= req.translations.dockerImage %></th>
-            <th scope="col" class="py-2 pl-0 pr-8 font-medium sm:table-cell"><%= req.translations.actions %></th>
+            
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><%= req.translations.name %></th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><%= req.translations.author %></th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><%= req.translations.dockerImage %></th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><%= req.translations.remove %></th>
+            <th> <button id="uploadimage" type="button" class=" transition px-4 py-2 text-sm font-medium text-white bg-blue-500 border border-blue-500 rounded-lg hover:bg-blue-600 hover:text-white focus:z-10 focus:ring-2 focus:ring-blue-600 focus:text-white">
+              <%= req.translations.importImage %>
+            </button></th>
+
           </tr>
         </thead>
         <tbody class="divide-y divide-white/5">
          <% images.forEach(function(image) { %>
-          <tr class="image-row" data-image='<%= JSON.stringify(image) %>'>
-            <td class="py-4 pl-4 pr-8 sm:pl-6 lg:pl-8 cursor-pointer">
-              <div class="flex items-center gap-x-4">
-                <div class="truncate text-sm font-medium leading-6 text-white"><%= image.Name %></div>
-              </div>
-            </td>
-            <td class="py-4 pl-0 pr-4 sm:table-cell sm:pr-8">
-              <div class="flex gap-x-3">
-                <div class="font-mono text-sm leading-6 text-neutral-400"><%= image.Author %> (<%= image.AuthorName %>)</div>
-              </div>
-            </td>
-            <td class="py-4 pl-0 pr-4 sm:table-cell sm:pr-8">
-              <div class="flex gap-x-3">
-                <div class="font-mono text-sm leading-6 text-neutral-400"><%= image.Image %></div>
-              </div>
-            </td>
-            <td class="py-4 pl-0 pr-4 sm:table-cell sm:pr-8">
-              <div class="flex gap-x-3">
-                <div onclick="deleteImage('<%= image.Id %>')" class="block rounded-xl bg-red-600 px-3 py-2 text-center text-sm font-medium text-white shadow-lg hover:bg-red-500 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                  <%= req.translations.remove %>
-                </div>
-              </div>
-            </td>
+          <tr>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white"><%= image.Name %></td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400"><%= image.Author %> (<%= image.AuthorName %>)</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400"><%= image.Image %></td>
+            <td>
+              <button class="px-6 py-4 whitespace-nowrap text-sm text-gray-400 deleteImageButton" data-image-id="<%= image.Id %>" data-user-id="<%= user.userId %>">
+                  <%= req.translations.imageDelete %>
+              </button>
+          </td>
+          
           </tr>
           <% }); %>
         </tbody>
@@ -85,7 +75,7 @@
 </main>
 <%- include('../components/footer') %>
 <script>
-  document.addEventListener("DOMContentLoaded", async function(event){
+  document.addEventListener("DOMContentLoaded", async function(event) {
       var uploadBtn = document.getElementById('uploadimage');
       var imageRows = document.querySelectorAll('.image-row');
       var nodeTable = document.getElementById('nodeTable');
@@ -101,120 +91,126 @@
       var currentImage = null;
 
       uploadBtn.addEventListener('click', async function() {
-        var input = document.createElement('input');
-        input.type = 'file';
-        input.accept = '.json';
-        input.click();
-        input.addEventListener('change', function(event) {
-          var file = event.target.files[0];
-          if (file && file.type === 'application/json') {
-            var reader = new FileReader();
-            reader.onload = function(event) {
-              var jsonData = event.target.result;
-              var xhr = new XMLHttpRequest();
-              xhr.open('POST', '/admin/images/upload', true);
-              xhr.setRequestHeader('Content-Type', 'application/json');
-              xhr.onload = function() {
-                if (xhr.status === 200) {
-                  console.log('image uploaded successfully.');
-                  setTimeout(function() {
-                    window.location.reload();
-                  }, 500);
-                } else {
-                  console.error('Error uploading image.');
-                }
-              };
-              xhr.onerror = function() {
-                console.error('Network error.');
-              };
-              xhr.send(jsonData);
-            };
-            reader.readAsText(file);
-          } else {
-            alert('<%= req.translations.jsonSelectFile %>');
-          }
-        });
+          var input = document.createElement('input');
+          input.type = 'file';
+          input.accept = '.json';
+          input.click();
+          input.addEventListener('change', function(event) {
+              var file = event.target.files[0];
+              if (file && file.type === 'application/json') {
+                  var reader = new FileReader();
+                  reader.onload = function(event) {
+                      var jsonData = event.target.result;
+                      var xhr = new XMLHttpRequest();
+                      xhr.open('POST', '/admin/images/upload', true);
+                      xhr.setRequestHeader('Content-Type', 'application/json');
+                      xhr.onload = function() {
+                          if (xhr.status === 200) {
+                              console.log('Image uploaded successfully.');
+                              
+                              setTimeout(function() {
+                                  window.location.reload();
+                              }, 500);
+                          } else {
+                              console.error('Error uploading image.');
+                          }
+                      };
+                      xhr.onerror = function() {
+                          console.error('Network error.');
+                      };
+                      xhr.send(jsonData);
+                  };
+                  reader.readAsText(file);
+              } else {
+                  alert('<%= req.translations.jsonSelectFile %>');
+              }
+          });
       });
 
       imageRows.forEach(function(row) {
-        row.addEventListener('click', async function() {
-          var image = JSON.parse(this.dataset.image);
-          currentImage = image;
-          imageName.textContent = image.Name;
-          imageDescription.textContent = image.Description;
-          dockerImage.textContent = image.Image;
-          envVars.textContent = image.Env.join(', ');
-          authorInfo.textContent = image.Author + ' (' + image.AuthorName + ')';
-          nodeTable.style.display = 'none';
-          imageDetail.style.display = 'block';
-        });
+          row.addEventListener('click', async function() {
+              var image = JSON.parse(this.dataset.image);
+              currentImage = image;
+              imageName.textContent = image.Name;
+              imageDescription.textContent = image.Description;
+              dockerImage.textContent = image.Image;
+              envVars.textContent = image.Env.join(', ');
+              authorInfo.textContent = image.Author + ' (' + image.AuthorName + ')';
+              nodeTable.style.display = 'none';
+              imageDetail.style.display = 'block';
+          });
       });
 
       backButton.addEventListener('click', function() {
-        nodeTable.style.display = 'block';
-        imageDetail.style.display = 'none';
+          nodeTable.style.display = 'block';
+          imageDetail.style.display = 'none';
       });
 
-      deleteImageButton.addEventListener('click', async function() {
-        if (currentImage) {
-          deleteImage(currentImage.Id);
-        }
-      });
+      // After your other event listeners
+document.querySelectorAll('.deleteImageButton').forEach(function(button) {
+    button.addEventListener('click', function() {
+        var imageId = this.dataset.imageId;
+        deleteImage(imageId);
+    });
+});
+
 
       replaceImageButton.addEventListener('click', async function() {
-        var input = document.createElement('input');
-        input.type = 'file';
-        input.accept = '.json';
-        input.click();
-        input.addEventListener('change', function(event) {
-          var file = event.target.files[0];
-          if (file && file.type === 'application/json') {
-            var reader = new FileReader();
-            reader.onload = function(event) {
-              var jsonData = event.target.result;
-              var xhr = new XMLHttpRequest();
-              xhr.open('POST', '/admin/images/upload', true);
-              xhr.setRequestHeader('Content-Type', 'application/json');
-              xhr.onload = function() {
-                if (xhr.status === 200) {
-                  console.log('image uploaded successfully.');
-                  setTimeout(function() {
-                    deleteImage(currentImage.Id);
-                  }, 500);
-                } else {
-                  console.error('Error uploading image.');
-                }
-              };
-              xhr.onerror = function() {
-                console.error('Network error.');
-              };
-              xhr.send(jsonData);
-            };
-            reader.readAsText(file);
-          } else {
-            alert('<%= req.translations.jsonSelectFile %>');
-          }
-        });
+          var input = document.createElement('input');
+          input.type = 'file';
+          input.accept = '.json';
+          input.click();
+          input.addEventListener('change', function(event) {
+              var file = event.target.files[0];
+              if (file && file.type === 'application/json') {
+                  var reader = new FileReader();
+                  reader.onload = function(event) {
+                      var jsonData = event.target.result;
+                      var xhr = new XMLHttpRequest();
+                      xhr.open('POST', '/admin/images/upload', true);
+                      xhr.setRequestHeader('Content-Type', 'application/json');
+                      xhr.onload = function() {
+                          if (xhr.status === 200) {
+                              console.log('Image uploaded successfully.');
+                              setTimeout(function() {
+                                  deleteImage(currentImage.Id);
+                              }, 500);
+                          } else {
+                              console.error('Error uploading image.');
+                          }
+                      };
+                      xhr.onerror = function() {
+                          console.error('Network error.');
+                      };
+                      xhr.send(jsonData);
+                  };
+                  reader.readAsText(file);
+              } else {
+                  alert('<%= req.translations.jsonSelectFile %>');
+              }
+          });
       });
 
       async function deleteImage(id) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('POST', '/admin/images/delete', true);
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.onload = function() {
-          if (xhr.status === 200) {
-            console.log('image deleted successfully.');
-            setTimeout(function() {
-              window.location.reload();
-            }, 500);
-          } else {
-            console.error('Error deleting image.');
-          }
-        };
-        xhr.onerror = function() {
-          console.error('Network error.');
-        };
-        xhr.send(JSON.stringify({ id: id }));
+          var xhr = new XMLHttpRequest();
+          xhr.open('POST', '/admin/images/delete', true);
+          xhr.setRequestHeader('Content-Type', 'application/json');
+          xhr.onload = function() {
+              if (xhr.status === 200) {
+                  console.log('Image deleted successfully.');
+                  alert('Image Deleted Successfully');
+                  setTimeout(function() {
+                      window.location.reload();
+                  }, 500);
+              } else {
+                  console.error('Error deleting image.');
+                  alert('Error Deleting Image');
+              }
+          };
+          xhr.onerror = function() {
+              console.error('Network error.');
+          };
+          xhr.send(JSON.stringify({ id: id }));
       }
-    });
+  });
 </script>

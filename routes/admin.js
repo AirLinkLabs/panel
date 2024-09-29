@@ -561,6 +561,7 @@ router.delete('/nodes/delete', isAdmin, async (req, res) => {
  *
  * @returns {Response} Renders the 'nodes' view with node data and user information.
  */
+
 router.get('/admin/nodes', isAdmin, async (req, res) => {
   let nodes = await db.get('nodes') || [];
   let instances = await db.get('instances') || [];
