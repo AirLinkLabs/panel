@@ -1,20 +1,3 @@
-console.log(`
-  __                          __ 
-_____/ /____  ______  ____  _____/ /_
-/ ___/ //_/ / / / __ \\/ __ \\/ ___/ __/
-(__  ) ,< / /_/ / /_/ / /_/ / /  / /_  
-/____/_/|_|\\__, / .___/\\____/_/   \\__/  
-   /____/_/                  /   
-         /   
-
-
-https://github.com/skyportlabs
-https://skyport.dev
-
-
-(c) 2024 Matt James and contributors.
-`);
-
 const searchModal = document.getElementById('searchModal');
 const modalContent = document.querySelector('.modal-content');
 const searchInput = document.getElementById('searchInput');

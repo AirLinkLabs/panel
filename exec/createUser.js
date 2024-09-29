@@ -69,7 +69,7 @@ function isValidEmail(email) {
 
 async function main() {
     while (true) {
-        log.init('Create a new *admin* user for the Skyport Panel:');
+        log.init('Create a new *admin* user for the AirLink Panel:');
         log.init('You can make regular users from the admin -> users page.');
         
         const username = await askQuestion("Username: ");

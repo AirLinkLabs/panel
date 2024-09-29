@@ -131,7 +131,7 @@ router.get('/admin/plugins', isAdmin, async (req, res) => {
         pluginsidebar,
         enabledPlugins,
         user: req.user,
-        name: await db.get('name') || 'Skyport',
+        name: await db.get('name') || 'AirLink',
         logo: await db.get('logo') || false
     });
 });
@@ -159,7 +159,7 @@ router.get('/admin/plugins/:dir/edit', isAdmin, async (req, res) => {
         dir,
         content: manifestJson,
         user: req.user,
-        name: await db.get('name') || 'Skyport',
+        name: await db.get('name') || 'AirLink',
         logo: await db.get('logo') || false
     });
 });

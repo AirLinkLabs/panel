@@ -57,7 +57,7 @@ router.get("/instance/:id/archives", async (req, res) => {
                 res.render('instance/archives', { 
                     req, 
                     user: req.user, 
-                    name: await db.get('name') || 'Skyport',
+                    name: await db.get('name') || 'AirLink',
                     logo: await db.get('logo') || false, 
                     archives, 
                     settings,

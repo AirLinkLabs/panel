@@ -57,7 +57,7 @@ async function setupRoutes() {
                         res.render(page.template, { 
                             req, 
                             user: req.user, 
-                            name: await db.get('name') || 'Skyport', 
+                            name: await db.get('name') || 'AirLink', 
                             logo: await db.get('logo') || false,
                             settings: await db.get('settings'),
                             config, 
@@ -75,7 +75,7 @@ async function setupRoutes() {
                 router.get(page.path, async (req, res) => {
                     res.render(page.template, {
                         req,
-                        name: await db.get('name') || 'Skyport',
+                        name: await db.get('name') || 'AirLink',
                         logo: await db.get('logo') || false,
                         settings: await db.get('settings')
                     });

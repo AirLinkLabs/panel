@@ -40,7 +40,7 @@ async function seed() {
 // r.com/uNob
 async function performSeeding() {
   try {
-    const imagesIndexResponse = await axios.get('https://raw.githubusercontent.com/skyportlabs/images_v2/main/seed/0.1.0-beta2.json');
+    const imagesIndexResponse = await axios.get('https://raw.githubusercontent.com/AirLinklabs/images_v2/main/seed/0.1.0-beta2.json');
     const imageUrls = imagesIndexResponse.data;
     let imageDataArray = [];
 

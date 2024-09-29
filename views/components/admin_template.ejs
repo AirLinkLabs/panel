@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= name %></title>
+    <link href="/assets/tailwind.css" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  </head>
+  <body style="font-family: 'Inter'" class="bg-gray-800">
+    <div>
+      <!-- Static sidebar for desktop -->
+      <div class="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0">
+        <!-- Sidebar component, swap this element with another sidebar if you like -->
+        <div class="flex-1 flex flex-col min-h-0 bg-gray-700/20">
+          <div class="flex items-center h-16 flex-shrink-0 px-4 bg-gray-700/50">
+            <span class="text-white font-bold"><%= name %></span>
+          </div>
+          <div class="flex-1 flex flex-col overflow-y-auto">
+            <nav class="flex-1 px-2 py-4 space-y-1">
+              <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
+            
+            
+              <% if (user.admin == true) { %>
+                <a href="../admin/overview" class="transition text-gray-300 hover:bg-gray-700/50 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-3">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" />
+                    </svg>
+                    Admin
+                </a>
+                <a href="../admin/settings" class="transition text-gray-300 hover:bg-gray-700/50 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" class="w-6 h-6 mr-3">
+                        <rect width="256" height="256" fill="none"/>
+                        <path d="M237.94,107.21a8,8,0,0,0-3.89-5.4l-29.83-17-.12-33.62a8,8,0,0,0-2.83-6.08,111.91,111.91,0,0,0-36.72-20.67,8,8,0,0,0-6.46.59L128,41.85,97.88,25a8,8,0,0,0-6.47-.6A111.92,111.92,0,0,0,54.73,45.15a8,8,0,0,0-2.83,6.07l-.15,33.65-29.83,17a8,8,0,0,0-3.89,5.4,106.47,106.47,0,0,0,0,41.56,8,8,0,0,0,3.89,5.4l29.83,17,.12,33.63a8,8,0,0,0,2.83,6.08,111.91,111.91,0,0,0,36.72,20.67,8,8,0,0,0,6.46-.59L128,214.15,158.12,231a7.91,7.91,0,0,0,3.9,1,8.09,8.09,0,0,0,2.57-.42,112.1,112.1,0,0,0,36.68-20.73,8,8,0,0,0,2.83-6.07l.15-33.65,29.83-17a8,8,0,0,0,3.89-5.4A106.47,106.47,0,0,0,237.94,107.21ZM128,168a40,40,0,1,1,40-40A40,40,0,0,1,128,168Z"/>
+                    </svg>
+                    
+                    Settings
+                </a>
+                <a href="../admin/users" class="transition text-gray-300 hover:bg-gray-700/50 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" class="w-6 h-6 mt-0.5 mr-3"><rect width="256" height="256" fill="none"/><path d="M164.47,195.63a8,8,0,0,1-6.7,12.37H10.23a8,8,0,0,1-6.7-12.37,95.83,95.83,0,0,1,47.22-37.71,60,60,0,1,1,66.5,0A95.83,95.83,0,0,1,164.47,195.63Zm87.91-.15a95.87,95.87,0,0,0-47.13-37.56A60,60,0,0,0,144.7,54.59a4,4,0,0,0-1.33,6A75.83,75.83,0,0,1,147,150.53a4,4,0,0,0,1.07,5.53,112.32,112.32,0,0,1,29.85,30.83,23.92,23.92,0,0,1,3.65,16.47,4,4,0,0,0,3.95,4.64h60.3a8,8,0,0,0,7.73-5.93A8.22,8.22,0,0,0,252.38,195.48Z"/></svg>
+                    Users
+                </a>
+                <a href="../admin/instances" class="transition text-gray-300 hover:bg-gray-700/50 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" class="w-6 h-6 mt-0.5 mr-3"><rect width="256" height="256" fill="none"/><path d="M24,80a8,8,0,0,1,4-6.91l96-56a8,8,0,0,1,8.06,0l96,56a8,8,0,0,1,0,13.82l-96,56a8,8,0,0,1-8.06,0l-96-56A8,8,0,0,1,24,80Zm196,41.09-92,53.65L36,121.09A8,8,0,0,0,28,134.91l96,56a8,8,0,0,0,8.06,0l96-56A8,8,0,1,0,220,121.09ZM232,192H216V176a8,8,0,0,0-16,0v16H184a8,8,0,0,0,0,16h16v16a8,8,0,0,0,16,0V208h16a8,8,0,0,0,0-16Zm-92,23.76-12,7L36,169.09A8,8,0,0,0,28,182.91l96,56a8,8,0,0,0,8.06,0l16-9.33A8,8,0,1,0,140,215.76Z"/></svg>
+                    Instances
+                </a>
+                <a href="../admin/nodes" class="transition text-gray-300 hover:bg-gray-700/50 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" class="w-6 h-6 mt-0.5 mr-3"><rect width="256" height="256" fill="none"/><path d="M208,40H48A16,16,0,0,0,32,56v48a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V56A16,16,0,0,0,208,40ZM180,92a12,12,0,1,1,12-12A12,12,0,0,1,180,92Z"/><path d="M208,136H48a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V152A16,16,0,0,0,208,136Zm-28,52a12,12,0,1,1,12-12A12,12,0,0,1,180,188Z"/></svg>
+                    Nodes
+                </a>
+                <a href="../admin/images" class="transition text-gray-300 hover:bg-gray-700/50 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" class="w-6 h-6 mt-0.5 mr-3"><rect width="256" height="256" fill="none"/><path d="M243.31,136,144,36.69A15.86,15.86,0,0,0,132.69,32H40a8,8,0,0,0-8,8v92.69A15.86,15.86,0,0,0,36.69,144L136,243.31a16,16,0,0,0,22.63,0l84.68-84.68a16,16,0,0,0,0-22.63ZM84,96A12,12,0,1,1,96,84,12,12,0,0,1,84,96Z"/></svg>
+                    Images
+                </a>
+                <a href="../admin/apikeys" class="transition text-gray-300 hover:bg-gray-700/50 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" class="w-6 h-6 mt-0.5 mr-3"><rect width="256" height="256" fill="none"/><path d="M216.57,39.43A80,80,0,0,0,83.91,120.78L28.69,176A15.86,15.86,0,0,0,24,187.31V216a16,16,0,0,0,16,16H72a8,8,0,0,0,8-8V208H96a8,8,0,0,0,8-8V184h16a8,8,0,0,0,5.66-2.34l9.56-9.57A79.73,79.73,0,0,0,160,176h.1A80,80,0,0,0,216.57,39.43ZM180,92a16,16,0,1,1,16-16A16,16,0,0,1,180,92Z"/></svg>
+                    API Keys
+                </a>
+                <a href="../admin/auditlogs" class="transition text-gray-300 hover:bg-gray-700/50 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" class="w-6 h-6 mt-0.5 mr-3"><rect width="256" height="256" fill="none"/><path d="M220.8,169.6A8,8,0,0,0,216,168h-8V64a32,32,0,0,0-32-32H40A32,32,0,0,0,8,64C8,77.61,18.05,85.54,19.2,86.4h0A7.89,7.89,0,0,0,24,88a8,8,0,0,0,4.87-14.33h0C28.83,73.62,24,69.74,24,64a16,16,0,0,1,32,0V192a32,32,0,0,0,32,32H200a32,32,0,0,0,32-32C232,178.39,222,170.46,220.8,169.6ZM104,96h64a8,8,0,0,1,0,16H104a8,8,0,0,1,0-16Zm-8,40a8,8,0,0,1,8-8h64a8,8,0,0,1,0,16H104A8,8,0,0,1,96,136Zm104,72H107.71A31.82,31.82,0,0,0,112,192a26.92,26.92,0,0,0-1.21-8h102a12.58,12.58,0,0,1,3.23,8A16,16,0,0,1,200,208Z"/></svg>
+                    Audit Logs
+                </a>
+                
+
+              <% } %>
+              <a href="../logout" class="transition text-gray-300 hover:bg-gray-700/50 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-3">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+                </svg>
+                Logout
+              </a>
+            </nav>
+          </div>
+        </div>
+      </div>
+      <!-- doesn't work for phone -->
+      <div class="md:pl-64 flex flex-col">
+        <div class="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-gray-700/50 backdrop-blur-md">
+            <button type="button" class="px-4 border-r border-gray-200 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 md:hidden">
+                <span class="sr-only">Open sidebar</span>
+                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+                </svg>
+            </button>
+            <div class="flex-1 px-4 flex justify-end">
+                <div class="ml-4 flex items-center md:ml-6">
+                    <div class="ml-3 relative">
+                        <div>
+                            <span class="text-white mr-4"><%= user.username %></span>
+                        </div>
+                    </div>
+                    <div class="ml-3 relative">
+                        <div>
+                            <button type="button" class="transition max-w-xs bg-gray-700/50 flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" id="user-menu-button" aria-expanded="false" aria-haspopup="true">
+                                <span class="sr-only">Open user menu</span>
+                                <img class="h-8 w-8 rounded-full" src="https://api.dicebear.com/9.x/thumbs/svg?seed=<%= user.username %>"/>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>

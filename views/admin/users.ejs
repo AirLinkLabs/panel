@@ -1,21 +1,12 @@
-<%- include('../components/template') %>
+<%- include('../components/admin_template') %>
 <main id="content">
   <div class="bg-transparent">
     <div class="sm:flex sm:items-center px-8 pt-4">
       <div class="sm:flex-auto">
         <h1 class="text-base font-medium leading-6 text-white"><%= req.translations.users %></h1>
-        <p class="mt-1 tracking-tight text-sm text-neutral-500">
-          <%= req.translations.usersDescription %>
-        </p>
       </div>
       <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-        <button
-          id="createButton"
-          type="button"
-          class="block rounded-xl <%= theme['button-color'] %> px-3 py-2 text-center text-sm font-medium shadow-lg transition focus:outline focus:outline-2 focus:outline-offset-2"
-        >
-         <%= req.translations.createUserButton %>
-        </button>
+      
       </div>
     </div>
     <div id="nodeTable" class="mt-6 w-full">
@@ -28,137 +19,40 @@
           <col class="lg:w-1/12" />
           <col class="lg:w-1/12" />
         </colgroup>
-        <thead class="border-b border-white/5 text-sm leading-6 text-white">
+        <thead class="bg-gray-700/25">
           <tr>
-            <th
-              scope="col"
-              class="py-2 pl-0 pr-8 font-medium sm:pl-80 lg:pl-8"
-            >
-            <%= req.translations.name %>
-            </th>
-            <th
-            scope="col"
-            class="py-2 pl-0 pr-8 font-medium sm:pl-80 lg:pl-8"
-          >
-          <%= req.translations.email %>
-          </th>
-            <th scope="col" class="py-2 pl-0 pr-8 font-medium sm:table-cell">
-              <%= req.translations.information %>
-            </th>
-            <th
-              scope="col"
-              class="py-2 pl-0 pr-8 font-medium md:table-cell lg:pr-20"
-            >
-            <%= req.translations.role %>
-            </th>
-            <th
-              scope="col"
-              class="py-2 pl-0 pr-8 font-medium md:table-cell lg:pr-20"
-            >
-            <%= req.translations.verificationStatus %>
-            </th>
-            <th
-              scope="col"
-              class="py-2 pl-0 pr-8 font-medium md:table-cell lg:pr-20"
-            >
-            <%= req.translations.actions %>
-            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><%= req.translations.name %></th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><%= req.translations.email %></th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><%= req.translations.information %></th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><%= req.translations.role %></th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><%= req.translations.edit %></th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><%= req.translations.remove %></th>
+            <th><button
+          id="createButton"
+          type="button"
+          class="transition px-4 py-2 text-sm font-medium text-white bg-blue-500 border border-blue-500 rounded-lg hover:bg-blue-600 hover:text-white focus:z-10 focus:ring-2 focus:ring-blue-600 focus:text-white"
+        >
+         <%= req.translations.createUserButton %>
+        </button></th>
+
           </tr>
+          
         </thead>
         <tbody class="divide-y divide-white/5">
           <% users.forEach(function(user) { %>
-          <tr>
-            <td class="py-4 pl-4 pr-8 sm:pl-8 lg:pl-8">
-              <div class="flex items-center gap-x-4">
-                <img
-                  class="h-8 w-8 rounded-xl bg-transparent"
-                  src="https://api.dicebear.com/9.x/thumbs/svg?seed=<%= user.username %>"
-                  alt=""
-                />
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white"><%= user.username %></td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400"><%= user.email %></td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400"><%= user.userId %></td>
+              <% if (user.admin==true) { %>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400"><%= req.translations.admin %></td>
+              <% } else if (user.admin==false) { %>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400"><%= req.translations.regularUserRole %></td>
+              <% } %>
+              <td><a href="/admin/users/edit/<%= user.userId %>" class="px-6 py-4 whitespace-nowrap text-sm text-gray-400"> <%= req.translations.edit %></a></td>
+              <td><a id="removeButton"  type="button" class="px-6 py-4 whitespace-nowrap text-sm text-gray-400" data-user-id="<%= user.userId %>"> <%= req.translations.remove %></a></td>
 
-                <div class="truncate text-sm font-medium leading-6 text-white">
-                  <%= user.username %>
-                </div>
-              </div>
-            </td>
-            <td class="hidden py-4 pl-0 pr-4 sm:table-cell sm:pr-8">
-              <div class="flex gap-x-3 pl-8">
-                <div
-                  class="rounded-xl bg-neutral-800/40 px-2 py-1 text-xs font-medium text-neutral-400 ring-1 ring-inset ring-white/10"
-                >
-                  <%= user.email %>
-                </div>
-              </div>
-            </td>
-            <td class="hidden py-4 pl-0 pr-4 sm:table-cell sm:pr-8">
-              <div class="flex gap-x-3">
-                <div
-                  class="rounded-xl bg-neutral-800/40 px-2 py-1 text-xs font-medium text-neutral-400 ring-1 ring-inset ring-white/10"
-                >
-                  <%= user.userId %>
-                </div>
-              </div>
-            </td>
-
-            <% if (user.admin==true) { %>
-            <td
-              class="hidden py-4 pl-0 pr-8 text-sm leading-6 text-neutral-400 md:table-cell lg:pr-20"
-            >
-            <%= req.translations.admin %>
-            </td>
-            <% } else if (user.admin==false) { %>
-            <td
-              class="hidden py-4 pl-0 pr-8 text-sm leading-6 text-neutral-400 md:table-cell lg:pr-20"
-            >
-            <%= req.translations.regularUserRole %>
-            </td>
-            <% } %>
-
-            <% if (user.verified==true) { %>
-              <td
-                class="hidden py-4 pl-0 pr-8 text-sm leading-6 text-green-500 md:table-cell lg:pr-20"
-              >
-              <%= req.translations.verifiedStatus %>
-              </td>
-              <% } else if (user.verified==false) { %>
-              <td
-                class="hidden py-4 pl-0 pr-8 text-sm leading-6 text-red-500 md:table-cell lg:pr-20"
-              >
-              <%= req.translations.unverifiedStatus %>
-              </td>
-            <% } else { %>
-            <td
-              class="hidden py-4 pl-0 pr-8 text-sm leading-6 text-neutral-400 md:table-cell lg:pr-20"
-            >
-            <%= req.translations.error %>
-            </td>
-            <% } %>
-            <td
-              class="py-4 pl-0 pr-4 text-sm leading-6 sm:pr-8 lg:pr-20 flex gap-3"
-            >
-              <div class="inner">
-                <a href="/admin/users/edit/<%= user.userId %>"
-                  ><button
-                    id="editButton"
-                    type="button"
-                    class="block rounded-xl <%= theme['button-color'] %> px-3 py-2 text-center text-sm font-medium shadow-lg transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                  >
-                  <%= req.translations.edit %>
-                  </button></a
-                >
-              </div>
-              <div class="inner">
-                <button
-                  id="removeButton"
-                  type="button"
-                  class="removeButton block rounded-xl bg-red-600 px-3 py-2 text-center text-sm font-medium text-white shadow-lg hover:bg-red-500 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                  data-user-id="<%= user.userId %>"                
-                  >
-                  <%= req.translations.remove %>
-                </button>
-              </div>
-            </td>
-          </tr>
+            </tr>
           <% }); %>
         </tbody>
       </table>
@@ -215,26 +109,7 @@
         <option value="true"><%= req.translations.true %></option>
         <option value="false"><%= req.translations.false %></option>
         </select>
-        <!-- <label class="text-neutral-400 text-sm tracking-tight mb-2">Tags:</label>
-         <input id="nodeTags" class="rounded-xl focus:ring-transparent focus:border-transparent text-white text-sm mt-2 mb-6 w-96 items-center transition justify-left gap-16 hover:bg-white/5 px-4 py-2 flex border-white/5 bg-neutral-600/20 placeholder:text-white/20 text-white border border-black/10" placeholder="Tag 1 - Tag 2 - Tag 3">
-
-         <label class="text-neutral-400 text-sm tracking-tight mb-2">RAM (GB):</label>
-         <input id="nodeRam" class="rounded-xl focus:ring-transparent focus:border-transparent text-white text-sm mt-2 mb-6 w-96 items-center transition justify-left gap-16 hover:bg-white/5 px-4 py-2 flex border-white/5 bg-neutral-600/20 placeholder:text-white/20 text-white border border-black/10" placeholder="8">
-
-         <label class="text-neutral-400 text-sm tracking-tight mb-2">Disk (GB):</label>
-         <input id="nodeDisk" class="rounded-xl focus:ring-transparent focus:border-transparent text-white text-sm mt-2 mb-6 w-96 items-center transition justify-left gap-16 hover:bg-white/5 px-4 py-2 flex border-white/5 bg-neutral-600/20 placeholder:text-white/20 text-white border border-black/10" placeholder="40">
-
-         <label class="text-neutral-400 text-sm tracking-tight mb-2">Processor:</label>
-         <input id="nodeProcessor" class="rounded-xl focus:ring-transparent focus:border-transparent text-white text-sm mt-2 mb-6 w-96 items-center transition justify-left gap-16 hover:bg-white/5 px-4 py-2 flex border-white/5 bg-neutral-600/20 placeholder:text-white/20 text-white border border-black/10" placeholder="AMD EPYC 9454 - 16 Threads">
-
-         <label class="text-neutral-400 text-sm tracking-tight mb-2">IP Address:</label>
-         <input id="nodeAddress" class="rounded-xl focus:ring-transparent focus:border-transparent text-white text-sm mt-2 mb-6 w-96 items-center transition justify-left gap-16 hover:bg-white/5 px-4 py-2 flex border-white/5 bg-neutral-600/20 placeholder:text-white/20 text-white border border-black/10" placeholder="192.168.1.1 or my.hostnamehere.com">
-
-         <label class="text-neutral-400 text-sm tracking-tight mb-2">Daemon Port:</label>
-         <input id="nodePort" class="rounded-xl focus:ring-transparent focus:border-transparent text-white text-sm mt-2 mb-6 w-96 items-center transition justify-left gap-16 hover:bg-white/5 px-4 py-2 flex border-white/5 bg-neutral-600/20 placeholder:text-white/20 text-white border border-black/10" placeholder="8080">
-
-         <label class="text-neutral-400 text-sm tracking-tight mb-2">Access Key:</label>
-         <input id="nodeApiKey" class="rounded-xl focus:ring-transparent focus:border-transparent text-white text-sm mt-2 mb-6 w-96 items-center transition justify-left gap-16 hover:bg-white/5 px-4 py-2 flex border-white/5 bg-neutral-600/20 placeholder:text-white/20 text-white border border-black/10" placeholder="skyportd_xxxxxxxxxxxxxxxx"> -->
+        
 
         <button
           id="createNodeBtn"
@@ -307,10 +182,11 @@
 </script>
 <!-- remove -->
 <script>
-  document.querySelectorAll('.removeButton').forEach(button => {
+
+  document.querySelectorAll('removeButton').forEach(button => {
     button.addEventListener('click', function() {
       const userId = this.dataset.userId;
-      const totalUsers = document.querySelectorAll('.removeButton').length;
+      const totalUsers = document.querySelectorAll('removeButton').length;
       if (totalUsers === 1) {
         alert('<%= req.translations.databaseCannotDelete %>');
         return;

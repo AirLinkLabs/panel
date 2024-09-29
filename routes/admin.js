@@ -99,7 +99,7 @@ router.get('/admin/apikeys', isAdmin, async (req, res) => {
       req,
       user: req.user,
       apiKeys: await db.get('apiKeys') || [],
-      name: await db.get('name') || 'Skyport',
+      name: await db.get('name') || 'AirLink',
       logo: await db.get('logo') || false
     });
   } catch (error) {
@@ -111,7 +111,7 @@ router.post('/apikeys/create', isAdmin, async (req, res) => {
   try {
     const newApiKey = {
       id: uuidv4(),
-      key: 'skyport_' + uuidv4(),
+      key: 'AirLink_' + uuidv4(),
       createdAt: new Date().toISOString()
     };
     
@@ -224,7 +224,7 @@ router.get('/admin/overview', isAdmin, async (req, res) => {
       res.render('admin/overview', {
         req,
         user: req.user,
-        name: await db.get('name') || 'Skyport',
+        name: await db.get('name') || 'AirLink',
         logo: await db.get('logo') || false,
         usersTotal,
         nodesTotal,
@@ -478,7 +478,7 @@ router.get('/admin/users/edit/:userId', isAdmin, async (req, res) => {
     req,
     user: req.user,
     editUser: user,
-    name: await db.get('name') || 'Skyport',
+    name: await db.get('name') || 'AirLink',
     logo: await db.get('logo') || false
   });
 });
@@ -578,7 +578,7 @@ router.get('/admin/nodes', isAdmin, async (req, res) => {
   res.render('admin/nodes', { 
     req,
     user: req.user,
-    name: await db.get('name') || 'Skyport',
+    name: await db.get('name') || 'AirLink',
     logo: await db.get('logo') || false,
     nodes,
     set
@@ -596,7 +596,7 @@ router.get('/admin/settings', isAdmin, async (req, res) => {
   res.render('admin/settings/appearance', {
     req,
     user: req.user,
-    name: await db.get('name') || 'Skyport',
+    name: await db.get('name') || 'AirLink',
     logo: await db.get('logo') || false,
     settings: await db.get('settings')
   });
@@ -610,7 +610,7 @@ router.get('/admin/settings/smtp', isAdmin, async (req, res) => {
     res.render('admin/settings/smtp', {
       req,
       user: req.user,
-      name: await db.get('name') || 'Skyport',
+      name: await db.get('name') || 'AirLink',
       logo: await db.get('logo') || false,
       settings,
       smtpSettings
@@ -626,7 +626,7 @@ router.get('/admin/settings/theme', isAdmin, async (req, res) => {
   res.render('admin/settings/theme', {
     req,
     user: req.user,
-    name: await db.get('name') || 'Skyport',
+    name: await db.get('name') || 'AirLink',
     logo: await db.get('logo') || false,
     settings: await db.get('settings')
   });
@@ -820,7 +820,7 @@ router.get('/admin/instances', isAdmin, async (req, res) => {
   res.render('admin/instances', {
     req,
     user: req.user,
-    name: await db.get('name') || 'Skyport',
+    name: await db.get('name') || 'AirLink',
     logo: await db.get('logo') || false,
     instances,
     images,
@@ -840,7 +840,7 @@ router.get('/admin/instances/:id/edit', isAdmin, async (req, res) => {
   res.render('admin/instance_edit', {
     req,
     user: req.user,
-    name: await db.get('name') || 'Skyport',
+    name: await db.get('name') || 'AirLink',
     logo: await db.get('logo') || false,
     instance,
     images,
@@ -852,7 +852,7 @@ router.get('/admin/users', isAdmin, async (req, res) => {
   res.render('admin/users', {
     req,
     user: req.user,
-    name: await db.get('name') || 'Skyport',
+    name: await db.get('name') || 'AirLink',
     logo: await db.get('logo') || false,
     users: await db.get('users') || []
   });
@@ -878,7 +878,7 @@ router.get("/admin/node/:id", async (req, res) => {
     res.render('admin/node', {
       req,
       user: req.user,
-      name: await db.get('name') || 'Skyport',
+      name: await db.get('name') || 'AirLink',
       logo: await db.get('logo') || false,
       node
     });
@@ -926,7 +926,7 @@ router.get('/admin/images', isAdmin, async (req, res) => {
   res.render('admin/images', {
     req,
     user: req.user,
-    name: await db.get('name') || 'Skyport',
+    name: await db.get('name') || 'AirLink',
     logo: await db.get('logo') || false,
     images: await db.get('images') || []
   });
@@ -1093,7 +1093,7 @@ router.get('/admin/auditlogs', isAdmin, async (req, res) => {
     res.render('admin/auditlogs', {
       req,
       user: req.user,
-      name: await db.get('name') || 'Skyport',
+      name: await db.get('name') || 'AirLink',
       logo: await db.get('logo') || false,
       audits
     });

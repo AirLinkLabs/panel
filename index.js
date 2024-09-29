@@ -1,21 +1,18 @@
 /*
- *           __                          __ 
-*      _____/ /____  ______  ____  _____/ /_
- *    / ___/ //_/ / / / __ \/ __ \/ ___/ __/
- *   (__  ) ,< / /_/ / /_/ / /_/ / /  / /_  
- *  /____/_/|_|\__, / .___/\____/_/   \__/  
- *           /____/_/                  
+ *               _      _      _       _     
+ *     /\   (_)    | |    (_)     | |    
+ *    /  \   _ _ __| |     _ _ __ | | __ 
+ *   / /\ \ | | '__| |    | | '_ \| |/ / 
+ *  / ____ \| | |  | |____| | | | |   <  
+ * /_/    \_\_|_|  |______|_|_| |_|_|\_\ 
+ *                                      
+ *                                      
  *              
- *  Skyport Panel 0.2.1 (Piledriver)
- *  (c) 2024 Matt James and contributers
+ *  AirLink Panel 0.2.1 (Piledriver)
+ *  (c) 2024 Meesam and contributers
  * 
 */
 
-/**
- * @fileoverview Main server file for Skyport Panel. Sets up the express application,
- * configures middleware for sessions, body parsing, and websocket enhancements, and dynamically loads route
- * modules. This file also sets up the server to listen on a configured port and initializes logging.
- */
 
 const express = require('express');
 const session = require('express-session');
@@ -192,12 +189,12 @@ app.set('views', [path.join(__dirname, 'views'), ...PluginViewsDir]);
  * number to indicate successful startup.
  */
 app.use(express.static('public'));
-app.listen(config.port, () => log.info(`skyport is listening on port ${config.port}`));
+app.listen(config.port, () => log.info(`AirLink is listening on port ${config.port}`));
 
 app.get('*', async function(req, res){
   res.render('errors/404', {
     req,
-    name: await db.get('name') || 'Skyport',
+    name: await db.get('name') || 'AirLink',
     logo: await db.get('logo') || false
   })
 });
