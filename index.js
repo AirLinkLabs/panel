@@ -7,7 +7,7 @@
  *                                      
  *                                      
  *              
- *  AirLink Panel 0.2.1 (Piledriver)
+ *  AirLink Panel 0.1.0-beta1
  *  (c) 2024 Meesam and contributers
  * 
 */
@@ -173,13 +173,6 @@ function loadRoutes(directory) {
 
 // Start loading routes from the root routes directory
 loadRoutes(routesDir);
-
-const pluginroutes = require('./plugins/pluginmanager.js');
-app.use("/", pluginroutes);
-
-const pluginDir = path.join(__dirname, 'plugins');
-const PluginViewsDir = fs.readdirSync(pluginDir).map(addonName => path.join(pluginDir, addonName, 'views'));
-app.set('views', [path.join(__dirname, 'views'), ...PluginViewsDir]);
 
 /**
  * Configures the Express application to serve static files from the 'public' directory, providing
