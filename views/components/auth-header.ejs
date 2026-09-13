@@ -37,6 +37,10 @@
       ::-webkit-scrollbar-track { background: transparent; }
       html, body { transition: background-color 0.25s ease-in, color 0.25s ease-in; margin: 0; padding: 0; }
     </style>
+<% if (process.env.NODE_ENV !== 'production') { %>
+    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+    <script>eruda.init();</script>
+<% } %>
 </head>
 <body style="font-family: 'Inter Variable'; background: var(--theme-bg); color: var(--theme-text);" class="h-full">
 

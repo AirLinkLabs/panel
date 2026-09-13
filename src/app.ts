@@ -232,6 +232,10 @@ app.use((req: Request, res: Response, next: NextFunction) => {
               "'strict-dynamic'",
               // Alpine.js uses new Function() internally for directive compilation
               "'unsafe-eval'",
+              // Dev-only: Eruda console debugger loaded from CDN
+              ...(!panelConfig.isProduction
+                ? ["https://cdn.jsdelivr.net"]
+                : []),
             ],
             scriptSrcAttr: ["'unsafe-inline'"],
             styleSrc: ["'self'", "'unsafe-inline'"],

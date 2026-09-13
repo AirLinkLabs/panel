@@ -42,4 +42,10 @@ export default defineConfig({
   css: {
     devSourcemap: true,
   },
+  // Ensure scripts/ is never copied to build output
+  server: {
+    fs: {
+      deny: ["**/scripts/**"],
+    },
+  },
 });

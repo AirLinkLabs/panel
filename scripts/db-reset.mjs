@@ -12,8 +12,8 @@
  *   --help / -h    Show this message.
  *
  * Usage:
- *   node public/scripts/db-reset.mjs
- *   node public/scripts/db-reset.mjs --yes
+ *   node scripts/db-reset.mjs
+ *   node scripts/db-reset.mjs --yes
  */
 
 import { execSync, spawnSync } from "node:child_process";
@@ -25,7 +25,7 @@ import chalk from "chalk";
 import boxen from "boxen";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const projectDir = resolve(__dirname, "../..");
+const projectDir = resolve(__dirname, "..");
 
 // ── Arg parsing ──────────────────────────────────────────────────────────────
 
@@ -88,7 +88,7 @@ function banner() {
 
 function showHelp() {
   console.log(`${chalk.bold("Usage")}
-  node public/scripts/db-reset.mjs [flags]
+  node scripts/db-reset.mjs [flags]
 
 ${chalk.bold("Flags")}
   --yes, -y        Skip confirmation prompt (CI / non-interactive).
@@ -102,8 +102,8 @@ ${chalk.bold("What it does")}
   4. Runs prisma generate + migrate dev.
 
 ${chalk.bold("Examples")}
-  node public/scripts/db-reset.mjs
-  node public/scripts/db-reset.mjs --yes
+  node scripts/db-reset.mjs
+  node scripts/db-reset.mjs --yes
 `);
 }
 

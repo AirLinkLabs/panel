@@ -25,9 +25,10 @@
  *   --db-user USER        Override the DB username (default: airlink).
  *   --redis-url URL       Override the Redis connection URL.
  *   --url URL             Panel public URL (default: http://localhost:3000).
+ *   --asset-url URL       CDN/asset origin for Vite-built assets (ASSET_URL).
+ *   --asset-base-url URL  Base URL for static assets (ASSET_BASE_URL / CDN).
  *   --trust-proxy         Enable trust of X-Forwarded-* headers.
  *   --cookie-domain DOM   Cookie domain for cross-subdomain sessions.
- *   --asset-base-url URL  Base URL for static assets (CDN / different origin).
  *   --csp-enabled         Force Content Security Policy on/off.
  *   --rate-limit MAX      Global request rate limit per IP (default: 500).
  *   --log-level LEVEL     Log level (default: info).
@@ -38,9 +39,9 @@
  *   --help / -h           Show this message and exit.
  *
  * Usage examples:
- *   node public/scripts/setup.mjs
- *   node public/scripts/setup.mjs --yes
- *   node public/scripts/setup.mjs --skip-services --db-host=db.internal
+ *   node scripts/setup.mjs
+ *   node scripts/setup.mjs --yes
+ *   node scripts/setup.mjs --skip-services --db-host=db.internal
  */
 
 import { execSync, execFileSync, spawnSync } from "node:child_process";
@@ -55,11 +56,11 @@ import boxen from "boxen";
 
 // ---
 // Locate ourselves and load package.json from the project root (one level up
-// from public/, which is where this file lives).
+// from scripts/, which is where this file lives).
 // ---
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const projectDir = resolve(__dirname, "../..");
+const projectDir = resolve(__dirname, "..");
 
 /** Pull name / version / author / license out of the nearest package.json. */
 function loadPackageMeta() {
@@ -161,6 +162,7 @@ const opts = {
   dbUser: flag("--db-user", "airlink"),
   redisUrl: flag("--redis-url", null),
   url: flag("--url", "http://localhost:3000"),
+  assetUrl: flag("--asset-url", ""),
   trustProxy: argv.includes("--trust-proxy"),
   cookieDomain: flag("--cookie-domain", ""),
   assetBaseUrl: flag("--asset-base-url", ""),
@@ -230,7 +232,7 @@ function banner() {
 function showHelp() {
   banner();
   console.log(`${chalk.bold("Usage")}
-  node public/scripts/setup.mjs [flags]
+  node scripts/setup.mjs [flags]
 
 ${chalk.bold("Flags")}
   --yes, -y              Accept all prompts (non-interactive / CI mode).
@@ -255,9 +257,9 @@ ${chalk.bold("Flags")}
   --help, -h             Show this message.
 
 ${chalk.bold("Examples")}
-  node public/scripts/setup.mjs
-  node public/scripts/setup.mjs --yes
-  node public/scripts/setup.mjs --skip-services --db-host=db.internal --yes
+  node scripts/setup.mjs
+  node scripts/setup.mjs --yes
+  node scripts/setup.mjs --skip-services --db-host=db.internal --yes
 `);
   process.exit(0);
 }
@@ -355,6 +357,18 @@ function ask(question) {
         resolve(lower === "" || lower === "y" || lower === "yes");
       },
     );
+  });
+}
+
+function askInput(question, defaultVal = "") {
+  const hint = defaultVal ? chalk.dim(` [${defaultVal}]`) : "";
+  const rl = createInterface({ input: process.stdin, output: process.stdout });
+  return new Promise((resolve) => {
+    rl.question(`  ${chalk.yellow("?")} ${question}${hint} `, (ans) => {
+      rl.close();
+      const val = ans.trim();
+      resolve(val === "" ? defaultVal : val);
+    });
   });
 }
 
@@ -922,7 +936,7 @@ async function setupDatabase() {
 // .env generation
 // ---
 
-function generateEnv(creds) {
+async function generateEnv(creds) {
   section("Environment file");
 
   const envPath = resolve(projectDir, ".env");
@@ -932,6 +946,26 @@ function generateEnv(creds) {
     warn(".env already exists - leaving it untouched.");
     info("Delete it and re-run setup to regenerate with fresh secrets.");
     return;
+  }
+
+  // Interactive prompts (skip if --yes or flag provided)
+  let panelUrl = opts.url;
+  let assetUrl = opts.assetUrl;
+  let assetBaseUrl = opts.assetBaseUrl;
+
+  if (!opts.yes) {
+    gap();
+    info("Panel configuration — press Enter to keep defaults");
+    panelUrl = await askInput("Panel public URL", panelUrl);
+    assetUrl = await askInput(
+      "Asset CDN URL (ASSET_URL, leave empty for local)",
+      assetUrl,
+    );
+    assetBaseUrl = await askInput(
+      "Asset base URL (ASSET_BASE_URL, leave empty for local)",
+      assetBaseUrl,
+    );
+    gap();
   }
 
   const { dbHost, dbPort, dbName, dbUser, dbPass } = creds;
@@ -945,10 +979,10 @@ function generateEnv(creds) {
     "#",
     "",
     "# ── Core ──────────────────────────────────────────────────────────────────────",
-    `URL="${opts.url}"`,
+    `URL="${panelUrl}"`,
     "PORT=3000",
     `NAME="${PKG.name}"`,
-    'NODE_ENV="production"',
+    'NODE_ENV="development"',
     "",
     "# ── Session ───────────────────────────────────────────────────────────────────",
     `SESSION_SECRET="${sessionSecret}"`,
@@ -959,7 +993,8 @@ function generateEnv(creds) {
     `COOKIE_DOMAIN="${opts.cookieDomain}"`,
     "",
     "# ── Asset Delivery ────────────────────────────────────────────────────────────",
-    `ASSET_BASE_URL="${opts.assetBaseUrl}"`,
+    `ASSET_URL="${assetUrl}"`,
+    `ASSET_BASE_URL="${assetBaseUrl}"`,
     "",
     "# ── Content Security Policy ───────────────────────────────────────────────────",
     `CSP_ENABLED="${opts.cspEnabled ? "true" : ""}"`,
@@ -986,10 +1021,11 @@ function generateEnv(creds) {
     "",
     "# ── Redis ─────────────────────────────────────────────────────────────────────",
     `REDIS_URL="${redisUrl}"`,
+    `ALLOWED_ORIGINS="0.0.0.0"`,
     "",
     "# ── TLS (Direct HTTPS — no reverse proxy) ────────────────────────────────────",
     '# TLS_CERT_PATH=""',
-    '# TLS_KEY_PATH=""',
+    '# TLS_KEY_KEY=""',
     "",
     "# ── SMTP / Email ──────────────────────────────────────────────────────────────",
     `SMTP_HOST="${opts.smtpHost}"`,
@@ -1002,7 +1038,8 @@ function generateEnv(creds) {
   ];
 
   writeFileSync(envPath, lines.join("\n"), "utf-8");
-  ok(".env written with a fresh SESSION_SECRET");
+  ok(".env written with fresh SESSION_SECRET");
+  if (assetUrl) ok(`ASSET_URL set to ${assetUrl}`);
   dim(`  Path: ${envPath}`);
 }
 
@@ -1124,7 +1161,7 @@ async function main() {
 
   const creds = await setupDatabase();
 
-  generateEnv(creds);
+  await generateEnv(creds);
 
   runPrisma();
 

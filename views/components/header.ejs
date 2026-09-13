@@ -108,6 +108,10 @@ const wallpaperExcluded = req && req.path && (
         transform: translateY(14px);
       }
     </style>
+<% if (process.env.NODE_ENV !== 'production') { %>
+    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+    <script>eruda.init();</script>
+<% } %>
 </head>
 <body style="font-family: 'Inter Variable';<%= (settings.panelWallpaper && !wallpaperExcluded) ? `--al-wallpaper-image:url('${settings.panelWallpaper}');` : '' %>" class="h-full<%= (settings.panelWallpaper && !wallpaperExcluded) ? ' al-wallpaper' : '' %>">
 <% if (settings.panelWallpaper && !wallpaperExcluded) { %>
