@@ -108,7 +108,7 @@
 </main>
 
 <script type="module" nonce="<%- nonce %>">
-  import { startRegistration } from '/vendor/@simplewebauthn/browser/esm/index.js';
+  import { startRegistration } from '<%= assetPath('/vendor/@simplewebauthn/browser/esm/index.js') %>';
 
   (async function () {
     var csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';

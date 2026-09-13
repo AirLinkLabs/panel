@@ -25,19 +25,19 @@ const wallpaperExcluded = req && req.path && (
         <% } %>
       })();
     </script>
-    <link rel="stylesheet" href="/styles.css?v=8">
-    <link rel="stylesheet" href="/styles/layout-animations.css?v=8">
-    <link rel="stylesheet" href="/styles/motion.css?v=8">
-    <link rel="icon" href="<%= settings.favicon && settings.favicon.startsWith('/') ? settings.favicon : '/favicon.ico' %>" type="image/x-icon">
-    <link rel="shortcut icon" href="<%= settings.favicon && settings.favicon.startsWith('/') ? settings.favicon : '/favicon.ico' %>" type="image/x-icon">
+    <link rel="stylesheet" href="<%= assetPath('/styles.css') %>?v=8">
+    <link rel="stylesheet" href="<%= assetPath('/styles/layout-animations.css') %>?v=8">
+    <link rel="stylesheet" href="<%= assetPath('/styles/motion.css') %>?v=8">
+    <link rel="icon" href="<%= settings.favicon && settings.favicon.startsWith('/') ? assetPath(settings.favicon) : assetPath('/favicon.ico') %>" type="image/x-icon">
+    <link rel="shortcut icon" href="<%= settings.favicon && settings.favicon.startsWith('/') ? assetPath(settings.favicon) : assetPath('/favicon.ico') %>" type="image/x-icon">
     <!-- Default themes — always loaded as base layer -->
-    <link rel="stylesheet" href="/themes/default-light.css">
-    <link rel="stylesheet" href="/themes/default-dark.css">
+    <link rel="stylesheet" href="<%= assetPath('/themes/default-light.css') %>">
+    <link rel="stylesheet" href="<%= assetPath('/themes/default-dark.css') %>">
     <!-- Selected theme override -->
     <% if (settings.theme && settings.theme !== 'default' && settings.theme !== 'light' && settings.theme !== 'dark') { %>
-    <link rel="stylesheet" href="<%= settings.theme %>" id="theme-css">
+    <link rel="stylesheet" href="<%= assetPath(settings.theme) %>" id="theme-css">
     <% } %>
-    <link rel="stylesheet" href="/vendor/@fontsource-variable/inter/index.css">
+    <link rel="stylesheet" href="<%= assetPath('/vendor/@fontsource-variable/inter/index.css') %>">
     <% if (Array.isArray(typeof extraStyles !== 'undefined' ? extraStyles : undefined)) { %>
       <% for (const stylesheet of extraStyles) { %>
     <link rel="stylesheet" href="<%= stylesheet %>">
@@ -45,37 +45,37 @@ const wallpaperExcluded = req && req.path && (
     <% } %>
     <!-- Session/CSRF support -->
     <script nonce="<%- nonce %>">window.__sessionExpiredMsg = '<%= (req.translations && req.translations.sessionExpired) || "Your session expired. Please sign in again." %>';</script>
-    <script nonce="<%- nonce %>" defer src="/javascript/shared/csrf.js?v=8"></script>
-    <script nonce="<%- nonce %>" defer src="/javascript/shared/al-icon.js?v=8"></script>
+    <script nonce="<%- nonce %>" defer src="<%= assetPath('/javascript/shared/csrf.js') %>?v=8"></script>
+    <script nonce="<%- nonce %>" defer src="<%= assetPath('/javascript/shared/al-icon.js') %>?v=8"></script>
 
     <!-- Vendor bundles -->
-    <script nonce="<%- nonce %>" defer src="/javascript/vendor/query-core.js"></script>
-    <script nonce="<%- nonce %>" defer src="/vendor/reconnecting-websocket/dist/reconnecting-websocket-iife.min.js"></script>
+    <script nonce="<%- nonce %>" defer src="<%= assetPath('/javascript/vendor/query-core.js') %>"></script>
+    <script nonce="<%- nonce %>" defer src="<%= assetPath('/vendor/reconnecting-websocket/dist/reconnecting-websocket-iife.min.js') %>"></script>
 
     <!-- htmx -->
-    <script nonce="<%- nonce %>" defer src="/vendor/htmx.org/dist/htmx.min.js?v=2.0.10"></script>
-    <script nonce="<%- nonce %>" defer src="/javascript/shared/htmx-bootstrap.js?v=1"></script>
+    <script nonce="<%- nonce %>" defer src="<%= assetPath('/vendor/htmx.org/dist/htmx.min.js') %>?v=2.0.10"></script>
+    <script nonce="<%- nonce %>" defer src="<%= assetPath('/javascript/shared/htmx-bootstrap.js') %>?v=1"></script>
 
     <!-- Alpine.js -->
-    <script nonce="<%- nonce %>" defer src="/vendor/alpinejs/dist/cdn.min.js?v=3.16.3"></script>
-    <script nonce="<%- nonce %>" defer src="/javascript/shared/alpine-bootstrap.js?v=2"></script>
-    <script nonce="<%- nonce %>" defer src="/javascript/shared/auto-save.js?v=1"></script>
+    <script nonce="<%- nonce %>" defer src="<%= assetPath('/vendor/alpinejs/dist/cdn.min.js') %>?v=3.16.3"></script>
+    <script nonce="<%- nonce %>" defer src="<%= assetPath('/javascript/shared/alpine-bootstrap.js') %>?v=2"></script>
+    <script nonce="<%- nonce %>" defer src="<%= assetPath('/javascript/shared/auto-save.js') %>?v=1"></script>
 
     <!-- Shared UI components -->
-    <script nonce="<%- nonce %>" defer src="/javascript/shared/format-switcher.js?v=8"></script>
-    <script nonce="<%- nonce %>" defer src="/javascript/shared/animations.js?v=8"></script>
-    <script nonce="<%- nonce %>" defer src="/javascript/shared/custom-select.js?v=8"></script>
-    <script nonce="<%- nonce %>" defer src="/javascript/shared/page-loader.js?v=8"></script>
-    <script nonce="<%- nonce %>" defer src="/javascript/shared/checkbox-anim.js?v=8"></script>
-    <script nonce="<%- nonce %>" defer src="/javascript/shared/layout-animations.js?v=8"></script>
-    <script nonce="<%- nonce %>" defer src="/javascript/shared/al-table.js?v=7"></script>
-    <script nonce="<%- nonce %>" defer src="/javascript/shared/al-tabs.js?v=1"></script>
-    <script nonce="<%- nonce %>" defer src="/javascript/shared/al-dialog.js?v=1"></script>
-    <script nonce="<%- nonce %>" defer src="/javascript/shared/al-action.js?v=1"></script>
-    <script nonce="<%- nonce %>" defer src="/javascript/shared/al-field.js?v=1"></script>
-    <script nonce="<%- nonce %>" defer src="/javascript/shared/al-state.js?v=1"></script>
-    <script nonce="<%- nonce %>" defer src="/javascript/shared/islands.js?v=1"></script>
-    <script nonce="<%- nonce %>" defer src="/javascript/shared/data-layer.js?v=1"></script>
+    <script nonce="<%- nonce %>" defer src="<%= assetPath('/javascript/shared/format-switcher.js') %>?v=8"></script>
+    <script nonce="<%- nonce %>" defer src="<%= assetPath('/javascript/shared/animations.js') %>?v=8"></script>
+    <script nonce="<%- nonce %>" defer src="<%= assetPath('/javascript/shared/custom-select.js') %>?v=8"></script>
+    <script nonce="<%- nonce %>" defer src="<%= assetPath('/javascript/shared/page-loader.js') %>?v=8"></script>
+    <script nonce="<%- nonce %>" defer src="<%= assetPath('/javascript/shared/checkbox-anim.js') %>?v=8"></script>
+    <script nonce="<%- nonce %>" defer src="<%= assetPath('/javascript/shared/layout-animations.js') %>?v=8"></script>
+    <script nonce="<%- nonce %>" defer src="<%= assetPath('/javascript/shared/al-table.js') %>?v=7"></script>
+    <script nonce="<%- nonce %>" defer src="<%= assetPath('/javascript/shared/al-tabs.js') %>?v=1"></script>
+    <script nonce="<%- nonce %>" defer src="<%= assetPath('/javascript/shared/al-dialog.js') %>?v=1"></script>
+    <script nonce="<%- nonce %>" defer src="<%= assetPath('/javascript/shared/al-action.js') %>?v=1"></script>
+    <script nonce="<%- nonce %>" defer src="<%= assetPath('/javascript/shared/al-field.js') %>?v=1"></script>
+    <script nonce="<%- nonce %>" defer src="<%= assetPath('/javascript/shared/al-state.js') %>?v=1"></script>
+    <script nonce="<%- nonce %>" defer src="<%= assetPath('/javascript/shared/islands.js') %>?v=1"></script>
+    <script nonce="<%- nonce %>" defer src="<%= assetPath('/javascript/shared/data-layer.js') %>?v=1"></script>
     <style>
       @keyframes al-page-loader-sweep {
         from { transform: translateX(-110%); }
@@ -119,10 +119,10 @@ const wallpaperExcluded = req && req.path && (
 
 <!-- The indeterminate page loading line is created by page-loader.js. -->
 <!-- Theme initialization: external module replaces inline script -->
-<script nonce="<%- nonce %>" src="/javascript/shared/theme-init.js?v=1"></script>
+<script nonce="<%- nonce %>" src="<%= assetPath('/javascript/shared/theme-init.js') %>?v=1"></script>
 <%- include("./bottom-nav") %>
 <%- include("./modal") %>
-<script nonce="<%- nonce %>" src="/javascript/shared/toast-store.js?v=1"></script>
+<script nonce="<%- nonce %>" src="<%= assetPath('/javascript/shared/toast-store.js') %>?v=1"></script>
 <%- include("./toast") %>
-<script nonce="<%- nonce %>" src="/javascript/shared/escape.js?v=1"></script>
-<script nonce="<%- nonce %>" src="/javascript/shared/api.js?v=1"></script>
+<script nonce="<%- nonce %>" src="<%= assetPath('/javascript/shared/escape.js') %>?v=1"></script>
+<script nonce="<%- nonce %>" src="<%= assetPath('/javascript/shared/api.js') %>?v=1"></script>

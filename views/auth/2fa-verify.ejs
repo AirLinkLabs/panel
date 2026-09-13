@@ -3,7 +3,7 @@
 <%- include('../components/auth-styles') %>
 <style>
   .auth-image {
-    background: url('<%= settings.loginWallpaper || "/assets/wallpapers/login.jpeg" %>') center/cover no-repeat;
+    background: url('<%= settings.loginWallpaper || assetPath('/assets/wallpapers/login.jpeg') %>') center/cover no-repeat;
   }
 </style>
 
@@ -118,7 +118,7 @@
 </script>
 
 <script type="module" nonce="<%- nonce %>">
-  import { startAuthentication } from '/vendor/@simplewebauthn/browser/esm/index.js';
+  import { startAuthentication } from '<%= assetPath('/vendor/@simplewebauthn/browser/esm/index.js') %>';
 
   (async function () {
     var section = document.getElementById('passkeySection');

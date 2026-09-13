@@ -52,3 +52,4 @@ agent/
 backups/
 docs/tmp/
 /dist/*.map
+.windsurf/

@@ -3,7 +3,7 @@
 <%- include('../components/auth-styles') %>
 <style>
   .auth-image {
-    background: url('<%= settings.loginWallpaper || "/assets/wallpapers/login.jpeg" %>') center/cover no-repeat;
+    background: url('<%= settings.loginWallpaper || assetPath('/assets/wallpapers/login.jpeg') %>') center/cover no-repeat;
   }
 </style>
 

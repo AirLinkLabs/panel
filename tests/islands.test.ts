@@ -304,9 +304,7 @@ describe("server console island wiring", () => {
   const island = fs.readFileSync(consoleIslandPath, "utf8");
 
   it("loads xterm styling as a stylesheet instead of an invalid JavaScript module", () => {
-    expect(manage).toContain(
-      "extraStyles: ['/vendor/@xterm/xterm/css/xterm.css']",
-    );
+    expect(manage).toContain("assetPath('/vendor/@xterm/xterm/css/xterm.css')");
     expect(island).not.toContain("import '/vendor/@xterm/xterm/css/xterm.css'");
   });
 

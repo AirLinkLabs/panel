@@ -21,15 +21,15 @@
         <% } %>
       })();
     </script>
-    <link rel="icon" href="<%= settings.favicon && settings.favicon.startsWith('/') ? settings.favicon : '/favicon.ico' %>" type="image/x-icon">
-    <link rel="shortcut icon" href="<%= settings.favicon && settings.favicon.startsWith('/') ? settings.favicon : '/favicon.ico' %>" type="image/x-icon">
-    <link rel="stylesheet" href="/themes/default-light.css">
-    <link rel="stylesheet" href="/themes/default-dark.css">
+    <link rel="icon" href="<%= settings.favicon && settings.favicon.startsWith('/') ? assetPath(settings.favicon) : assetPath('/favicon.ico') %>" type="image/x-icon">
+    <link rel="shortcut icon" href="<%= settings.favicon && settings.favicon.startsWith('/') ? assetPath(settings.favicon) : assetPath('/favicon.ico') %>" type="image/x-icon">
+    <link rel="stylesheet" href="<%= assetPath('/themes/default-light.css') %>">
+    <link rel="stylesheet" href="<%= assetPath('/themes/default-dark.css') %>">
     <% if (settings.theme && settings.theme !== 'default' && settings.theme !== 'light' && settings.theme !== 'dark') { %>
-    <link rel="stylesheet" href="<%= settings.theme %>" id="theme-css">
+    <link rel="stylesheet" href="<%= assetPath(settings.theme) %>" id="theme-css">
     <% } %>
-    <link rel="stylesheet" href="/vendor/@fontsource-variable/inter/index.css">
-    <link rel="stylesheet" href="/styles.css?v=5">
+    <link rel="stylesheet" href="<%= assetPath('/vendor/@fontsource-variable/inter/index.css') %>">
+    <link rel="stylesheet" href="<%= assetPath('/styles.css') %>?v=5">
     <style>
       * { scrollbar-width: thin; scrollbar-color: var(--theme-border) transparent; }
       ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -40,4 +40,4 @@
 </head>
 <body style="font-family: 'Inter Variable'; background: var(--theme-bg); color: var(--theme-text);" class="h-full">
 
-<script nonce="<%- nonce %>" src="/javascript/shared/theme-init.js?v=1"></script>
+<script nonce="<%- nonce %>" src="<%= assetPath('/javascript/shared/theme-init.js') %>?v=1"></script>

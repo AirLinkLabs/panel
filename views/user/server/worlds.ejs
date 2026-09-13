@@ -77,17 +77,17 @@
                         <%
                           let iconPath = '';
                           if (world.name === 'world') {
-                            iconPath = '/assets/world_icons/overworld.png';
+                            iconPath = assetPath('/assets/world_icons/overworld.png');
                           } else if (world.name === 'world_nether') {
-                            iconPath = '/assets/world_icons/nether.png';
+                            iconPath = assetPath('/assets/world_icons/nether.png');
                           } else if (world.name === 'world_the_end') {
-                            iconPath = '/assets/world_icons/end.png';
+                            iconPath = assetPath('/assets/world_icons/end.png');
                           } else if (world.name.includes('nether')) {
-                            iconPath = '/assets/world_icons/nether.png';
+                            iconPath = assetPath('/assets/world_icons/nether.png');
                           } else if (world.name.includes('end')) {
-                            iconPath = '/assets/world_icons/end.png';
+                            iconPath = assetPath('/assets/world_icons/end.png');
                           } else {
-                            iconPath = '/assets/world_icons/overworld.png';
+                            iconPath = assetPath('/assets/world_icons/overworld.png');
                           }
                         %>
                         <img loading="lazy" class="h-10 w-10 rounded-full border" style="border-color:var(--theme-border)" src="<%= iconPath %>" alt="<%= t('worldIconAlt') %>" />

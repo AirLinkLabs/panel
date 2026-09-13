@@ -10,6 +10,40 @@ import * as ui from "../config/ui";
 import { getConfig } from "../config";
 
 /**
+ * Resolves the actual request protocol (http/https) from the incoming request.
+ * When behind a reverse proxy, trusts X-Forwarded-Proto header.
+ * Falls back to the env-configured URL protocol.
+ */
+function resolveRequestProtocol(req: Request, envIsHttps: boolean): string {
+  // trust proxy is already set on the app — Express populates req.protocol
+  // from X-Forwarded-Proto when trust proxy is enabled.
+  const proto = req.protocol;
+  if (proto === "https" || proto === "http") return proto;
+  return envIsHttps ? "https" : "http";
+}
+
+/**
+ * Builds the full origin URL for the current request (e.g. "https://panel.example.com").
+ * Uses ASSET_BASE_URL if set, otherwise reconstructs from the request.
+ */
+function resolveOrigin(
+  req: Request,
+  envUrl: string,
+  envIsHttps: boolean,
+): string {
+  // If ASSET_BASE_URL is set, use it as the origin
+  // (it may be a full origin like "https://cdn.example.com" or a path prefix like "/assets")
+  const assetBase = (req.app.get("assetBaseUrl") as string) || "";
+  if (assetBase && /^https?:\/\//.test(assetBase)) {
+    return assetBase.replace(/\/+$/, "");
+  }
+  // Reconstruct from request headers (works behind proxies)
+  const host = req.get("host") || new URL(envUrl).host;
+  const protocol = resolveRequestProtocol(req, envIsHttps);
+  return `${protocol}://${host}`;
+}
+
+/**
  * Makes all config constants available to EJS templates via res.locals.
  *
  * Usage in templates:
@@ -19,9 +53,12 @@ import { getConfig } from "../config";
  *   <%= DEFAULT_SERVER_PORT %>         (short alias)
  *   <%= panel.url %>                   (panel URL)
  *   <%= panel.assetBaseUrl %>          (CDN/asset base)
+ *   <%= assetPath('/themes/dark.css') %>   → "/themes/dark.css" or "https://cdn.example.com/themes/dark.css"
+ *   <%= assetUrl('/api/v2/ping') %>        → "https://panel.example.com/api/v2/ping"
+ *   <%= panel.isHttps %>               (per-request, respects proxy headers)
  */
 export function templateConfigMiddleware(
-  _req: Request,
+  req: Request,
   res: Response,
   next: NextFunction,
 ) {
@@ -66,15 +103,23 @@ export function templateConfigMiddleware(
     } as ReturnType<typeof getConfig>;
   }
 
+  // Per-request protocol detection — respects X-Forwarded-Proto when trust proxy is on
+  const requestIsHttps = resolveRequestProtocol(req, panel.isHttps) === "https";
+  const requestOrigin = resolveOrigin(req, panel.url, panel.isHttps);
+
+  // assetBaseUrl: full URL origin (e.g. "https://cdn.example.com") OR path prefix (e.g. "/assets")
+  // When empty, assets serve from the same origin as the panel.
+  const assetBase = panel.assetBaseUrl || "";
+
   res.locals.panel = {
     url: panel.url,
-    assetBaseUrl: panel.assetBaseUrl,
+    assetBaseUrl: assetBase,
     name: panel.name,
     trustProxy: panel.trustProxy,
     cspEnabled: panel.cspEnabled,
     cookieDomain: panel.cookieDomain,
     cookieSecure: panel.cookieSecure,
-    isHttps: panel.isHttps,
+    isHttps: requestIsHttps, // per-request, not static
     isProduction: panel.isProduction,
     nodeEnv: panel.nodeEnv,
     logLevel: panel.logLevel,
@@ -93,6 +138,27 @@ export function templateConfigMiddleware(
     dbConnectTimeoutMs: panel.dbConnectTimeoutMs,
     port: panel.port,
     allowedOrigins: panel.allowedOrigins,
+    origin: requestOrigin, // full origin for this request
+  };
+
+  // ── Asset helpers ─────────────────────────────────────────────────────────
+  // assetPath('/themes/dark.css') → '/themes/dark.css' (no CDN)
+  //                              → 'https://cdn.example.com/themes/dark.css' (with CDN origin)
+  //                              → '/assets/themes/dark.css' (with path prefix)
+  const abUrl = assetBase; // may be empty, a path prefix, or a full origin
+  res.locals.assetPath = function assetPath(relativePath: string): string {
+    if (!abUrl) return relativePath;
+    // Full origin → prepend origin to relative path
+    if (/^https?:\/\//.test(abUrl)) {
+      return abUrl.replace(/\/+$/, "") + relativePath;
+    }
+    // Path prefix → prepend prefix (e.g. ASSET_BASE_URL="/assets" → "/assets/themes/...")
+    return abUrl.replace(/\/+$/, "") + relativePath;
+  };
+
+  // assetUrl('/api/v2/ping') → 'https://panel.example.com/api/v2/ping'
+  res.locals.assetUrl = function assetUrl(relativePath: string): string {
+    return requestOrigin + relativePath;
   };
 
   // Full config namespaces

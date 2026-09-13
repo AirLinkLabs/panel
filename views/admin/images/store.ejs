@@ -199,7 +199,7 @@ function imageStore() {
 
   async function getMd() {
     if(mdParse) return mdParse;
-    try { var mod=await import("/vendor/marked/lib/marked.esm.js"); mdParse=mod.marked; mdParse.setOptions({gfm:true,breaks:true}); }
+    try { var mod=await import("<%= assetPath('/vendor/marked/lib/marked.esm.js') %>"); mdParse=mod.marked; mdParse.setOptions({gfm:true,breaks:true}); }
     catch(e) { mdParse={parse:function(s){return esc(s).replace(/\n/g,"<br>");}}; }
     return mdParse;
   }
