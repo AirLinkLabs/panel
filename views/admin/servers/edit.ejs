@@ -38,7 +38,7 @@ function serverEditPage() {
           <p class="al-page-desc"><%= t('adminManageServer') %></p>
         </div>
         <div class="flex gap-2 shrink-0 items-center">
-          <button type="submit" form="editServerForm" class="al-btn-primary"><%- icon('save', { class: 'size-4', strokeWidth: 1.5 }) %><%= t('saveChanges') %></button>
+          <%- include('../../components/ui/save-button', { formId: 'editServerForm' }) %>
           <a href="/admin/servers" class="al-btn-secondary"><%= t('backToServers') %></a>
         </div>
       </div>
@@ -646,7 +646,7 @@ function serverEditPage() {
             loader.close();
             showToast(req.translations.serverUpdatedSuccessfully || 'Server updated successfully!', 'success');
             setTimeout(() => {
-              window.location.href = '/admin/servers';
+              Alnav.load('/admin/servers');
             }, 1000);
           }, 500);
         } else {

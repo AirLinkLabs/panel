@@ -1,5 +1,4 @@
 (function () {
-  const csrfToken = document.getElementById("page-data").dataset.csrfToken;
   const apiKeyInput = document.getElementById("airlinkCloudApiKey");
   const backupToggle = document.getElementById("airlinkCloudBackupEnabled");
 
@@ -9,32 +8,15 @@
   document
     .getElementById("saveBtn")
     .addEventListener("click", async function () {
-      const apiKey = apiKeyInput.value;
-      const backupEnabled = backupToggle.checked;
+      const data = await Api.admin.settings.updateAirlinkCloud({
+        airlinkCloudApiKey: apiKeyInput.value,
+        airlinkCloudBackupEnabled: backupToggle.checked,
+      });
 
-      try {
-        const res = await fetch("/api/v2/admin/settings/airlink-cloud", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-CSRF-Token": csrfToken,
-          },
-          body: JSON.stringify({
-            airlinkCloudApiKey: apiKey,
-            airlinkCloudBackupEnabled: backupEnabled,
-          }),
-        });
-
-        const data = await res.json();
-        if (data.success) {
-          showToast("Settings saved. Looking good.", "success");
-          savedKey = apiKeyInput.value;
-          savedEnabled = backupToggle.checked;
-        } else {
-          showToast(data.error || "Failed to save settings.", "error");
-        }
-      } catch (err) {
-        showToast("An error occurred while saving settings.", "error");
+      if (data && data.success) {
+        showToast("Settings saved. Looking good.", "success");
+        savedKey = apiKeyInput.value;
+        savedEnabled = backupToggle.checked;
       }
     });
 

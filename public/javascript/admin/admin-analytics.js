@@ -256,9 +256,8 @@
 
   async function loadActivityLogsSummary() {
     try {
-      const res = await fetch("/api/v2/admin/activity-logs/summary");
-      if (!res.ok) return;
-      const body = await res.json();
+      const body = await Api.admin.activityLogs.summary();
+      if (!body) return;
       const d = body.data;
 
       document.getElementById("log-total").textContent = fmt(d.total);
@@ -328,9 +327,10 @@
     if (search) params.set("search", search);
 
     try {
-      const res = await fetch(`/api/v2/admin/activity-logs?${params}`);
-      if (!res.ok) return;
-      const body = await res.json();
+      const body = await Api.admin.activityLogs.list(
+        Object.fromEntries(params),
+      );
+      if (!body) return;
       const logs = body.data || [];
       const meta = body.meta;
 
@@ -386,9 +386,8 @@
   async function loadSystemLogsSummary() {
     if (!isOwner) return;
     try {
-      const res = await fetch("/api/v2/admin/system-logs/summary");
-      if (!res.ok) return;
-      const body = await res.json();
+      const body = await Api.admin.systemLogs.summary();
+      if (!body) return;
       const d = body.data;
 
       document.getElementById("sys-total").textContent = fmt(d.total);
@@ -446,9 +445,8 @@
     if (search) params.set("search", search);
 
     try {
-      const res = await fetch(`/api/v2/admin/system-logs?${params}`);
-      if (!res.ok) return;
-      const body = await res.json();
+      const body = await Api.admin.systemLogs.list(Object.fromEntries(params));
+      if (!body) return;
       const logs = body.data || [];
       const meta = body.meta;
 
@@ -505,9 +503,8 @@
     loading.classList.remove("hidden");
 
     try {
-      const res = await fetch("/api/v2/admin/analytics/summary");
-      if (!res.ok) throw new Error("Request failed");
-      analyticsData = await res.json();
+      analyticsData = await Api.admin.analytics.summary();
+      if (!analyticsData) throw new Error("Request failed");
 
       loading.classList.add("hidden");
 

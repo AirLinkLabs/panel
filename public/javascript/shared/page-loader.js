@@ -1,9 +1,5 @@
 (function () {
   const NAV_FLAG = "al_nav";
-  const FADE_OUT_MS = 120;
-  const EASE_OUT = "cubic-bezier(0.16,1,0.3,1)";
-  const EASE_IN = "cubic-bezier(0.4,0,1,1)";
-  const LOAD_GUARD_MS = 2000;
   const EXACT_MATCH_SCORE = 9999;
   const ACTIVE_BORDER_RADIUS = "0.75rem";
   var PILL_TRANSITION = "none";
@@ -49,27 +45,10 @@
     }
   }
 
-  function isNavLink(a) {
-    const href = a && a.getAttribute("href");
-    if (!href || href === "#" || href.startsWith("#")) return false;
-    if (href.startsWith("mailto:") || href.startsWith("tel:")) return false;
-    if (a.hasAttribute("download") || a.target === "_blank") return false;
-    if (href.startsWith("http") && !href.startsWith(window.location.origin))
-      return false;
-    return true;
-  }
-
-  function markNavigation() {
-    try {
-      sessionStorage.setItem(NAV_FLAG, "1");
-    } catch {
-      /* sessionStorage unavailable */
-    }
-  }
-
   // ── Top loading line ─────────────────────────────────────────────────────
   // Reference-counted so a completed request never hides another request's
   // feedback. The line is indeterminate; it never pretends to know progress.
+  // navigator.js calls ALPageActivity.start() / .stop() during SPA navs.
 
   let loaderEl = null;
   let loaderHideTimer = null;
@@ -131,80 +110,7 @@
     }, 200);
   }
 
-  window.addEventListener("al:themechange", function () {
-    applyLoaderTheme();
-  });
-
   window.ALPageActivity = { start: requestActivity, stop: releaseActivity };
-
-  // ── Content fade ─────────────────────────────────────────────────────────
-
-  function getAnimEl() {
-    return el("server-page-body") || el("page-content") || null;
-  }
-
-  function hasClass(child, frag) {
-    const list = child.classList;
-    if (list && typeof list.contains === "function") return list.contains(frag);
-    const name = child.className;
-    return typeof name === "string" && name.indexOf(frag) !== -1;
-  }
-
-  function getAnimatableChildren(container) {
-    return Array.from(container.children).filter(function (child) {
-      if (hasClass(child, "mobile-top-bar")) return false;
-      if (hasClass(child, "mobile-bottom-nav")) return false;
-      if (hasClass(child, "mobile-more-sheet")) return false;
-      if (hasClass(child, "mobile-server-chrome")) return false;
-      const pos = window.getComputedStyle(child).position;
-      if (pos === "fixed") return false;
-      return true;
-    });
-  }
-
-  function animateOut(c) {
-    if (!c) return;
-    const children = getAnimatableChildren(c);
-    const targets = children.length ? children : [c];
-    targets.forEach(function (t) {
-      t.style.transition = "opacity " + FADE_OUT_MS + "ms " + EASE_OUT;
-      t.style.opacity = "0";
-    });
-  }
-
-  function animateIn(c) {
-    if (!c) return;
-    const children = getAnimatableChildren(c);
-    document.documentElement.classList.remove("js-loading");
-    c.style.opacity = "1";
-    c.style.transform = "";
-    if (!children.length) return;
-    children.forEach(function (child) {
-      child.style.opacity = "1";
-      child.style.transform = "";
-    });
-  }
-
-  function fadeContentOut() {
-    animateOut(getAnimEl());
-  }
-
-  function fadeContentIn() {
-    requestAnimationFrame(function () {
-      requestAnimationFrame(function () {
-        animateIn(getAnimEl());
-      });
-    });
-  }
-
-  // ── Reveal after navigation ───────────────────────────────────────────────
-
-  function revealAfterNav() {
-    const _pc = el("page-content") || el("server-page-body");
-    if (_pc) _pc.style.opacity = "";
-    releaseActivity();
-    animateIn(getAnimEl());
-  }
 
   // ── Desktop sidebar highlight ─────────────────────────────────────────────
 
@@ -337,70 +243,56 @@
 
   // ── Lifecycle ─────────────────────────────────────────────────────────────
 
-  function revealAfterStuckLoad() {
-    if (document.documentElement.classList.contains("js-loading")) {
-      releaseActivity();
-      fadeContentIn();
-    }
-  }
-
   document.addEventListener("DOMContentLoaded", function () {
     initDesktopHighlight(_fromNav);
     initMobileHighlight();
     if (_fromNav) {
-      revealAfterNav();
-    } else {
-      window.__alLoadGuard = setTimeout(revealAfterStuckLoad, LOAD_GUARD_MS);
+      const _pc = el("page-content") || el("server-page-body");
+      if (_pc) _pc.style.opacity = "";
+      releaseActivity();
     }
   });
 
   window.addEventListener("load", function () {
-    if (!_fromNav) {
-      if (window.__alLoadGuard) {
-        clearTimeout(window.__alLoadGuard);
-        window.__alLoadGuard = null;
-      }
-      releaseActivity();
-      fadeContentIn();
-    }
+    releaseActivity();
+    // Fade in content on initial full page load (before navigator takes over)
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        const content = el("page-content") || el("server-page-body");
+        if (content) {
+          document.documentElement.classList.remove("js-loading");
+          content.style.opacity = "1";
+          content.style.transform = "";
+          Array.from(content.children).forEach(function (child) {
+            child.style.opacity = "1";
+            child.style.transform = "";
+          });
+        }
+      });
+    });
   });
 
   window.addEventListener("pageshow", function (e) {
     if (e.persisted) {
       initDesktopHighlight(false);
       initMobileHighlight();
-      fadeContentIn();
     }
   });
 
-  // ── Click interception ────────────────────────────────────────────────────
+  // ── SPA navigation coordination ───────────────────────────────────────────
+  // navigator.js dispatches al:navigated after content swap. Re-run nav
+  // highlights against the new URL so sidebar + mobile bars stay correct.
 
-  document.addEventListener(
-    "click",
-    function (e) {
-      if (e.ctrlKey || e.metaKey || e.shiftKey || e.button === 1) return;
-      const a = e.target && e.target.closest && e.target.closest("a[href]");
-      if (!isNavLink(a)) return;
-      if (a.classList.contains("nav-link")) {
-        setDesktopActiveLink(a);
-        movePill(a, true);
-      }
-      if (a.classList.contains("mobile-nav-link")) {
-        document.querySelectorAll(".mobile-nav-link").forEach(function (l) {
-          l.classList.remove(...MOBILE_ACTIVE_CLASSES);
-          l.classList.add(...MOBILE_INACTIVE_CLASSES);
-        });
-        a.classList.remove(...MOBILE_INACTIVE_CLASSES);
-        a.classList.add(...MOBILE_ACTIVE_CLASSES);
-      }
-      markNavigation();
-      fadeContentOut();
-      requestActivity();
-    },
-    true,
-  );
+  document.addEventListener("al:navigated", function () {
+    initDesktopHighlight(false);
+    initMobileHighlight();
+  });
+
+  // ── Theme change handler ─────────────────────────────────────────────────
 
   window.addEventListener("al:themechange", function () {
+    applyLoaderTheme();
+
     const path = normalizePath(window.location.pathname);
     const isDark = document.documentElement.classList.contains("dark");
     const active = findDesktopActiveLink(path);
@@ -461,20 +353,4 @@
       }
     }
   });
-
-  document.addEventListener(
-    "submit",
-    function (e) {
-      const form = e.target && e.target.closest && e.target.closest("form");
-      if (
-        !form ||
-        form.matches("[hx-get], [hx-post], [hx-put], [hx-patch], [hx-delete]")
-      )
-        return;
-      markNavigation();
-      fadeContentOut();
-      requestActivity();
-    },
-    true,
-  );
 })();

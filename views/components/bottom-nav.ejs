@@ -224,7 +224,7 @@
           <img loading="lazy" decoding="async" class="w-5 h-5 rounded-lg" src="<%= user.avatar ? user.avatar : '/avatar/' + encodeURIComponent(user.username) %>" alt="">
           <span class="text-[13px]"><%= t('account') %></span>
         </a>
-        <a href="/logout" role="menuitem" class="sheet-anim-item sheet-item mobile-more-link flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl transition-colors" style="color:var(--theme-danger); -webkit-tap-highlight-color: transparent; min-height: var(--sheet-item-min-height); --i:21">
+        <a href="/logout" data-alnav-skip role="menuitem" class="sheet-anim-item sheet-item mobile-more-link flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl transition-colors" style="color:var(--theme-danger); -webkit-tap-highlight-color: transparent; min-height: var(--sheet-item-min-height); --i:21">
           <%- icon('log-out', { class: 'w-4 h-4' }) %>
           <span class="text-[13px]"><%= t('logout') %></span>
         </a>

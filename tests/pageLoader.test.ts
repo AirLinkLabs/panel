@@ -6,6 +6,10 @@ const loader = readFileSync(
   resolve(__dirname, "../public/javascript/shared/page-loader.js"),
   "utf8",
 );
+const navigator = readFileSync(
+  resolve(__dirname, "../public/javascript/shared/navigator.js"),
+  "utf8",
+);
 const htmx = readFileSync(
   resolve(__dirname, "../public/javascript/shared/htmx-bootstrap.js"),
   "utf8",
@@ -19,11 +23,13 @@ describe("shared page loading feedback", () => {
   });
 
   it("keeps HTMX requests out of hard-navigation handling and gives them loader feedback", () => {
-    expect(loader).toContain("hx-get");
-    expect(loader).toContain("hx-post");
-    expect(loader).toContain("hx-put");
-    expect(loader).toContain("hx-patch");
-    expect(loader).toContain("hx-delete");
+    // navigator.js handles click/submit interception and skips hx-* links
+    expect(navigator).toContain("hx-get");
+    expect(navigator).toContain("hx-post");
+    expect(navigator).toContain("hx-put");
+    expect(navigator).toContain("hx-patch");
+    expect(navigator).toContain("hx-delete");
+    // htmx-bootstrap.js wires ALPageActivity for HTMX requests
     expect(htmx).toContain("htmx:beforeRequest");
     expect(htmx).toContain("window.ALPageActivity.start()");
     expect(htmx).toContain("htmx:afterRequest");

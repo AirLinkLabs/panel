@@ -18,6 +18,7 @@
           <p class="al-page-desc"><%= t('adminCreateUserText') %></p>
         </div>
         <div class="flex gap-2 shrink-0 items-center">
+          <%- include('../../components/ui/save-button', { formId: 'createUserForm', label: t('create'), iconName: 'plus' }) %>
           <a href="/admin/users" class="al-btn-secondary"><%= t('backToUsers') %></a>
         </div>
       </div>
@@ -276,7 +277,7 @@ function adminUserCreate() {
           setTimeout(() => {
             loader.close();
             showToast('<%= t('createUserAdded') %>', 'success');
-            setTimeout(() => { window.location.href = '/admin/users?err=none'; }, 1000);
+            setTimeout(() => { Alnav.load('/admin/users?err=none'); }, 1000);
           }, 500);
         } else {
           const err = await res.json().catch(() => ({ message: 'Unknown error' }));

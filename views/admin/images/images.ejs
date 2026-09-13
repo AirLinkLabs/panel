@@ -109,7 +109,7 @@ function imageReject() {
         const data = await res.json();
         this.close();
         if (data.error) { showToast(data.error, 'error'); }
-        else { showToast(data.message || req.translations.imageRejected || 'Image rejected.', 'success'); window.location.reload(); }
+        else { showToast(data.message || req.translations.imageRejected || 'Image rejected.', 'success'); Alnav.reload(); }
       } catch (e) { this.close(); showToast(req.translations.somethingWentWrong || 'Something went wrong.', 'error'); }
       finally { this.submitting = false; }
     }
@@ -315,7 +315,7 @@ function imageManager() {
       });
     },
     handleRowClick(e, url) {
-      if (!e.target.closest("button,a")) window.location = url;
+      if (!e.target.closest("button,a")) Alnav.load(url);
     },
     openCreate() {
       window.modal.show({

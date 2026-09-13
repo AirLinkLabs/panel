@@ -19,7 +19,7 @@
         </div>
         <div class="flex gap-2 shrink-0 items-center">
           <a href="/admin/users" class="al-btn-secondary"><%= t('backToUsers') %></a>
-          <button type="submit" form="editUserForm" class="al-btn-primary" x-data x-bind:disabled="$root.querySelector && false"><%- icon('save', { class: 'size-4', strokeWidth: 1.5 }) %><%= t('saveChanges') %></button>
+          <%- include('../../components/ui/save-button', { formId: 'editUserForm' }) %>
         </div>
       </div>
 
@@ -278,7 +278,7 @@ function adminUserEdit() {
           setTimeout(() => {
             loader.close();
             showToast(result.message || '<%= req.translations.userUpdatedSuccessfully || 'User updated successfully!' %>', 'success');
-            setTimeout(() => { window.location.href = '/admin/users'; }, 1000);
+            setTimeout(() => { Alnav.load('/admin/users'); }, 1000);
           }, 500);
         }
       } catch (e) {
@@ -308,7 +308,7 @@ function adminUserEdit() {
               showToast(result.error, 'error');
             } else {
               showToast(result.message || '<%= req.translations.transferringOwnership || 'Transferring ownership...' %>', 'success');
-              setTimeout(() => { window.location.href = '/admin/users'; }, 1000);
+              setTimeout(() => { Alnav.load('/admin/users'); }, 1000);
             }
           } catch (e) {
             loader.close();

@@ -39,9 +39,7 @@ function serverCreatePage() {
                 </p>
               </div>
               <div class="flex gap-2 shrink-0 items-center">
-                <button type="submit" form="createServerForm" class="al-btn-primary"><%- icon('plus', { class: 'size-4'
-                    , strokeWidth: 1.5 }) %>
-                    <%= t('create') %></button>
+                <%- include('../../components/ui/save-button', { formId: 'createServerForm', label: t('create'), iconName: 'plus' }) %>
                 <a href="/admin/servers" class="al-btn-secondary"><%= t('backToServers') %></a>
               </div>
             </div>
@@ -466,7 +464,7 @@ function serverCreatePage() {
             })
             .then(data => {
               loader.updateProgress(100, req.translations.serverCreatedSuccessfully || 'Server created successfully!');
-              setTimeout(() => { loader.close(); showToast(req.translations.serverDeployed || 'Server deployed. Go make something cool.', 'success'); setTimeout(() => { window.location.href = '/admin/servers'; }, 1000); }, 500);
+              setTimeout(() => { loader.close(); showToast(req.translations.serverDeployed || 'Server deployed. Go make something cool.', 'success'); setTimeout(() => { Alnav.load('/admin/servers'); }, 1000); }, 500);
             })
             .catch(error => { loader.close(); console.error('Error:', error); showToast((req.translations.failedToCreateServer || 'Failed to create server: ') + error.message, 'error'); });
         });

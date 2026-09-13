@@ -182,7 +182,7 @@ function subusersPage() {
         if (result) {
           showToast('<%= req.translations.subuserAdded || "Subuser added." %>', 'success');
           this.showAdd = false;
-          window.location.reload();
+          Alnav.reload();
         }
       } catch (e) { showToast('<%= req.translations.failedToAddSubuser || "Failed to add subuser." %>', 'error'); }
       finally { this.saving = false; }
@@ -198,7 +198,7 @@ function subusersPage() {
         if (result) {
           showToast('<%= req.translations.permissionsUpdated || "Permissions updated." %>', 'success');
           this.showEdit = false;
-          window.location.reload();
+          Alnav.reload();
         }
       } catch (e) { showToast('<%= req.translations.failedToUpdatePermissions || "Failed to update permissions." %>', 'error'); }
       finally { this.saving = false; }
@@ -214,7 +214,7 @@ function subusersPage() {
           const result = await api('/api/v2/servers/' + serverId + '/subusers/' + id, { method: 'DELETE' });
           if (result) {
             showToast('<%= req.translations.subuserRemoved || "Subuser removed." %>', 'success');
-            window.location.reload();
+            Alnav.reload();
           }
         }
       });

@@ -18,7 +18,7 @@
           <p class="al-page-desc"><%= t('adminEditNodeText') %></p>
         </div>
         <div class="flex gap-2 shrink-0 items-center">
-          <button id="updateNodeBtn" type="button" class="al-btn-primary" @click="updateNode()"><%- icon('save', { class: 'size-4', strokeWidth: 1.5 }) %><%= t('saveChanges') %></button>
+          <%- include('../../components/ui/save-button', { onclick: 'updateNode()' }) %>
           <a href="/admin/nodes" class="al-btn-secondary"><%= t('backToNodes') %></a>
         </div>
       </div>
@@ -432,7 +432,7 @@ function nodeEditor() {
         if (response.ok) {
           showToast(req.translations.nodeUpdated || 'Node updated. Looking good.', 'success');
           setTimeout(() => {
-            window.location.href = '/admin/nodes?err=none';
+            Alnav.load('/admin/nodes?err=none');
           }, 1000);
         } else {
           throw new Error('Failed to update node');

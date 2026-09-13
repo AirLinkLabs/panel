@@ -16,9 +16,7 @@
           <p class="al-page-desc"><%= t('addDatabaseHostDesc') %></p>
         </div>
         <div class="flex gap-2 shrink-0 items-center">
-          <button type="submit" form="hostForm" class="al-btn-primary" :disabled="saving">
-            <%- icon('save', { class: 'size-4', strokeWidth: 1.5 }) %><span x-text="saving ? '<%= t('savingEllipsis') %>' : '<%= t('saveHost') %>'"><%= t('saveHost') %></span>
-          </button>
+          <%- include('../../components/ui/save-button', { formId: 'hostForm', label: t('saveHost') }) %>
           <a href="/admin/databases" class="al-btn-secondary"><%= t('backToDatabases') %></a>
         </div>
       </div>
@@ -108,7 +106,7 @@
               });
               if (res.ok) {
                 showToast(req.translations.dbHostAdded || 'Database host added.', 'success');
-                setTimeout(() => { window.location.href = '/admin/databases'; }, 500);
+                setTimeout(() => { Alnav.load('/admin/databases'); }, 500);
               } else {
                 const data = await res.json().catch(() => ({ error: req.translations.dbHostCreateFailed || 'Failed to create host.' }));
                 this.error = data.error || data.message || (req.translations.dbHostCreateFailed || 'Failed to create host.');

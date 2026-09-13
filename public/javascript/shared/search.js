@@ -547,12 +547,9 @@
       const navItems = getNavResults(term);
       const catalogItems = getCatalogResults(term);
       try {
-        const r = await fetch(
-          "/api/v2/system/search?q=" + encodeURIComponent(term),
-        );
-        const data = await r.json();
+        const data = await Api.system.search({ q: term });
         renderResults(
-          (data.results || []).concat(navItems, catalogItems),
+          ((data && data.results) || []).concat(navItems, catalogItems),
           term,
         );
       } catch {

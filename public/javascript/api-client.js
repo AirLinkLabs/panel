@@ -14,12 +14,17 @@
 
   function api(url, opts) {
     opts = opts || {};
+    var isForm =
+      typeof FormData !== "undefined" && opts.body instanceof FormData;
+    var headers = isForm
+      ? Object.assign({}, opts.headers || {})
+      : Object.assign(
+          { "Content-Type": "application/json" },
+          opts.headers || {},
+        );
     return fetch(url, {
       method: opts.method || "GET",
-      headers: Object.assign(
-        { "Content-Type": "application/json" },
-        opts.headers || {},
-      ),
+      headers: headers,
       body: opts.body ? opts.body : undefined,
     })
       .then(function (res) {
@@ -53,6 +58,10 @@
     return api(url, { method: "POST", body: JSON.stringify(data) });
   }
 
+  function postForm(url, formData) {
+    return api(url, { method: "POST", body: formData });
+  }
+
   function patch(url, data) {
     return api(url, { method: "PATCH", body: JSON.stringify(data) });
   }
@@ -64,6 +73,60 @@
   function del(url) {
     return api(url, { method: "DELETE" });
   }
+
+  // ── Lightweight response validation ────────────────────────────────────────
+  // Mimics Zod-style schema validation without the 30KB+ bundle.
+  // Usage:  v.obj({ data: v.arr(v.obj({ id: v.str })) })(response)
+  // Returns { ok: true, data } or { ok: false, error }.
+  var v = {
+    str: function (x) {
+      return typeof x === "string";
+    },
+    num: function (x) {
+      return typeof x === "number";
+    },
+    bool: function (x) {
+      return typeof x === "boolean";
+    },
+    arr: function (itemValidator) {
+      return function (x) {
+        if (!Array.isArray(x)) return false;
+        return itemValidator ? x.every(itemValidator) : true;
+      };
+    },
+    obj: function (spec) {
+      return function (x) {
+        if (!x || typeof x !== "object") return false;
+        for (var key in spec) {
+          if (!(key in x)) return false;
+          if (spec[key] && !spec[key](x[key])) return false;
+        }
+        return true;
+      };
+    },
+    optional: function (fn) {
+      return function (x) {
+        return x === undefined || x === null || fn(x);
+      };
+    },
+    en: function () {
+      return true;
+    },
+  };
+
+  function validate(schema, data) {
+    if (schema(data)) return { ok: true, data: data };
+    return { ok: false, data: data };
+  }
+
+  // ── Common response schemas ────────────────────────────────────────────────
+  var Schemas = {
+    account: v.obj({ id: v.num, email: v.str }),
+    server: v.obj({ id: v.str, uuid: v.str }),
+    nodeList: v.obj({ data: v.arr(v.obj({ id: v.num })) }),
+    userList: v.obj({ data: v.arr(v.obj({ id: v.num, email: v.str })) }),
+    successEnvelope: v.obj({ success: v.bool }),
+  };
 
   window.Api = {
     // ── Auth: Passkeys ──────────────────────────────────────────────────────
@@ -477,6 +540,9 @@
       testNode: function (data) {
         return post(BASE + "/system/test-node", data);
       },
+      search: function (params) {
+        return api(BASE + "/system/search" + qs(params));
+      },
     },
 
     // ── Admin: Users ────────────────────────────────────────────────────────
@@ -616,7 +682,7 @@
           return api(BASE + "/admin/settings");
         },
         updateGeneral: function (data) {
-          return patch(BASE + "/admin/settings/general", data);
+          return postForm(BASE + "/admin/settings/general", data);
         },
         updateSecurity: function (data) {
           return patch(BASE + "/admin/settings/security", data);
@@ -641,6 +707,12 @@
         },
         unbanIp: function (data) {
           return post(BASE + "/admin/settings/unban-ip", data);
+        },
+        updateFeatures: function (data) {
+          return patch(BASE + "/admin/settings/features", data);
+        },
+        updateAirlinkCloud: function (data) {
+          return post(BASE + "/admin/settings/airlink-cloud", data);
         },
       },
 
@@ -793,6 +865,26 @@
       analytics: {
         summary: function () {
           return api(BASE + "/admin/analytics/summary");
+        },
+      },
+
+      // ── Admin: Activity Logs ────────────────────────────────────────────
+      activityLogs: {
+        summary: function () {
+          return api(BASE + "/admin/activity-logs/summary");
+        },
+        list: function (params) {
+          return api(BASE + "/admin/activity-logs" + qs(params));
+        },
+      },
+
+      // ── Admin: System Logs ──────────────────────────────────────────────
+      systemLogs: {
+        summary: function () {
+          return api(BASE + "/admin/system-logs/summary");
+        },
+        list: function (params) {
+          return api(BASE + "/admin/system-logs" + qs(params));
         },
       },
 

@@ -169,14 +169,14 @@
 function userManager() {
   return {
     init() {
-      document.getElementById('createButton').addEventListener('click', () => { location.href = '/admin/users/create'; });
+      document.getElementById('createButton').addEventListener('click', () => { Alnav.load('/admin/users/create'); });
       var emptyBtn = document.getElementById('createButtonEmpty');
-      if (emptyBtn) emptyBtn.addEventListener('click', () => { window.location.href = '/admin/users/create'; });
+      if (emptyBtn) emptyBtn.addEventListener('click', () => { Alnav.load('/admin/users/create'); });
       this.staggerRows();
     },
 
     handleRowClick(event, url) {
-      if (!event.target.closest('button, a')) window.location = url;
+      if (!event.target.closest('button, a')) Alnav.load(url);
     },
 
     deleteUser(userId) {

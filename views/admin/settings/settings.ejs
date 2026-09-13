@@ -17,6 +17,7 @@
         </div>
         <div class="flex gap-2 shrink-0 items-center">
           <span id="autosave-indicator" class="text-xs font-medium transition-opacity duration-300 opacity-0" style="color:var(--theme-success);"><%= t('settingsSaved') %></span>
+          <%- include('../../components/ui/save-button', { onclick: 'saveActiveTab()' }) %>
         </div>
       </div>
 

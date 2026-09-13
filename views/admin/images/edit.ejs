@@ -18,7 +18,7 @@
           <p class="al-page-desc"><%= t('adminEditImageText') %></p>
         </div>
         <div class="flex gap-2 shrink-0 items-center">
-          <button type="button" id="tab-save-btn" class="al-btn-primary"><%= t('save') %></button>
+          <%- include('../../components/ui/save-button', { id: 'tab-save-btn' }) %>
           <button type="button" id="tab-reset-btn" class="al-btn-secondary"><%- icon('rotate-ccw', { class: 'size-4', strokeWidth: 1.5 }) %><%= t('reset') %></button>
           <a href="/admin/images/export/<%= image.id %>" class="al-btn-secondary"><%= t('export') %></a>
           <a href="/admin/images" class="al-btn-secondary"><%= t('back') %></a>

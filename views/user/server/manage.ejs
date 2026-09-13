@@ -416,7 +416,7 @@
 <%- include('../../components/footer') %>
 
 <script nonce="<%- nonce %>">
-function retryDaemonConnection() { window.location.reload(); }
+function retryDaemonConnection() { Alnav.reload(); }
 (async function () {
   const root = document.getElementById('manage-root');
   if (!root) return;

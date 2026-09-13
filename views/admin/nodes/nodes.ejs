@@ -17,7 +17,7 @@
         title: t('adminNodesTitle'),
         description: t('adminNodesText'),
         actions: '<a href="#locations" class="al-btn-secondary text-sm">' + icon('map-pin', { class: 'size-4', strokeWidth: 1.5 }) + ' ' + t('navLocations') + '</a>' +
-                 '<button id="createButton" type="button" class="al-btn-primary" @click="location.href=\'/admin/nodes/create\'">' + icon('plus', { class: 'size-4', strokeWidth: 1.5 }) + t('createNewNode') + '</button>'
+                 '<button id="createButton" type="button" class="al-btn-primary" @click="Alnav.load(\'/admin/nodes/create\')">' + icon('plus', { class: 'size-4', strokeWidth: 1.5 }) + t('createNewNode') + '</button>'
       }) %>
 
       <div class="al-page-body" data-al-tabs data-tabs-default="nodes" data-tabs-hash>
@@ -194,7 +194,7 @@
 <script nonce="<%- nonce %>">
 function handleRowClick(event, url) {
   if (!event.target.closest('button, a')) {
-    window.location = url;
+    Alnav.load(url);
   }
 }
 

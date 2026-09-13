@@ -35,9 +35,7 @@ function adminSettings() {
         .addEventListener("click", async () => {
           const ip = document.getElementById("banIpInput").value.trim();
           if (!ip) return showToast("Enter an IP address", "error");
-          const d = await window.api("/api/v2/admin/settings/ban-ip", "POST", {
-            ip,
-          });
+          const d = await Api.admin.settings.banIp({ ip });
           if (d && d.success) {
             document.getElementById("banIpInput").value = "";
             showToast("IP banned. Bye bye.", "success");
@@ -50,11 +48,7 @@ function adminSettings() {
         .addEventListener("click", async (e) => {
           var btn = e.target.closest(".unban-btn");
           if (!btn) return;
-          const d = await window.api(
-            "/api/v2/admin/settings/unban-ip",
-            "POST",
-            { ip: btn.dataset.ip },
-          );
+          const d = await Api.admin.settings.unbanIp({ ip: btn.dataset.ip });
           if (d && d.success) {
             showToast("IP unbanned. Welcome back.", "success");
             this.removeBanRow(btn);
@@ -71,17 +65,15 @@ function adminSettings() {
           btn.textContent = "Testing\u2026";
           result.classList.add("hidden");
           try {
-            const d = await fetch("/api/v2/admin/settings/smtp/test", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-            }).then((r) => r.json());
+            const d = await Api.admin.settings.testSmtp();
             result.classList.remove("hidden");
-            result.textContent = d.success
-              ? "Connection OK."
-              : d.error || "Connection failed.";
+            result.textContent =
+              d && d.success
+                ? "Connection OK."
+                : (d && d.error) || "Connection failed.";
             result.className =
               "px-5 pb-5 text-xs " +
-              (d.success
+              (d && d.success
                 ? "text-emerald-600 dark:text-emerald-400"
                 : "text-red-600 dark:text-red-400");
           } catch {
@@ -105,17 +97,15 @@ function adminSettings() {
           btn.textContent = "Testing\u2026";
           result.classList.add("hidden");
           try {
-            const d = await fetch("/api/v2/admin/settings/s3/test", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-            }).then((r) => r.json());
+            const d = await Api.admin.settings.testS3();
             result.classList.remove("hidden");
-            result.textContent = d.success
-              ? d.message || "Connection OK."
-              : d.error || "Connection failed.";
+            result.textContent =
+              d && d.success
+                ? d.message || "Connection OK."
+                : (d && d.error) || "Connection failed.";
             result.className =
               "px-5 pb-5 text-xs " +
-              (d.success
+              (d && d.success
                 ? "text-emerald-600 dark:text-emerald-400"
                 : "text-red-600 dark:text-red-400");
           } catch {
@@ -187,24 +177,14 @@ function adminSettings() {
       }, 2000);
     },
 
-    async post(url, body) {
-      try {
-        const r = await fetch(url, {
-          method: "POST",
-          headers:
-            body instanceof FormData
-              ? undefined
-              : { "Content-Type": "application/json" },
-          body: body instanceof FormData ? body : JSON.stringify(body),
-        });
-        const d = await r.json();
-        if (!d.success) throw new Error(d.error || "Failed");
-        this.showSaved();
-        return d;
-      } catch (err) {
-        showToast(err.message || "Failed", "error");
-        return false;
-      }
+    saveActiveTab() {
+      var active = document.querySelector('[role="tab"][aria-selected="true"]');
+      if (!active) return;
+      var tab = active.getAttribute("data-tab");
+      if (tab === "appearance") this.saveAppearance();
+      else if (tab === "servers") this.saveServers();
+      else if (tab === "security") this.saveSecurity();
+      else if (tab === "features") this.saveFeatures();
     },
 
     applyThemeCss(value) {
@@ -290,57 +270,69 @@ function adminSettings() {
         var el = document.getElementById(id);
         if (el) fd.set(el.name, el.value);
       });
-      const ok = await this.post("/api/v2/admin/settings/general", fd);
+      const ok = await Api.admin.settings.updateGeneral(fd);
       if (ok) {
+        this.showSaved();
         this.applyThemeFromForm();
         this.applyWallpaperFromResponse(ok.panelWallpaper);
       }
     },
 
     saveServers() {
-      this.post("/api/v2/admin/settings/server-policy", {
-        allowUserCreateServer: document.getElementById("allowUserCreateServer")
-          .checked,
-        allowUserDeleteServer: document.getElementById("allowUserDeleteServer")
-          .checked,
-        allowUserCreateImages: document.getElementById("allowUserCreateImages")
-          .checked,
-        defaultServerLimit:
-          parseInt(document.getElementById("defaultServerLimit").value, 10) ||
-          0,
-        defaultMaxMemory:
-          parseInt(document.getElementById("defaultMaxMemory").value, 10) || 0,
-        defaultMaxCpu:
-          parseInt(document.getElementById("defaultMaxCpu").value, 10) || 0,
-        defaultMaxStorage:
-          parseInt(document.getElementById("defaultMaxStorage").value, 10) || 0,
-        defaultMaxDatabases:
-          parseInt(document.getElementById("defaultMaxDatabases").value, 10) ||
-          0,
-        defaultOverallocateMemory:
-          parseInt(
-            document.getElementById("defaultOverallocateMemory").value,
-            10,
-          ) || 0,
-        defaultOverallocateDisk:
-          parseInt(
-            document.getElementById("defaultOverallocateDisk").value,
-            10,
-          ) || 0,
-        defaultOverallocateCpu:
-          parseInt(
-            document.getElementById("defaultOverallocateCpu").value,
-            10,
-          ) || 0,
-        uploadLimit:
-          parseInt(document.getElementById("uploadLimitInput").value, 10) ||
-          100,
-      });
+      Api.admin.settings
+        .updateServerPolicy({
+          allowUserCreateServer: document.getElementById(
+            "allowUserCreateServer",
+          ).checked,
+          allowUserDeleteServer: document.getElementById(
+            "allowUserDeleteServer",
+          ).checked,
+          allowUserCreateImages: document.getElementById(
+            "allowUserCreateImages",
+          ).checked,
+          defaultServerLimit:
+            parseInt(document.getElementById("defaultServerLimit").value, 10) ||
+            0,
+          defaultMaxMemory:
+            parseInt(document.getElementById("defaultMaxMemory").value, 10) ||
+            0,
+          defaultMaxCpu:
+            parseInt(document.getElementById("defaultMaxCpu").value, 10) || 0,
+          defaultMaxStorage:
+            parseInt(document.getElementById("defaultMaxStorage").value, 10) ||
+            0,
+          defaultMaxDatabases:
+            parseInt(
+              document.getElementById("defaultMaxDatabases").value,
+              10,
+            ) || 0,
+          defaultOverallocateMemory:
+            parseInt(
+              document.getElementById("defaultOverallocateMemory").value,
+              10,
+            ) || 0,
+          defaultOverallocateDisk:
+            parseInt(
+              document.getElementById("defaultOverallocateDisk").value,
+              10,
+            ) || 0,
+          defaultOverallocateCpu:
+            parseInt(
+              document.getElementById("defaultOverallocateCpu").value,
+              10,
+            ) || 0,
+          uploadLimit:
+            parseInt(document.getElementById("uploadLimitInput").value, 10) ||
+            100,
+        })
+        .then((d) => {
+          if (d) this.showSaved();
+        });
     },
 
     saveSecurity() {
       Promise.all([
-        this.post("/api/v2/admin/settings/security", {
+        Api.admin.settings.updateSecurity({
           rateLimitEnabled: document.getElementById("rateLimitEnabled").checked,
           rateLimitRpm:
             parseInt(document.getElementById("rateLimitRpm").value, 10) || 0,
@@ -362,8 +354,7 @@ function adminSettings() {
           virusTotalApiKey:
             document.getElementById("vtKeyInput").value.trim() || null,
         }),
-        this.post(
-          "/api/v2/admin/settings/general",
+        Api.admin.settings.updateGeneral(
           (() => {
             var fd = new FormData();
             var reg = document.getElementById("allowRegistration");
@@ -371,7 +362,7 @@ function adminSettings() {
             return fd;
           })(),
         ),
-        this.post("/api/v2/admin/settings/smtp", {
+        Api.admin.settings.updateSmtp({
           smtpHost: document.getElementById("smtpHost").value.trim() || null,
           smtpPort:
             parseInt(document.getElementById("smtpPort").value, 10) || 587,
@@ -382,7 +373,7 @@ function adminSettings() {
           emailCooldown:
             parseInt(document.getElementById("emailCooldown").value, 10) || 0,
         }),
-        this.post("/api/v2/admin/settings/s3", {
+        Api.admin.settings.updateS3({
           s3Enabled: document.getElementById("s3Enabled").checked,
           s3Endpoint:
             document.getElementById("s3Endpoint").value.trim() || null,
@@ -393,39 +384,53 @@ function adminSettings() {
           s3SecretKey: document.getElementById("s3SecretKey").value || null,
           s3PathStyle: document.getElementById("s3PathStyle").checked,
         }),
-      ]);
+      ]).then((results) => {
+        if (results.some((d) => d)) this.showSaved();
+      });
     },
 
     saveFeatures() {
-      this.post("/api/v2/admin/settings/features", {
-        twoFactorRequired: document.getElementById("twoFactorRequired").checked,
-        sftpEnabled: document.getElementById("sftpEnabled").checked,
-        backupsEnabled: document.getElementById("backupsEnabled").checked,
-        schedulesEnabled: document.getElementById("schedulesEnabled").checked,
-        databasesEnabled: document.getElementById("databasesEnabled").checked,
-        fileManagerEnabled:
-          document.getElementById("fileManagerEnabled").checked,
-        consoleEnabled: document.getElementById("consoleEnabled").checked,
-        playerTrackingEnabled: document.getElementById("playerTrackingEnabled")
-          .checked,
-        scannerEnabled: document.getElementById("scannerEnabled").checked,
-        airlinkCloudEnabled: document.getElementById("airlinkCloudEnabled")
-          .checked,
-      });
-      this.post("/api/v2/admin/settings/server-policy", {
-        defaultMemory:
-          parseInt(document.getElementById("featureDefaultMemory").value, 10) ||
-          512,
-        defaultCpu:
-          parseInt(document.getElementById("featureDefaultCpu").value, 10) ||
-          100,
-        defaultDisk:
-          parseInt(document.getElementById("featureDefaultDisk").value, 10) ||
-          5120,
-        maxServersPerUser:
-          parseInt(document.getElementById("maxServersPerUser").value, 10) ||
-          10,
-      });
+      Api.admin.settings
+        .updateFeatures({
+          twoFactorRequired:
+            document.getElementById("twoFactorRequired").checked,
+          sftpEnabled: document.getElementById("sftpEnabled").checked,
+          backupsEnabled: document.getElementById("backupsEnabled").checked,
+          schedulesEnabled: document.getElementById("schedulesEnabled").checked,
+          databasesEnabled: document.getElementById("databasesEnabled").checked,
+          fileManagerEnabled:
+            document.getElementById("fileManagerEnabled").checked,
+          consoleEnabled: document.getElementById("consoleEnabled").checked,
+          playerTrackingEnabled: document.getElementById(
+            "playerTrackingEnabled",
+          ).checked,
+          scannerEnabled: document.getElementById("scannerEnabled").checked,
+          airlinkCloudEnabled: document.getElementById("airlinkCloudEnabled")
+            .checked,
+        })
+        .then((d) => {
+          if (d) this.showSaved();
+        });
+      Api.admin.settings
+        .updateServerPolicy({
+          defaultMemory:
+            parseInt(
+              document.getElementById("featureDefaultMemory").value,
+              10,
+            ) || 512,
+          defaultCpu:
+            parseInt(document.getElementById("featureDefaultCpu").value, 10) ||
+            100,
+          defaultDisk:
+            parseInt(document.getElementById("featureDefaultDisk").value, 10) ||
+            5120,
+          maxServersPerUser:
+            parseInt(document.getElementById("maxServersPerUser").value, 10) ||
+            10,
+        })
+        .then((d) => {
+          if (d) this.showSaved();
+        });
     },
 
     banRowHtml(ip) {
