@@ -54,6 +54,7 @@ storage/themes/user/
 .opencode/
 agent/
 backups/
+.backups/
 docs/tmp/
 /dist/*.map
 .windsurf/

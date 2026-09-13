@@ -8,6 +8,15 @@ import * as server from "../config/server";
 import * as daemonTimeouts from "../config/daemonTimeouts";
 import * as urls from "../config/urls";
 import * as mime from "../config/mime";
+
+let panelConfig: { meta?: { version?: string; codename?: string } } = {};
+try {
+  panelConfig = JSON.parse(
+    fs.readFileSync(path.join(__dirname, "../../storage/config.json"), "utf-8"),
+  );
+} catch {
+  /* optional — not all environments have config.json */
+}
 import * as ui from "../config/ui";
 import { getConfig } from "../config";
 
@@ -124,6 +133,8 @@ export function templateConfigMiddleware(
     url: panel.url,
     assetBaseUrl: assetBase,
     name: panel.name,
+    version: panelConfig.meta?.version ?? "",
+    codename: panelConfig.meta?.codename ?? "",
     trustProxy: panel.trustProxy,
     cspEnabled: panel.cspEnabled,
     cookieDomain: panel.cookieDomain,

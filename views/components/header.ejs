@@ -25,7 +25,7 @@ const wallpaperExcluded = req && req.path && (
         <% } %>
       })();
     </script>
-    <link rel="stylesheet" href="<%= assetUrl('/styles.css') %>?v=8">
+    <link rel="stylesheet" href="<%= assetUrl('/styles/tw.css') %>">
     <link rel="stylesheet" href="<%= assetUrl('/styles/layout-animations.css') %>?v=8">
     <link rel="stylesheet" href="<%= assetUrl('/styles/motion.css') %>?v=8">
     <link rel="icon" href="<%= settings.favicon && settings.favicon.startsWith('/') ? assetUrl(settings.favicon) : assetUrl('/favicon.ico') %>" type="image/x-icon">
@@ -112,6 +112,35 @@ const wallpaperExcluded = req && req.path && (
     <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
     <script>eruda.init();</script>
 <% } %>
+    <script nonce="<%- nonce %>">
+    (function () {
+      var v = '<%= panel.version %>', c = '<%= panel.codename %>';
+      console.log(
+        '%c  /$$$$$$ /$$         /$$/$$         /$$\n' +
+        ' /$$__  $|__/        | $|__/        | $$\n' +
+        '| $$   $$/$$ /$$$$$$| $$/$$/$$$$$$$| $$   /$$\n' +
+        '| $$$$$$$| $$/$$__  $| $| $| $$__  $| $$  /$$/\n' +
+        '| $$__  $| $| $$  __| $| $| $$   $| $$$$$$/\n' +
+        '| $$  | $| $| $$     | $| $| $$  | $| $$_  $$\n' +
+        '| $$  | $| $| $$     | $| $| $$  | $| $$ \\  $$\n' +
+        '|__/  |__|__|__/     |__|__|__/  |__|__/  __/',
+        'color:#00d4ff;font-family:monospace;font-size:11px;font-weight:bold'
+      );
+      console.log(
+        '%c  Airlink Panel %cv' + v + ' %c' + c,
+        'color:#00d4ff;font-size:14px;font-weight:bold',
+        'color:#888;font-size:12px',
+        'color:#666;font-size:11px;font-style:italic'
+      );
+      console.log('%c  Airlinklabs \u00b7 MIT License \u00a9 2025', 'color:#555;font-size:11px');
+      console.log(
+        '%c  GitHub:%c https://github.com/AirlinkLabs   %cDiscord:%c https://discord.gg/ujXyxwwMHc   %cWeb:%c https://airlinklabs.xyz',
+        'color:#00d4ff;font-weight:bold', 'color:#999',
+        'color:#00d4ff;font-weight:bold', 'color:#999',
+        'color:#00d4ff;font-weight:bold', 'color:#999'
+      );
+    })();
+    </script>
 </head>
 <body style="font-family: 'Inter Variable';<%= (settings.panelWallpaper && !wallpaperExcluded) ? `--al-wallpaper-image:url('${settings.panelWallpaper}');` : '' %>" class="h-full<%= (settings.panelWallpaper && !wallpaperExcluded) ? ' al-wallpaper' : '' %>">
 <% if (settings.panelWallpaper && !wallpaperExcluded) { %>

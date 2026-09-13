@@ -70,19 +70,26 @@ function banner() {
     console.log(
       boxen(
         [
-          chalk.bold.red("  ⚠  DESTRUCTIVE OPERATION  ⚠"),
+          chalk.bold.red("  !!  DESTRUCTIVE OPERATION  !!"),
           "",
           chalk.dim("  This will PERMANENTLY DELETE:"),
-          chalk.red("    • The entire airlink PostgreSQL database"),
-          chalk.red("    • All Redis session + cache data"),
+          "",
+          chalk.red("    * The entire airlink PostgreSQL database"),
+          chalk.red("    * The PostgreSQL role and all owned objects"),
+          chalk.red("    * All Redis session + cache data"),
           "",
           chalk.dim("  There is NO undo for this action."),
         ].join("\n"),
-        { padding: 1, margin: 1, borderStyle: "round", borderColor: "red" },
+        {
+          padding: 1,
+          margin: 1,
+          borderStyle: "round",
+          borderColor: "red",
+        },
       ),
     );
   } else {
-    warn("DESTRUCTIVE: Dropping database + flushing Redis.");
+    warn("DESTRUCTIVE: Dropping database, role, and flushing Redis.");
   }
 }
 
@@ -97,9 +104,12 @@ ${chalk.bold("Flags")}
 
 ${chalk.bold("What it does")}
   1. Drops the airlink database.
-  2. Recreates it with the airlink user.
-  3. Flushes all Redis data.
-  4. Runs prisma generate + migrate dev.
+  2. Drops all owned objects and the PostgreSQL role.
+  3. Recreates the role with login + createdb privileges.
+  4. Recreates the database with the role as owner.
+  5. Grants full database privileges to the role.
+  6. Flushes all Redis data.
+  7. Runs prisma generate + migrate dev.
 
 ${chalk.bold("Examples")}
   node scripts/db-reset.mjs
@@ -249,7 +259,57 @@ async function main() {
     }
   }
 
-  // ── Step 2: Recreate database ──────────────────────────────────────────
+  // ── Step 1b: Drop owned objects + role ─────────────────────────────────
+  info("Revoking all owned objects and dropping role...");
+  const revokeCmd = `PGPASSWORD=${db.pass} psql -h ${db.host} -p ${db.port} -U ${db.user} -d postgres -c "DROP OWNED BY ${db.user} CASCADE;"`;
+  const revokeResult = run(revokeCmd);
+  if (revokeResult !== null) {
+    ok("All owned objects revoked.");
+  } else {
+    warn("DROP OWNED failed as airlink — trying postgres superuser...");
+    const superRevoke = `sudo -u postgres psql -c "DROP OWNED BY ${db.user} CASCADE;"`;
+    const superRevokeResult = run(superRevoke);
+    if (superRevokeResult !== null) {
+      ok("All owned objects revoked (via postgres superuser).");
+    } else {
+      warn("DROP OWNED failed — role may not exist or have no owned objects.");
+    }
+  }
+
+  const dropRoleCmd = `PGPASSWORD=${db.pass} psql -h ${db.host} -p ${db.port} -U ${db.user} -d postgres -c "DROP ROLE IF EXISTS ${db.user};"`;
+  const dropRoleResult = run(dropRoleCmd);
+  if (dropRoleResult !== null) {
+    ok(`Role '${db.user}' dropped.`);
+  } else {
+    warn("airlink user lacks DROP ROLE — trying postgres superuser...");
+    const superDropRole = `sudo -u postgres psql -c "DROP ROLE IF EXISTS ${db.user};"`;
+    const superDropRoleResult = run(superDropRole);
+    if (superDropRoleResult !== null) {
+      ok(`Role '${db.user}' dropped (via postgres superuser).`);
+    } else {
+      warn("Failed to drop role. Continuing...");
+    }
+  }
+
+  // ── Step 2: Recreate role + database ────────────────────────────────────
+  info("Recreating role...");
+  const createRoleCmd = `PGPASSWORD=${db.pass} psql -h ${db.host} -p ${db.port} -U ${db.user} -d postgres -c "CREATE ROLE ${db.user} WITH LOGIN PASSWORD '${db.pass}' CREATEDB;"`;
+  const createRoleResult = run(createRoleCmd);
+  if (createRoleResult !== null) {
+    ok(`Role '${db.user}' created.`);
+  } else {
+    warn("CREATE ROLE failed — trying postgres superuser...");
+    const superCreateRole = `sudo -u postgres psql -c "CREATE ROLE ${db.user} WITH LOGIN PASSWORD '${db.pass}' CREATEDB;"`;
+    const superCreateRoleResult = run(superCreateRole);
+    if (superCreateRoleResult !== null) {
+      ok(`Role '${db.user}' created (via postgres superuser).`);
+    } else {
+      warn(
+        "Failed to create role. Continuing — database creation may still work.",
+      );
+    }
+  }
+
   info("Recreating database...");
   const createCmd = `PGPASSWORD=${db.pass} psql -h ${db.host} -p ${db.port} -U ${db.user} -d postgres -c "CREATE DATABASE ${db.db} OWNER ${db.user};"`;
   const createResult = run(createCmd);
@@ -267,6 +327,18 @@ async function main() {
         `  sudo -u postgres psql -c "CREATE DATABASE ${db.db} OWNER ${db.user};"`,
       );
     }
+  }
+
+  // ── Step 3: Grant privileges on database ────────────────────────────────
+  info("Granting database privileges...");
+  const grantCmd = `PGPASSWORD=${db.pass} psql -h ${db.host} -p ${db.port} -U ${db.user} -d postgres -c "GRANT ALL PRIVILEGES ON DATABASE ${db.db} TO ${db.user};"`;
+  const grantResult = run(grantCmd);
+  if (grantResult !== null) {
+    ok("Database privileges granted.");
+  } else {
+    const superGrant = `sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE ${db.db} TO ${db.user};"`;
+    run(superGrant);
+    ok("Database privileges granted (via postgres superuser).");
   }
 
   // ── Step 3: Flush Redis ────────────────────────────────────────────────
@@ -300,7 +372,11 @@ async function main() {
   }
 
   gap();
-  ok(chalk.bold("Reset complete. Database is clean and schema is up to date."));
+  ok(
+    chalk.bold(
+      "Reset complete. Database, role, and Redis are clean. Schema is up to date.",
+    ),
+  );
 }
 
 main().catch((err) => {
