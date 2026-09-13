@@ -57,6 +57,9 @@ declare global {
       htmx?: boolean;
       // Attached by admin auth middleware (requireAdmin) — the authenticated admin user record
       adminUser?: Users;
+      // Attached by isAuthenticated middleware — the full authenticated user record
+      // (avoids duplicate prisma.users.findUnique calls in route handlers)
+      panelUser?: Users;
     }
 
     interface Response {

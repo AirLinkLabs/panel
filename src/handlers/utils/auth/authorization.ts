@@ -7,8 +7,8 @@
  *   - Server auth middleware (src/handlers/utils/auth/serverAuthUtil.ts)
  */
 
-import prisma from '../../../db';
-import { isRoleAdmin, hasPermission } from './roles';
+import prisma from "../../../db";
+import { isRoleAdmin, hasPermission } from "./roles";
 
 // ---------------------------------------------------------------------------
 // Permission parsing
@@ -22,7 +22,7 @@ export function parsePermissions(raw: string | null | undefined): string[] {
   try {
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed)
-      ? parsed.filter((p): p is string => typeof p === 'string')
+      ? parsed.filter((p): p is string => typeof p === "string")
       : [];
   } catch {
     return [];
@@ -65,7 +65,7 @@ export interface ServerAccessResult {
     id: number;
     serverId: string;
     userId: number;
-    permissions: string;
+    permissions: string | unknown;
     [key: string]: unknown;
   } | null;
 }
@@ -102,7 +102,12 @@ export async function resolveServerAccess(
     where: { serverId_userId: { serverId: server.UUID, userId } },
   });
   if (subUser) {
-    return { server, isOwner: false, isAdmin: false, subUser };
+    return {
+      server,
+      isOwner: false,
+      isAdmin: false,
+      subUser,
+    };
   }
 
   return null;

@@ -42,7 +42,6 @@ export type RoleMinAggregateOutputType = {
   displayName: string | null
   description: string | null
   isAdmin: boolean | null
-  permissions: string | null
   isSystem: boolean | null
   sortOrder: number | null
   createdAt: Date | null
@@ -55,7 +54,6 @@ export type RoleMaxAggregateOutputType = {
   displayName: string | null
   description: string | null
   isAdmin: boolean | null
-  permissions: string | null
   isSystem: boolean | null
   sortOrder: number | null
   createdAt: Date | null
@@ -93,7 +91,6 @@ export type RoleMinAggregateInputType = {
   displayName?: true
   description?: true
   isAdmin?: true
-  permissions?: true
   isSystem?: true
   sortOrder?: true
   createdAt?: true
@@ -106,7 +103,6 @@ export type RoleMaxAggregateInputType = {
   displayName?: true
   description?: true
   isAdmin?: true
-  permissions?: true
   isSystem?: true
   sortOrder?: true
   createdAt?: true
@@ -219,7 +215,7 @@ export type RoleGroupByOutputType = {
   displayName: string
   description: string | null
   isAdmin: boolean
-  permissions: string
+  permissions: runtime.JsonValue
   isSystem: boolean
   sortOrder: number
   createdAt: Date
@@ -255,7 +251,7 @@ export type RoleWhereInput = {
   displayName?: Prisma.StringFilter<"Role"> | string
   description?: Prisma.StringNullableFilter<"Role"> | string | null
   isAdmin?: Prisma.BoolFilter<"Role"> | boolean
-  permissions?: Prisma.StringFilter<"Role"> | string
+  permissions?: Prisma.JsonFilter<"Role">
   isSystem?: Prisma.BoolFilter<"Role"> | boolean
   sortOrder?: Prisma.IntFilter<"Role"> | number
   createdAt?: Prisma.DateTimeFilter<"Role"> | Date | string
@@ -286,7 +282,7 @@ export type RoleWhereUniqueInput = Prisma.AtLeast<{
   displayName?: Prisma.StringFilter<"Role"> | string
   description?: Prisma.StringNullableFilter<"Role"> | string | null
   isAdmin?: Prisma.BoolFilter<"Role"> | boolean
-  permissions?: Prisma.StringFilter<"Role"> | string
+  permissions?: Prisma.JsonFilter<"Role">
   isSystem?: Prisma.BoolFilter<"Role"> | boolean
   sortOrder?: Prisma.IntFilter<"Role"> | number
   createdAt?: Prisma.DateTimeFilter<"Role"> | Date | string
@@ -321,7 +317,7 @@ export type RoleScalarWhereWithAggregatesInput = {
   displayName?: Prisma.StringWithAggregatesFilter<"Role"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"Role"> | string | null
   isAdmin?: Prisma.BoolWithAggregatesFilter<"Role"> | boolean
-  permissions?: Prisma.StringWithAggregatesFilter<"Role"> | string
+  permissions?: Prisma.JsonWithAggregatesFilter<"Role">
   isSystem?: Prisma.BoolWithAggregatesFilter<"Role"> | boolean
   sortOrder?: Prisma.IntWithAggregatesFilter<"Role"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Role"> | Date | string
@@ -333,7 +329,7 @@ export type RoleCreateInput = {
   displayName: string
   description?: string | null
   isAdmin?: boolean
-  permissions?: string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   isSystem?: boolean
   sortOrder?: number
   createdAt?: Date | string
@@ -347,7 +343,7 @@ export type RoleUncheckedCreateInput = {
   displayName: string
   description?: string | null
   isAdmin?: boolean
-  permissions?: string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   isSystem?: boolean
   sortOrder?: number
   createdAt?: Date | string
@@ -360,7 +356,7 @@ export type RoleUpdateInput = {
   displayName?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  permissions?: Prisma.StringFieldUpdateOperationsInput | string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -374,7 +370,7 @@ export type RoleUncheckedUpdateInput = {
   displayName?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  permissions?: Prisma.StringFieldUpdateOperationsInput | string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -388,7 +384,7 @@ export type RoleCreateManyInput = {
   displayName: string
   description?: string | null
   isAdmin?: boolean
-  permissions?: string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   isSystem?: boolean
   sortOrder?: number
   createdAt?: Date | string
@@ -400,7 +396,7 @@ export type RoleUpdateManyMutationInput = {
   displayName?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  permissions?: Prisma.StringFieldUpdateOperationsInput | string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -413,7 +409,7 @@ export type RoleUncheckedUpdateManyInput = {
   displayName?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  permissions?: Prisma.StringFieldUpdateOperationsInput | string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -444,7 +440,6 @@ export type RoleMaxOrderByAggregateInput = {
   displayName?: Prisma.SortOrder
   description?: Prisma.SortOrder
   isAdmin?: Prisma.SortOrder
-  permissions?: Prisma.SortOrder
   isSystem?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -457,7 +452,6 @@ export type RoleMinOrderByAggregateInput = {
   displayName?: Prisma.SortOrder
   description?: Prisma.SortOrder
   isAdmin?: Prisma.SortOrder
-  permissions?: Prisma.SortOrder
   isSystem?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -519,7 +513,7 @@ export type RoleCreateWithoutUsersInput = {
   displayName: string
   description?: string | null
   isAdmin?: boolean
-  permissions?: string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   isSystem?: boolean
   sortOrder?: number
   createdAt?: Date | string
@@ -532,7 +526,7 @@ export type RoleUncheckedCreateWithoutUsersInput = {
   displayName: string
   description?: string | null
   isAdmin?: boolean
-  permissions?: string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   isSystem?: boolean
   sortOrder?: number
   createdAt?: Date | string
@@ -560,7 +554,7 @@ export type RoleUpdateWithoutUsersInput = {
   displayName?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  permissions?: Prisma.StringFieldUpdateOperationsInput | string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -573,7 +567,7 @@ export type RoleUncheckedUpdateWithoutUsersInput = {
   displayName?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  permissions?: Prisma.StringFieldUpdateOperationsInput | string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -684,7 +678,7 @@ export type $RolePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     displayName: string
     description: string | null
     isAdmin: boolean
-    permissions: string
+    permissions: runtime.JsonValue
     isSystem: boolean
     sortOrder: number
     createdAt: Date
@@ -1118,7 +1112,7 @@ export interface RoleFieldRefs {
   readonly displayName: Prisma.FieldRef<"Role", 'String'>
   readonly description: Prisma.FieldRef<"Role", 'String'>
   readonly isAdmin: Prisma.FieldRef<"Role", 'Boolean'>
-  readonly permissions: Prisma.FieldRef<"Role", 'String'>
+  readonly permissions: Prisma.FieldRef<"Role", 'Json'>
   readonly isSystem: Prisma.FieldRef<"Role", 'Boolean'>
   readonly sortOrder: Prisma.FieldRef<"Role", 'Int'>
   readonly createdAt: Prisma.FieldRef<"Role", 'DateTime'>

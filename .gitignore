@@ -4,12 +4,16 @@ node_modules/
 # Build outputs
 dist/
 public/styles.css
+public/assets/css/
+public/assets/js/
+public/assets/media/
+public/.vite/
 
 # Prisma files
 storage/prisma/*
 !storage/prisma/schema.prisma
 !storage/prisma/migrations/
-storage/src/generated/
+src/generated/
 
 # Lock files
 /package-lock.json

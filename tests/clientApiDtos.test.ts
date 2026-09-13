@@ -131,7 +131,7 @@ describe("createScheduleBodySchema", () => {
       name: "x",
       cron: "0 * * * *",
       action: "power",
-      payload: '{"action":"restart"}',
+      payload: { action: "restart" },
     });
     expect(result.success).toBe(true);
   });
@@ -141,7 +141,7 @@ describe("createScheduleBodySchema", () => {
       name: "x",
       cron: "0 * * * *",
       action: "power",
-      payload: '{"action":"explode"}',
+      payload: { action: "explode" },
     });
     expect(result.success).toBe(false);
     expect(
@@ -149,7 +149,7 @@ describe("createScheduleBodySchema", () => {
         name: "x",
         cron: "0 * * * *",
         action: "power",
-        payload: '{"action":"explode"}',
+        payload: { action: "explode" },
       }),
     ).toBe("power payload must include a valid action");
   });

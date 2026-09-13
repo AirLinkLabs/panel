@@ -229,7 +229,7 @@ async function saveSettings(data: Record<string, unknown>) {
       uploadLimit: DEFAULT_UPLOAD_LIMIT_MB,
       rateLimitEnabled: true,
       rateLimitRpm: DEFAULT_RATE_LIMIT_RPM,
-      bannedIps: "[]",
+      bannedIps: [],
       allowUserCreateServer: false,
       allowUserDeleteServer: false,
       defaultServerLimit: 0,
@@ -835,15 +835,12 @@ const adminModule: Module = {
               .json({ success: false, error: "Invalid IP address." });
           }
           const settings = await getSettings();
-          let banned: string[] = [];
-          try {
-            banned = JSON.parse(settings?.bannedIps || "[]");
-          } catch {
-            banned = [];
-          }
+          let banned: string[] = Array.isArray(settings?.bannedIps)
+            ? (settings.bannedIps as string[])
+            : [];
           if (!banned.includes(ip)) {
             banned.push(ip);
-            await saveSettings({ bannedIps: JSON.stringify(banned) });
+            await saveSettings({ bannedIps: banned });
           }
           return res.json({ success: true, banned });
         } catch (error: unknown) {
@@ -867,14 +864,11 @@ const adminModule: Module = {
               .json({ success: false, error: "IP is required." });
           }
           const settings = await getSettings();
-          let banned: string[] = [];
-          try {
-            banned = JSON.parse(settings?.bannedIps || "[]");
-          } catch {
-            banned = [];
-          }
+          let banned: string[] = Array.isArray(settings?.bannedIps)
+            ? (settings.bannedIps as string[])
+            : [];
           await saveSettings({
-            bannedIps: JSON.stringify(banned.filter((b) => b !== ip)),
+            bannedIps: banned.filter((b) => b !== ip),
           });
           return res.json({
             success: true,

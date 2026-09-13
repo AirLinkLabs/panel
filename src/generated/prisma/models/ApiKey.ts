@@ -41,7 +41,6 @@ export type ApiKeyMinAggregateOutputType = {
   name: string | null
   key: string | null
   description: string | null
-  permissions: string | null
   createdAt: Date | null
   updatedAt: Date | null
   active: boolean | null
@@ -53,7 +52,6 @@ export type ApiKeyMaxAggregateOutputType = {
   name: string | null
   key: string | null
   description: string | null
-  permissions: string | null
   createdAt: Date | null
   updatedAt: Date | null
   active: boolean | null
@@ -89,7 +87,6 @@ export type ApiKeyMinAggregateInputType = {
   name?: true
   key?: true
   description?: true
-  permissions?: true
   createdAt?: true
   updatedAt?: true
   active?: true
@@ -101,7 +98,6 @@ export type ApiKeyMaxAggregateInputType = {
   name?: true
   key?: true
   description?: true
-  permissions?: true
   createdAt?: true
   updatedAt?: true
   active?: true
@@ -212,7 +208,7 @@ export type ApiKeyGroupByOutputType = {
   name: string
   key: string
   description: string | null
-  permissions: string
+  permissions: runtime.JsonValue
   createdAt: Date
   updatedAt: Date
   active: boolean
@@ -247,7 +243,7 @@ export type ApiKeyWhereInput = {
   name?: Prisma.StringFilter<"ApiKey"> | string
   key?: Prisma.StringFilter<"ApiKey"> | string
   description?: Prisma.StringNullableFilter<"ApiKey"> | string | null
-  permissions?: Prisma.StringFilter<"ApiKey"> | string
+  permissions?: Prisma.JsonFilter<"ApiKey">
   createdAt?: Prisma.DateTimeFilter<"ApiKey"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ApiKey"> | Date | string
   active?: Prisma.BoolFilter<"ApiKey"> | boolean
@@ -276,7 +272,7 @@ export type ApiKeyWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.ApiKeyWhereInput | Prisma.ApiKeyWhereInput[]
   name?: Prisma.StringFilter<"ApiKey"> | string
   description?: Prisma.StringNullableFilter<"ApiKey"> | string | null
-  permissions?: Prisma.StringFilter<"ApiKey"> | string
+  permissions?: Prisma.JsonFilter<"ApiKey">
   createdAt?: Prisma.DateTimeFilter<"ApiKey"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ApiKey"> | Date | string
   active?: Prisma.BoolFilter<"ApiKey"> | boolean
@@ -309,7 +305,7 @@ export type ApiKeyScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"ApiKey"> | string
   key?: Prisma.StringWithAggregatesFilter<"ApiKey"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"ApiKey"> | string | null
-  permissions?: Prisma.StringWithAggregatesFilter<"ApiKey"> | string
+  permissions?: Prisma.JsonWithAggregatesFilter<"ApiKey">
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ApiKey"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"ApiKey"> | Date | string
   active?: Prisma.BoolWithAggregatesFilter<"ApiKey"> | boolean
@@ -320,7 +316,7 @@ export type ApiKeyCreateInput = {
   name: string
   key: string
   description?: string | null
-  permissions?: string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   active?: boolean
@@ -332,7 +328,7 @@ export type ApiKeyUncheckedCreateInput = {
   name: string
   key: string
   description?: string | null
-  permissions?: string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   active?: boolean
@@ -343,7 +339,7 @@ export type ApiKeyUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   key?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  permissions?: Prisma.StringFieldUpdateOperationsInput | string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -355,7 +351,7 @@ export type ApiKeyUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   key?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  permissions?: Prisma.StringFieldUpdateOperationsInput | string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -367,7 +363,7 @@ export type ApiKeyCreateManyInput = {
   name: string
   key: string
   description?: string | null
-  permissions?: string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   active?: boolean
@@ -378,7 +374,7 @@ export type ApiKeyUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   key?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  permissions?: Prisma.StringFieldUpdateOperationsInput | string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -389,7 +385,7 @@ export type ApiKeyUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   key?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  permissions?: Prisma.StringFieldUpdateOperationsInput | string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -428,7 +424,6 @@ export type ApiKeyMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   key?: Prisma.SortOrder
   description?: Prisma.SortOrder
-  permissions?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   active?: Prisma.SortOrder
@@ -440,7 +435,6 @@ export type ApiKeyMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   key?: Prisma.SortOrder
   description?: Prisma.SortOrder
-  permissions?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   active?: Prisma.SortOrder
@@ -498,7 +492,7 @@ export type ApiKeyCreateWithoutUserInput = {
   name: string
   key: string
   description?: string | null
-  permissions?: string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   active?: boolean
@@ -509,7 +503,7 @@ export type ApiKeyUncheckedCreateWithoutUserInput = {
   name: string
   key: string
   description?: string | null
-  permissions?: string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   active?: boolean
@@ -549,7 +543,7 @@ export type ApiKeyScalarWhereInput = {
   name?: Prisma.StringFilter<"ApiKey"> | string
   key?: Prisma.StringFilter<"ApiKey"> | string
   description?: Prisma.StringNullableFilter<"ApiKey"> | string | null
-  permissions?: Prisma.StringFilter<"ApiKey"> | string
+  permissions?: Prisma.JsonFilter<"ApiKey">
   createdAt?: Prisma.DateTimeFilter<"ApiKey"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ApiKey"> | Date | string
   active?: Prisma.BoolFilter<"ApiKey"> | boolean
@@ -561,7 +555,7 @@ export type ApiKeyCreateManyUserInput = {
   name: string
   key: string
   description?: string | null
-  permissions?: string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   active?: boolean
@@ -571,7 +565,7 @@ export type ApiKeyUpdateWithoutUserInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   key?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  permissions?: Prisma.StringFieldUpdateOperationsInput | string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -582,7 +576,7 @@ export type ApiKeyUncheckedUpdateWithoutUserInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   key?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  permissions?: Prisma.StringFieldUpdateOperationsInput | string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -593,7 +587,7 @@ export type ApiKeyUncheckedUpdateManyWithoutUserInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   key?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  permissions?: Prisma.StringFieldUpdateOperationsInput | string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -673,7 +667,7 @@ export type $ApiKeyPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     name: string
     key: string
     description: string | null
-    permissions: string
+    permissions: runtime.JsonValue
     createdAt: Date
     updatedAt: Date
     active: boolean
@@ -1106,7 +1100,7 @@ export interface ApiKeyFieldRefs {
   readonly name: Prisma.FieldRef<"ApiKey", 'String'>
   readonly key: Prisma.FieldRef<"ApiKey", 'String'>
   readonly description: Prisma.FieldRef<"ApiKey", 'String'>
-  readonly permissions: Prisma.FieldRef<"ApiKey", 'String'>
+  readonly permissions: Prisma.FieldRef<"ApiKey", 'Json'>
   readonly createdAt: Prisma.FieldRef<"ApiKey", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"ApiKey", 'DateTime'>
   readonly active: Prisma.FieldRef<"ApiKey", 'Boolean'>

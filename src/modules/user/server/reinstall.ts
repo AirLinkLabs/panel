@@ -1,21 +1,21 @@
-import type { Router, Request, Response } from 'express';
+import type { Router, Request, Response } from "express";
 import {
   isAuthenticatedForServer,
   requireSubUserPermission,
-} from '../../../handlers/utils/auth/serverAuthUtil';
-import logger from '../../../handlers/logger';
-import { getParamAsString } from '../../../utils/typeHelpers';
-import prisma from '../../../db';
-import { daemonRequest } from '../../../handlers/utils/core/daemonRequest';
-import { logActivity } from '../../../handlers/utils/activity/activityLogger';
-import { getPrimaryExternalPort } from '../../../handlers/utils/server/ports';
-import type { ServerVariable } from './shared';
+} from "../../../handlers/utils/auth/serverAuthUtil";
+import logger from "../../../handlers/logger";
+import { getParamAsString } from "../../../utils/typeHelpers";
+import prisma from "../../../db";
+import { daemonRequest } from "../../../handlers/utils/core/daemonRequest";
+import { logActivity } from "../../../handlers/utils/activity/activityLogger";
+import { getPrimaryExternalPort } from "../../../handlers/utils/server/ports";
+import type { ServerVariable } from "./shared";
 
 export function registerReinstallRoutes(router: Router): void {
   router.post(
-    '/server/:id/reinstall',
-    isAuthenticatedForServer('id'),
-    requireSubUserPermission('settings.reinstall'),
+    "/server/:id/reinstall",
+    isAuthenticatedForServer("id"),
+    requireSubUserPermission("settings.reinstall"),
     async (req: Request, res: Response) => {
       const userId = req.session?.user?.id;
       const serverId = req.params?.id;
@@ -27,7 +27,7 @@ export function registerReinstallRoutes(router: Router): void {
       try {
         const user = await prisma.users.findUnique({ where: { id: userId } });
         if (!user) {
-          res.status(404).json({ error: 'User not found' });
+          res.status(404).json({ error: "User not found" });
           return;
         }
 
@@ -37,7 +37,7 @@ export function registerReinstallRoutes(router: Router): void {
         });
 
         if (!server) {
-          res.status(404).json({ error: 'Server not found' });
+          res.status(404).json({ error: "Server not found" });
           return;
         }
 
@@ -49,7 +49,7 @@ export function registerReinstallRoutes(router: Router): void {
           },
         });
 
-        const { queueer } = await import('../../../handlers/queueer');
+        const { queueer } = await import("../../../handlers/queueer");
         queueer.addTask(async () => {
           try {
             const serverToReinstall = await prisma.server.findUnique({
@@ -58,34 +58,28 @@ export function registerReinstallRoutes(router: Router): void {
             });
 
             if (!serverToReinstall) {
-              logger.error('Server not found for reinstallation:', serverId);
+              logger.error("Server not found for reinstallation:", serverId);
               return;
             }
 
             let ServerEnv: ServerVariable[] = [];
             if (serverToReinstall.Variables) {
-              try {
-                ServerEnv = JSON.parse(
-                  serverToReinstall.Variables,
-                ) as ServerVariable[];
+              if (Array.isArray(serverToReinstall.Variables)) {
+                ServerEnv =
+                  serverToReinstall.Variables as unknown as ServerVariable[];
+              }
 
-                const primaryPort = getPrimaryExternalPort(
-                  serverToReinstall.Ports,
-                );
-                if (primaryPort) {
-                  ServerEnv.push({
-                    env: 'SERVER_PORT',
-                    name: 'Primary Port',
-                    value: primaryPort,
-                    type: 'text',
-                    default: primaryPort,
-                  });
-                }
-              } catch (error) {
-                logger.error(
-                  `Error parsing Variables for server ID ${serverToReinstall.id}:`,
-                  error,
-                );
+              const primaryPort = getPrimaryExternalPort(
+                serverToReinstall.Ports as unknown as string,
+              );
+              if (primaryPort) {
+                ServerEnv.push({
+                  env: "SERVER_PORT",
+                  name: "Primary Port",
+                  value: primaryPort,
+                  type: "text",
+                  default: primaryPort,
+                });
               }
             }
 
@@ -101,21 +95,21 @@ export function registerReinstallRoutes(router: Router): void {
                 ) {
                   let processedValue: string | number | boolean;
                   switch (curr.type) {
-                  case 'boolean':
-                    processedValue =
+                    case "boolean":
+                      processedValue =
                         curr.value === 1 ||
-                        curr.value === '1' ||
+                        curr.value === "1" ||
                         curr.value === true
-                          ? 'true'
-                          : 'false';
-                    break;
-                  case 'number':
-                    processedValue = Number(curr.value);
-                    break;
-                  case 'text':
-                  default:
-                    processedValue = String(curr.value);
-                    break;
+                          ? "true"
+                          : "false";
+                      break;
+                    case "number":
+                      processedValue = Number(curr.value);
+                      break;
+                    case "text":
+                    default:
+                      processedValue = String(curr.value);
+                      break;
                   }
                   acc[curr.env] = processedValue;
                 }
@@ -125,14 +119,17 @@ export function registerReinstallRoutes(router: Router): void {
             );
 
             if (serverToReinstall.image?.scripts) {
-              let scripts;
+              let scripts: Record<string, unknown>;
               try {
-                scripts = JSON.parse(serverToReinstall.image.scripts);
+                scripts = serverToReinstall.image.scripts as unknown as Record<
+                  string,
+                  unknown
+                >;
 
                 let reinstallDockerImage: string | undefined;
                 try {
                   const parsed = JSON.parse(
-                    serverToReinstall.dockerImage || '{}',
+                    String(serverToReinstall.dockerImage ?? "{}"),
                   );
                   reinstallDockerImage = Object.values(parsed)[0] as
                     string | undefined;
@@ -143,8 +140,8 @@ export function registerReinstallRoutes(router: Router): void {
                 const installResponse = await daemonRequest<{
                   status?: number;
                 }>({
-                  method: 'POST',
-                  path: '/container/reinstall',
+                  method: "POST",
+                  path: "/container/reinstall",
                   nodeAddress: serverToReinstall.node.address,
                   nodePort: serverToReinstall.node.port,
                   nodeKey: serverToReinstall.node.key,
@@ -153,17 +150,12 @@ export function registerReinstallRoutes(router: Router): void {
                     image: reinstallDockerImage,
                     env,
                     preserveData,
-                    scripts: scripts.install.map(
-                      (script: {
-                        url: string;
-                        fileName: string;
-                        onStart: boolean;
-                        ALVKT: boolean;
-                      }) => ({
-                        url: script.url,
-                        onStartup: script.onStart,
-                        ALVKT: script.ALVKT,
-                        fileName: script.fileName,
+                    scripts: (scripts.install as Record<string, unknown>[]).map(
+                      (script) => ({
+                        url: script.url as string,
+                        onStartup: script.onStart as boolean,
+                        ALVKT: script.ALVKT as boolean,
+                        fileName: script.fileName as string,
                       }),
                     ),
                   },
@@ -182,12 +174,12 @@ export function registerReinstallRoutes(router: Router): void {
                   error,
                 );
                 const err =
-                  error && typeof error === 'object'
+                  error && typeof error === "object"
                     ? (error as Record<string, unknown>)
                     : {};
                 if (err.status) {
                   logger.error(`Response status: ${err.status}`);
-                  logger.error('Response data:', err.body);
+                  logger.error("Response data:", err.body);
                 }
                 await prisma.server.update({
                   where: { UUID: getParamAsString(serverId) },
@@ -212,23 +204,23 @@ export function registerReinstallRoutes(router: Router): void {
                 data: { Queued: false, Installing: false },
               })
               .catch((e) =>
-                logger.error('Error updating server queue status:', e),
+                logger.error("Error updating server queue status:", e),
               );
           }
         });
 
         res.status(200).json({
           success: true,
-          message: 'Server reinstallation initiated',
+          message: "Server reinstallation initiated",
         });
-        logActivity(req, 'server:reinstall', {
+        logActivity(req, "server:reinstall", {
           serverId: String(serverId),
         }).catch(() => {
           /* noop */
         });
       } catch (error) {
-        logger.error('Error reinstalling server:', error);
-        res.status(500).json({ error: 'Failed to reinstall server' });
+        logger.error("Error reinstalling server:", error);
+        res.status(500).json({ error: "Failed to reinstall server" });
       }
     },
   );

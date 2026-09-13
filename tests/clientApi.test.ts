@@ -246,7 +246,7 @@ describe("Client API Module", () => {
         serverId: "test-uuid",
         nextRunAt: new Date(),
         tasks: [
-          { id: 1, order: 0, action: "power", payload: '{"action":"restart"}' },
+          { id: 1, order: 0, action: "power", payload: { action: "restart" } },
         ],
       } as any);
 
@@ -260,7 +260,7 @@ describe("Client API Module", () => {
               name: "daily",
               cron: "0 4 * * *",
               action: "power",
-              payload: '{"action":"restart"}',
+              payload: { action: "restart" },
             }),
           },
         );
@@ -274,7 +274,7 @@ describe("Client API Module", () => {
         expect(createCall.data.tasks.create).toEqual({
           order: 0,
           action: "power",
-          payload: '{"action":"restart"}',
+          payload: { action: "restart" },
         });
       });
     });

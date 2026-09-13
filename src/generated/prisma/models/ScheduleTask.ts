@@ -45,7 +45,6 @@ export type ScheduleTaskMinAggregateOutputType = {
   scheduleId: number | null
   order: number | null
   action: string | null
-  payload: string | null
   timeOffset: number | null
 }
 
@@ -54,7 +53,6 @@ export type ScheduleTaskMaxAggregateOutputType = {
   scheduleId: number | null
   order: number | null
   action: string | null
-  payload: string | null
   timeOffset: number | null
 }
 
@@ -88,7 +86,6 @@ export type ScheduleTaskMinAggregateInputType = {
   scheduleId?: true
   order?: true
   action?: true
-  payload?: true
   timeOffset?: true
 }
 
@@ -97,7 +94,6 @@ export type ScheduleTaskMaxAggregateInputType = {
   scheduleId?: true
   order?: true
   action?: true
-  payload?: true
   timeOffset?: true
 }
 
@@ -202,7 +198,7 @@ export type ScheduleTaskGroupByOutputType = {
   scheduleId: number
   order: number
   action: string
-  payload: string
+  payload: runtime.JsonValue
   timeOffset: number
   _count: ScheduleTaskCountAggregateOutputType | null
   _avg: ScheduleTaskAvgAggregateOutputType | null
@@ -234,7 +230,7 @@ export type ScheduleTaskWhereInput = {
   scheduleId?: Prisma.IntFilter<"ScheduleTask"> | number
   order?: Prisma.IntFilter<"ScheduleTask"> | number
   action?: Prisma.StringFilter<"ScheduleTask"> | string
-  payload?: Prisma.StringFilter<"ScheduleTask"> | string
+  payload?: Prisma.JsonFilter<"ScheduleTask">
   timeOffset?: Prisma.IntFilter<"ScheduleTask"> | number
   schedule?: Prisma.XOR<Prisma.ScheduleScalarRelationFilter, Prisma.ScheduleWhereInput>
 }
@@ -257,7 +253,7 @@ export type ScheduleTaskWhereUniqueInput = Prisma.AtLeast<{
   scheduleId?: Prisma.IntFilter<"ScheduleTask"> | number
   order?: Prisma.IntFilter<"ScheduleTask"> | number
   action?: Prisma.StringFilter<"ScheduleTask"> | string
-  payload?: Prisma.StringFilter<"ScheduleTask"> | string
+  payload?: Prisma.JsonFilter<"ScheduleTask">
   timeOffset?: Prisma.IntFilter<"ScheduleTask"> | number
   schedule?: Prisma.XOR<Prisma.ScheduleScalarRelationFilter, Prisma.ScheduleWhereInput>
 }, "id">
@@ -284,14 +280,14 @@ export type ScheduleTaskScalarWhereWithAggregatesInput = {
   scheduleId?: Prisma.IntWithAggregatesFilter<"ScheduleTask"> | number
   order?: Prisma.IntWithAggregatesFilter<"ScheduleTask"> | number
   action?: Prisma.StringWithAggregatesFilter<"ScheduleTask"> | string
-  payload?: Prisma.StringWithAggregatesFilter<"ScheduleTask"> | string
+  payload?: Prisma.JsonWithAggregatesFilter<"ScheduleTask">
   timeOffset?: Prisma.IntWithAggregatesFilter<"ScheduleTask"> | number
 }
 
 export type ScheduleTaskCreateInput = {
   order?: number
   action: string
-  payload: string
+  payload: Prisma.JsonNullValueInput | runtime.InputJsonValue
   timeOffset?: number
   schedule: Prisma.ScheduleCreateNestedOneWithoutTasksInput
 }
@@ -301,14 +297,14 @@ export type ScheduleTaskUncheckedCreateInput = {
   scheduleId: number
   order?: number
   action: string
-  payload: string
+  payload: Prisma.JsonNullValueInput | runtime.InputJsonValue
   timeOffset?: number
 }
 
 export type ScheduleTaskUpdateInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   action?: Prisma.StringFieldUpdateOperationsInput | string
-  payload?: Prisma.StringFieldUpdateOperationsInput | string
+  payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   timeOffset?: Prisma.IntFieldUpdateOperationsInput | number
   schedule?: Prisma.ScheduleUpdateOneRequiredWithoutTasksNestedInput
 }
@@ -318,7 +314,7 @@ export type ScheduleTaskUncheckedUpdateInput = {
   scheduleId?: Prisma.IntFieldUpdateOperationsInput | number
   order?: Prisma.IntFieldUpdateOperationsInput | number
   action?: Prisma.StringFieldUpdateOperationsInput | string
-  payload?: Prisma.StringFieldUpdateOperationsInput | string
+  payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   timeOffset?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
@@ -327,14 +323,14 @@ export type ScheduleTaskCreateManyInput = {
   scheduleId: number
   order?: number
   action: string
-  payload: string
+  payload: Prisma.JsonNullValueInput | runtime.InputJsonValue
   timeOffset?: number
 }
 
 export type ScheduleTaskUpdateManyMutationInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   action?: Prisma.StringFieldUpdateOperationsInput | string
-  payload?: Prisma.StringFieldUpdateOperationsInput | string
+  payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   timeOffset?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
@@ -343,7 +339,7 @@ export type ScheduleTaskUncheckedUpdateManyInput = {
   scheduleId?: Prisma.IntFieldUpdateOperationsInput | number
   order?: Prisma.IntFieldUpdateOperationsInput | number
   action?: Prisma.StringFieldUpdateOperationsInput | string
-  payload?: Prisma.StringFieldUpdateOperationsInput | string
+  payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   timeOffset?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
@@ -378,7 +374,6 @@ export type ScheduleTaskMaxOrderByAggregateInput = {
   scheduleId?: Prisma.SortOrder
   order?: Prisma.SortOrder
   action?: Prisma.SortOrder
-  payload?: Prisma.SortOrder
   timeOffset?: Prisma.SortOrder
 }
 
@@ -387,7 +382,6 @@ export type ScheduleTaskMinOrderByAggregateInput = {
   scheduleId?: Prisma.SortOrder
   order?: Prisma.SortOrder
   action?: Prisma.SortOrder
-  payload?: Prisma.SortOrder
   timeOffset?: Prisma.SortOrder
 }
 
@@ -443,7 +437,7 @@ export type ScheduleTaskUncheckedUpdateManyWithoutScheduleNestedInput = {
 export type ScheduleTaskCreateWithoutScheduleInput = {
   order?: number
   action: string
-  payload: string
+  payload: Prisma.JsonNullValueInput | runtime.InputJsonValue
   timeOffset?: number
 }
 
@@ -451,7 +445,7 @@ export type ScheduleTaskUncheckedCreateWithoutScheduleInput = {
   id?: number
   order?: number
   action: string
-  payload: string
+  payload: Prisma.JsonNullValueInput | runtime.InputJsonValue
   timeOffset?: number
 }
 
@@ -489,7 +483,7 @@ export type ScheduleTaskScalarWhereInput = {
   scheduleId?: Prisma.IntFilter<"ScheduleTask"> | number
   order?: Prisma.IntFilter<"ScheduleTask"> | number
   action?: Prisma.StringFilter<"ScheduleTask"> | string
-  payload?: Prisma.StringFilter<"ScheduleTask"> | string
+  payload?: Prisma.JsonFilter<"ScheduleTask">
   timeOffset?: Prisma.IntFilter<"ScheduleTask"> | number
 }
 
@@ -497,14 +491,14 @@ export type ScheduleTaskCreateManyScheduleInput = {
   id?: number
   order?: number
   action: string
-  payload: string
+  payload: Prisma.JsonNullValueInput | runtime.InputJsonValue
   timeOffset?: number
 }
 
 export type ScheduleTaskUpdateWithoutScheduleInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   action?: Prisma.StringFieldUpdateOperationsInput | string
-  payload?: Prisma.StringFieldUpdateOperationsInput | string
+  payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   timeOffset?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
@@ -512,7 +506,7 @@ export type ScheduleTaskUncheckedUpdateWithoutScheduleInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   order?: Prisma.IntFieldUpdateOperationsInput | number
   action?: Prisma.StringFieldUpdateOperationsInput | string
-  payload?: Prisma.StringFieldUpdateOperationsInput | string
+  payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   timeOffset?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
@@ -520,7 +514,7 @@ export type ScheduleTaskUncheckedUpdateManyWithoutScheduleInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   order?: Prisma.IntFieldUpdateOperationsInput | number
   action?: Prisma.StringFieldUpdateOperationsInput | string
-  payload?: Prisma.StringFieldUpdateOperationsInput | string
+  payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   timeOffset?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
@@ -586,7 +580,7 @@ export type $ScheduleTaskPayload<ExtArgs extends runtime.Types.Extensions.Intern
     scheduleId: number
     order: number
     action: string
-    payload: string
+    payload: runtime.JsonValue
     timeOffset: number
   }, ExtArgs["result"]["scheduleTask"]>
   composites: {}
@@ -1016,7 +1010,7 @@ export interface ScheduleTaskFieldRefs {
   readonly scheduleId: Prisma.FieldRef<"ScheduleTask", 'Int'>
   readonly order: Prisma.FieldRef<"ScheduleTask", 'Int'>
   readonly action: Prisma.FieldRef<"ScheduleTask", 'String'>
-  readonly payload: Prisma.FieldRef<"ScheduleTask", 'String'>
+  readonly payload: Prisma.FieldRef<"ScheduleTask", 'Json'>
   readonly timeOffset: Prisma.FieldRef<"ScheduleTask", 'Int'>
 }
     

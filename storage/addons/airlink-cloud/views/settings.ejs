@@ -59,7 +59,7 @@
 
 <div id="page-data" style="display:none" data-csrf-token="<%= req.csrfToken() %>"></div>
 
-<script nonce="<%- nonce %>" src="/javascript/admin/admin-airlink-cloud-settings.js"></script>
+<script nonce="<%- nonce %>" src="<%= assetUrl('/javascript/admin/admin-airlink-cloud-settings.js') %>"></script>
 
 <%- include('../../../../views/components/footer') %>
 <%- include('../../../../views/components/toast') %>

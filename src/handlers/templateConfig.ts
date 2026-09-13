@@ -1,4 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
+import * as fs from "fs";
+import * as path from "path";
 import * as timeouts from "../config/timeouts";
 import * as limits from "../config/limits";
 import * as auth from "../config/auth";
@@ -15,8 +17,6 @@ import { getConfig } from "../config";
  * Falls back to the env-configured URL protocol.
  */
 function resolveRequestProtocol(req: Request, envIsHttps: boolean): string {
-  // trust proxy is already set on the app — Express populates req.protocol
-  // from X-Forwarded-Proto when trust proxy is enabled.
   const proto = req.protocol;
   if (proto === "https" || proto === "http") return proto;
   return envIsHttps ? "https" : "http";
@@ -24,53 +24,64 @@ function resolveRequestProtocol(req: Request, envIsHttps: boolean): string {
 
 /**
  * Builds the full origin URL for the current request (e.g. "https://panel.example.com").
- * Uses ASSET_BASE_URL if set, otherwise reconstructs from the request.
  */
 function resolveOrigin(
   req: Request,
   envUrl: string,
   envIsHttps: boolean,
 ): string {
-  // If ASSET_BASE_URL is set, use it as the origin
-  // (it may be a full origin like "https://cdn.example.com" or a path prefix like "/assets")
   const assetBase = (req.app.get("assetBaseUrl") as string) || "";
   if (assetBase && /^https?:\/\//.test(assetBase)) {
     return assetBase.replace(/\/+$/, "");
   }
-  // Reconstruct from request headers (works behind proxies)
   const host = req.get("host") || new URL(envUrl).host;
   const protocol = resolveRequestProtocol(req, envIsHttps);
   return `${protocol}://${host}`;
+}
+
+// ── Vite manifest (loaded once at startup) ──────────────────────────────────
+// When Vite builds CSS/JS, it writes .vite/manifest.json mapping source paths
+// to content-hashed output paths. assetUrl() resolves through this manifest
+// so templates don't hardcode hash strings.
+let viteManifest: Record<string, { file: string; css?: string[] }> | null =
+  null;
+try {
+  const manifestPath = path.resolve(
+    __dirname,
+    "../../public/.vite/manifest.json",
+  );
+  if (fs.existsSync(manifestPath)) {
+    viteManifest = JSON.parse(fs.readFileSync(manifestPath, "utf-8"));
+  }
+} catch {
+  /* not built yet — dev mode */
 }
 
 /**
  * Makes all config constants available to EJS templates via res.locals.
  *
  * Usage in templates:
- *   <%= config.limits.DEFAULT_PAGE_SIZE %>
- *   <%= config.server.DEFAULT_SERVER_PORT %>
- *   <%= DEFAULT_PAGE_SIZE %>           (short alias)
- *   <%= DEFAULT_SERVER_PORT %>         (short alias)
- *   <%= panel.url %>                   (panel URL)
- *   <%= panel.assetBaseUrl %>          (CDN/asset base)
- *   <%= assetPath('/themes/dark.css') %>   → "/themes/dark.css" or "https://cdn.example.com/themes/dark.css"
- *   <%= assetUrl('/api/v2/ping') %>        → "https://panel.example.com/api/v2/ping"
- *   <%= panel.isHttps %>               (per-request, respects proxy headers)
+ *   <%= assetUrl('styles/tw.css') %>       → "/styles/tw.css" (dev)
+ *                                           → "https://cdn.example.com/styles/tw.css" (prod CDN)
+ *   <%= assetUrl('assets/css/panel.css') %> → "/assets/css/panel-abc123.css" (Vite hashed)
+ *   <%= assetUrl('javascript/shared/csrf.js') %> → "/javascript/shared/csrf.js"
+ *   <%= assetPath('styles/tw.css') %>       → alias for assetUrl (legacy compat)
+ *   <%= panel.isHttps %>                    → per-request, respects proxy headers
  */
 export function templateConfigMiddleware(
   req: Request,
   res: Response,
   next: NextFunction,
 ) {
-  // Panel runtime config (URL, asset base, etc.)
+  // Panel runtime config
   let panel: ReturnType<typeof getConfig>;
   try {
     panel = getConfig();
   } catch {
-    // getConfig may throw if env is malformed — degrade gracefully
     panel = {
       url: process.env.URL || "",
       assetBaseUrl: "",
+      assetUrl: "",
       cspEnabled: false,
       trustProxy: false,
       cookieDomain: "",
@@ -103,12 +114,10 @@ export function templateConfigMiddleware(
     } as ReturnType<typeof getConfig>;
   }
 
-  // Per-request protocol detection — respects X-Forwarded-Proto when trust proxy is on
+  // Per-request protocol detection
   const requestIsHttps = resolveRequestProtocol(req, panel.isHttps) === "https";
   const requestOrigin = resolveOrigin(req, panel.url, panel.isHttps);
 
-  // assetBaseUrl: full URL origin (e.g. "https://cdn.example.com") OR path prefix (e.g. "/assets")
-  // When empty, assets serve from the same origin as the panel.
   const assetBase = panel.assetBaseUrl || "";
 
   res.locals.panel = {
@@ -119,7 +128,7 @@ export function templateConfigMiddleware(
     cspEnabled: panel.cspEnabled,
     cookieDomain: panel.cookieDomain,
     cookieSecure: panel.cookieSecure,
-    isHttps: requestIsHttps, // per-request, not static
+    isHttps: requestIsHttps,
     isProduction: panel.isProduction,
     nodeEnv: panel.nodeEnv,
     logLevel: panel.logLevel,
@@ -138,28 +147,54 @@ export function templateConfigMiddleware(
     dbConnectTimeoutMs: panel.dbConnectTimeoutMs,
     port: panel.port,
     allowedOrigins: panel.allowedOrigins,
-    origin: requestOrigin, // full origin for this request
+    origin: requestOrigin,
   };
 
-  // ── Asset helpers ─────────────────────────────────────────────────────────
-  // assetPath('/themes/dark.css') → '/themes/dark.css' (no CDN)
-  //                              → 'https://cdn.example.com/themes/dark.css' (with CDN origin)
-  //                              → '/assets/themes/dark.css' (with path prefix)
-  const abUrl = assetBase; // may be empty, a path prefix, or a full origin
-  res.locals.assetPath = function assetPath(relativePath: string): string {
-    if (!abUrl) return relativePath;
-    // Full origin → prepend origin to relative path
-    if (/^https?:\/\//.test(abUrl)) {
-      return abUrl.replace(/\/+$/, "") + relativePath;
-    }
-    // Path prefix → prepend prefix (e.g. ASSET_BASE_URL="/assets" → "/assets/themes/...")
-    return abUrl.replace(/\/+$/, "") + relativePath;
-  };
+  // ── assetUrl() ───────────────────────────────────────────────────────────
+  // Single abstraction for all frontend asset URLs.
+  // Reads ASSET_URL env var — CDN origin for production, empty for dev.
+  // All assets live in public/ — assetUrl('styles/tw.css') → /styles/tw.css
+  //
+  //   Dev (ASSET_URL unset):
+  //     assetUrl('styles/tw.css')                      → /styles/tw.css
+  //     assetUrl('javascript/shared/csrf.js')           → /javascript/shared/csrf.js
+  //     assetUrl('assets/css/panel.css')                → /assets/css/panel.css
+  //
+  //   Prod (ASSET_URL=https://cdn.example.com):
+  //     assetUrl('styles/tw.css')                      → https://cdn.example.com/styles/tw.css
+  //     assetUrl('assets/css/panel-abc123.css')         → https://cdn.example.com/assets/css/panel-abc123.css
+  //
+  //   Vite manifest resolution:
+  //     assetUrl('assets/css/panel.css')                → /assets/css/panel-abc123.css (hashed)
+  //
+  const ASSET_URL = (process.env.ASSET_URL || "").replace(/\/+$/, "");
 
-  // assetUrl('/api/v2/ping') → 'https://panel.example.com/api/v2/ping'
   res.locals.assetUrl = function assetUrl(relativePath: string): string {
-    return requestOrigin + relativePath;
+    // Normalize: strip leading slash so we control the path
+    const clean = relativePath.replace(/^\/+/, "");
+
+    // Vite manifest resolution — source path → hashed output path
+    if (viteManifest) {
+      // Try multiple key formats (manifest may use "public/styles/tw.css" or "styles/tw.css")
+      const candidates = [
+        clean, // "styles/tw.css"
+        "public/" + clean, // "public/styles/tw.css"
+        clean.replace(/^assets\//, ""), // "css/panel.css" from "assets/css/panel.css"
+      ];
+      for (const key of candidates) {
+        const entry = viteManifest[key];
+        if (entry) {
+          return ASSET_URL ? ASSET_URL + "/" + entry.file : "/" + entry.file;
+        }
+      }
+    }
+
+    // Normal resolution — prepend ASSET_URL if configured
+    return ASSET_URL ? ASSET_URL + "/" + clean : "/" + clean;
   };
+
+  // Legacy alias
+  res.locals.assetPath = res.locals.assetUrl;
 
   // Full config namespaces
   res.locals.config = {
@@ -173,7 +208,7 @@ export function templateConfigMiddleware(
     ui,
   };
 
-  // ── Short aliases for most-used values ───────────────────────────────────
+  // ── Short aliases ────────────────────────────────────────────────────────
   res.locals.DEFAULT_PAGE_SIZE = limits.DEFAULT_PAGE_SIZE;
   res.locals.ACTIVITY_PAGE_SIZE = limits.ACTIVITY_PAGE_SIZE;
   res.locals.DASHBOARD_PER_PAGE = limits.DASHBOARD_PER_PAGE;

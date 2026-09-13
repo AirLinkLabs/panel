@@ -45,15 +45,10 @@ export type ImagesMinAggregateOutputType = {
   authorName: string | null
   createdAt: Date | null
   meta: string | null
-  dockerImages: string | null
   startup: string | null
   stop: string | null
   startup_done: string | null
-  config_files: string | null
   info: string | null
-  scripts: string | null
-  variables: string | null
-  portRequirements: string | null
   status: string | null
   createdById: number | null
   rejectionReason: string | null
@@ -68,15 +63,10 @@ export type ImagesMaxAggregateOutputType = {
   authorName: string | null
   createdAt: Date | null
   meta: string | null
-  dockerImages: string | null
   startup: string | null
   stop: string | null
   startup_done: string | null
-  config_files: string | null
   info: string | null
-  scripts: string | null
-  variables: string | null
-  portRequirements: string | null
   status: string | null
   createdById: number | null
   rejectionReason: string | null
@@ -126,15 +116,10 @@ export type ImagesMinAggregateInputType = {
   authorName?: true
   createdAt?: true
   meta?: true
-  dockerImages?: true
   startup?: true
   stop?: true
   startup_done?: true
-  config_files?: true
   info?: true
-  scripts?: true
-  variables?: true
-  portRequirements?: true
   status?: true
   createdById?: true
   rejectionReason?: true
@@ -149,15 +134,10 @@ export type ImagesMaxAggregateInputType = {
   authorName?: true
   createdAt?: true
   meta?: true
-  dockerImages?: true
   startup?: true
   stop?: true
   startup_done?: true
-  config_files?: true
   info?: true
-  scripts?: true
-  variables?: true
-  portRequirements?: true
   status?: true
   createdById?: true
   rejectionReason?: true
@@ -282,15 +262,15 @@ export type ImagesGroupByOutputType = {
   authorName: string | null
   createdAt: Date
   meta: string | null
-  dockerImages: string | null
+  dockerImages: runtime.JsonValue | null
   startup: string | null
   stop: string | null
   startup_done: string | null
-  config_files: string | null
+  config_files: runtime.JsonValue | null
   info: string | null
-  scripts: string | null
-  variables: string | null
-  portRequirements: string
+  scripts: runtime.JsonValue | null
+  variables: runtime.JsonValue | null
+  portRequirements: runtime.JsonValue
   status: string
   createdById: number | null
   rejectionReason: string | null
@@ -328,15 +308,15 @@ export type ImagesWhereInput = {
   authorName?: Prisma.StringNullableFilter<"Images"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Images"> | Date | string
   meta?: Prisma.StringNullableFilter<"Images"> | string | null
-  dockerImages?: Prisma.StringNullableFilter<"Images"> | string | null
+  dockerImages?: Prisma.JsonNullableFilter<"Images">
   startup?: Prisma.StringNullableFilter<"Images"> | string | null
   stop?: Prisma.StringNullableFilter<"Images"> | string | null
   startup_done?: Prisma.StringNullableFilter<"Images"> | string | null
-  config_files?: Prisma.StringNullableFilter<"Images"> | string | null
+  config_files?: Prisma.JsonNullableFilter<"Images">
   info?: Prisma.StringNullableFilter<"Images"> | string | null
-  scripts?: Prisma.StringNullableFilter<"Images"> | string | null
-  variables?: Prisma.StringNullableFilter<"Images"> | string | null
-  portRequirements?: Prisma.StringFilter<"Images"> | string
+  scripts?: Prisma.JsonNullableFilter<"Images">
+  variables?: Prisma.JsonNullableFilter<"Images">
+  portRequirements?: Prisma.JsonFilter<"Images">
   status?: Prisma.StringFilter<"Images"> | string
   createdById?: Prisma.IntNullableFilter<"Images"> | number | null
   rejectionReason?: Prisma.StringNullableFilter<"Images"> | string | null
@@ -379,15 +359,15 @@ export type ImagesWhereUniqueInput = Prisma.AtLeast<{
   authorName?: Prisma.StringNullableFilter<"Images"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Images"> | Date | string
   meta?: Prisma.StringNullableFilter<"Images"> | string | null
-  dockerImages?: Prisma.StringNullableFilter<"Images"> | string | null
+  dockerImages?: Prisma.JsonNullableFilter<"Images">
   startup?: Prisma.StringNullableFilter<"Images"> | string | null
   stop?: Prisma.StringNullableFilter<"Images"> | string | null
   startup_done?: Prisma.StringNullableFilter<"Images"> | string | null
-  config_files?: Prisma.StringNullableFilter<"Images"> | string | null
+  config_files?: Prisma.JsonNullableFilter<"Images">
   info?: Prisma.StringNullableFilter<"Images"> | string | null
-  scripts?: Prisma.StringNullableFilter<"Images"> | string | null
-  variables?: Prisma.StringNullableFilter<"Images"> | string | null
-  portRequirements?: Prisma.StringFilter<"Images"> | string
+  scripts?: Prisma.JsonNullableFilter<"Images">
+  variables?: Prisma.JsonNullableFilter<"Images">
+  portRequirements?: Prisma.JsonFilter<"Images">
   status?: Prisma.StringFilter<"Images"> | string
   createdById?: Prisma.IntNullableFilter<"Images"> | number | null
   rejectionReason?: Prisma.StringNullableFilter<"Images"> | string | null
@@ -434,15 +414,15 @@ export type ImagesScalarWhereWithAggregatesInput = {
   authorName?: Prisma.StringNullableWithAggregatesFilter<"Images"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Images"> | Date | string
   meta?: Prisma.StringNullableWithAggregatesFilter<"Images"> | string | null
-  dockerImages?: Prisma.StringNullableWithAggregatesFilter<"Images"> | string | null
+  dockerImages?: Prisma.JsonNullableWithAggregatesFilter<"Images">
   startup?: Prisma.StringNullableWithAggregatesFilter<"Images"> | string | null
   stop?: Prisma.StringNullableWithAggregatesFilter<"Images"> | string | null
   startup_done?: Prisma.StringNullableWithAggregatesFilter<"Images"> | string | null
-  config_files?: Prisma.StringNullableWithAggregatesFilter<"Images"> | string | null
+  config_files?: Prisma.JsonNullableWithAggregatesFilter<"Images">
   info?: Prisma.StringNullableWithAggregatesFilter<"Images"> | string | null
-  scripts?: Prisma.StringNullableWithAggregatesFilter<"Images"> | string | null
-  variables?: Prisma.StringNullableWithAggregatesFilter<"Images"> | string | null
-  portRequirements?: Prisma.StringWithAggregatesFilter<"Images"> | string
+  scripts?: Prisma.JsonNullableWithAggregatesFilter<"Images">
+  variables?: Prisma.JsonNullableWithAggregatesFilter<"Images">
+  portRequirements?: Prisma.JsonWithAggregatesFilter<"Images">
   status?: Prisma.StringWithAggregatesFilter<"Images"> | string
   createdById?: Prisma.IntNullableWithAggregatesFilter<"Images"> | number | null
   rejectionReason?: Prisma.StringNullableWithAggregatesFilter<"Images"> | string | null
@@ -456,15 +436,15 @@ export type ImagesCreateInput = {
   authorName?: string | null
   createdAt?: Date | string
   meta?: string | null
-  dockerImages?: string | null
+  dockerImages?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   startup?: string | null
   stop?: string | null
   startup_done?: string | null
-  config_files?: string | null
+  config_files?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   info?: string | null
-  scripts?: string | null
-  variables?: string | null
-  portRequirements?: string
+  scripts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  portRequirements?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: string
   createdById?: number | null
   rejectionReason?: string | null
@@ -480,15 +460,15 @@ export type ImagesUncheckedCreateInput = {
   authorName?: string | null
   createdAt?: Date | string
   meta?: string | null
-  dockerImages?: string | null
+  dockerImages?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   startup?: string | null
   stop?: string | null
   startup_done?: string | null
-  config_files?: string | null
+  config_files?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   info?: string | null
-  scripts?: string | null
-  variables?: string | null
-  portRequirements?: string
+  scripts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  portRequirements?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: string
   createdById?: number | null
   rejectionReason?: string | null
@@ -503,15 +483,15 @@ export type ImagesUpdateInput = {
   authorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   meta?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dockerImages?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dockerImages?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   startup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stop?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startup_done?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  config_files?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  config_files?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   info?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  scripts?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  variables?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  portRequirements?: Prisma.StringFieldUpdateOperationsInput | string
+  scripts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  portRequirements?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -527,15 +507,15 @@ export type ImagesUncheckedUpdateInput = {
   authorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   meta?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dockerImages?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dockerImages?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   startup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stop?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startup_done?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  config_files?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  config_files?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   info?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  scripts?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  variables?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  portRequirements?: Prisma.StringFieldUpdateOperationsInput | string
+  scripts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  portRequirements?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -551,15 +531,15 @@ export type ImagesCreateManyInput = {
   authorName?: string | null
   createdAt?: Date | string
   meta?: string | null
-  dockerImages?: string | null
+  dockerImages?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   startup?: string | null
   stop?: string | null
   startup_done?: string | null
-  config_files?: string | null
+  config_files?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   info?: string | null
-  scripts?: string | null
-  variables?: string | null
-  portRequirements?: string
+  scripts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  portRequirements?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: string
   createdById?: number | null
   rejectionReason?: string | null
@@ -573,15 +553,15 @@ export type ImagesUpdateManyMutationInput = {
   authorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   meta?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dockerImages?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dockerImages?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   startup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stop?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startup_done?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  config_files?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  config_files?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   info?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  scripts?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  variables?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  portRequirements?: Prisma.StringFieldUpdateOperationsInput | string
+  scripts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  portRequirements?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -596,15 +576,15 @@ export type ImagesUncheckedUpdateManyInput = {
   authorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   meta?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dockerImages?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dockerImages?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   startup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stop?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startup_done?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  config_files?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  config_files?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   info?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  scripts?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  variables?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  portRequirements?: Prisma.StringFieldUpdateOperationsInput | string
+  scripts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  portRequirements?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -652,15 +632,10 @@ export type ImagesMaxOrderByAggregateInput = {
   authorName?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   meta?: Prisma.SortOrder
-  dockerImages?: Prisma.SortOrder
   startup?: Prisma.SortOrder
   stop?: Prisma.SortOrder
   startup_done?: Prisma.SortOrder
-  config_files?: Prisma.SortOrder
   info?: Prisma.SortOrder
-  scripts?: Prisma.SortOrder
-  variables?: Prisma.SortOrder
-  portRequirements?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   rejectionReason?: Prisma.SortOrder
@@ -675,15 +650,10 @@ export type ImagesMinOrderByAggregateInput = {
   authorName?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   meta?: Prisma.SortOrder
-  dockerImages?: Prisma.SortOrder
   startup?: Prisma.SortOrder
   stop?: Prisma.SortOrder
   startup_done?: Prisma.SortOrder
-  config_files?: Prisma.SortOrder
   info?: Prisma.SortOrder
-  scripts?: Prisma.SortOrder
-  variables?: Prisma.SortOrder
-  portRequirements?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   rejectionReason?: Prisma.SortOrder
@@ -716,15 +686,15 @@ export type ImagesCreateWithoutServersInput = {
   authorName?: string | null
   createdAt?: Date | string
   meta?: string | null
-  dockerImages?: string | null
+  dockerImages?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   startup?: string | null
   stop?: string | null
   startup_done?: string | null
-  config_files?: string | null
+  config_files?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   info?: string | null
-  scripts?: string | null
-  variables?: string | null
-  portRequirements?: string
+  scripts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  portRequirements?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: string
   createdById?: number | null
   rejectionReason?: string | null
@@ -739,15 +709,15 @@ export type ImagesUncheckedCreateWithoutServersInput = {
   authorName?: string | null
   createdAt?: Date | string
   meta?: string | null
-  dockerImages?: string | null
+  dockerImages?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   startup?: string | null
   stop?: string | null
   startup_done?: string | null
-  config_files?: string | null
+  config_files?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   info?: string | null
-  scripts?: string | null
-  variables?: string | null
-  portRequirements?: string
+  scripts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  portRequirements?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: string
   createdById?: number | null
   rejectionReason?: string | null
@@ -777,15 +747,15 @@ export type ImagesUpdateWithoutServersInput = {
   authorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   meta?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dockerImages?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dockerImages?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   startup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stop?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startup_done?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  config_files?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  config_files?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   info?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  scripts?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  variables?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  portRequirements?: Prisma.StringFieldUpdateOperationsInput | string
+  scripts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  portRequirements?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -800,15 +770,15 @@ export type ImagesUncheckedUpdateWithoutServersInput = {
   authorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   meta?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dockerImages?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dockerImages?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   startup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stop?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startup_done?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  config_files?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  config_files?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   info?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  scripts?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  variables?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  portRequirements?: Prisma.StringFieldUpdateOperationsInput | string
+  scripts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  portRequirements?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -961,15 +931,15 @@ export type $ImagesPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     authorName: string | null
     createdAt: Date
     meta: string | null
-    dockerImages: string | null
+    dockerImages: runtime.JsonValue | null
     startup: string | null
     stop: string | null
     startup_done: string | null
-    config_files: string | null
+    config_files: runtime.JsonValue | null
     info: string | null
-    scripts: string | null
-    variables: string | null
-    portRequirements: string
+    scripts: runtime.JsonValue | null
+    variables: runtime.JsonValue | null
+    portRequirements: runtime.JsonValue
     status: string
     createdById: number | null
     rejectionReason: string | null
@@ -1405,15 +1375,15 @@ export interface ImagesFieldRefs {
   readonly authorName: Prisma.FieldRef<"Images", 'String'>
   readonly createdAt: Prisma.FieldRef<"Images", 'DateTime'>
   readonly meta: Prisma.FieldRef<"Images", 'String'>
-  readonly dockerImages: Prisma.FieldRef<"Images", 'String'>
+  readonly dockerImages: Prisma.FieldRef<"Images", 'Json'>
   readonly startup: Prisma.FieldRef<"Images", 'String'>
   readonly stop: Prisma.FieldRef<"Images", 'String'>
   readonly startup_done: Prisma.FieldRef<"Images", 'String'>
-  readonly config_files: Prisma.FieldRef<"Images", 'String'>
+  readonly config_files: Prisma.FieldRef<"Images", 'Json'>
   readonly info: Prisma.FieldRef<"Images", 'String'>
-  readonly scripts: Prisma.FieldRef<"Images", 'String'>
-  readonly variables: Prisma.FieldRef<"Images", 'String'>
-  readonly portRequirements: Prisma.FieldRef<"Images", 'String'>
+  readonly scripts: Prisma.FieldRef<"Images", 'Json'>
+  readonly variables: Prisma.FieldRef<"Images", 'Json'>
+  readonly portRequirements: Prisma.FieldRef<"Images", 'Json'>
   readonly status: Prisma.FieldRef<"Images", 'String'>
   readonly createdById: Prisma.FieldRef<"Images", 'Int'>
   readonly rejectionReason: Prisma.FieldRef<"Images", 'String'>

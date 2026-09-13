@@ -227,10 +227,10 @@
 </main>
 
 
-<script nonce="<%- nonce %>" src="/monaco/vs/loader.js"></script>
+<script nonce="<%- nonce %>" src="<%= assetUrl('/monaco/vs/loader.js') %>"></script>
 <script type="application/json" id="editor-file-data"><%- JSON.stringify({ content: file.content || '', tooLarge: fileContentTooLarge, invalidUtf8: fileContentInvalidUtf8 }).replace(/<\//g, '<\\/').replace(/&/g, '&amp;').replace(/"/g, '&quot;') %></script>
 <script type="module" nonce="<%- nonce %>">
-  import { mount } from '<%= assetPath('/javascript/islands/file-editor.js') %>';
+  import { mount } from '<%= assetUrl('/javascript/islands/file-editor.js') %>';
   const root = document.getElementById('file-editor-root');
   if (root) mount(root, JSON.parse(root.dataset.config));
 </script>

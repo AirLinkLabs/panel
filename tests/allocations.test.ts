@@ -3,7 +3,7 @@ import { parseLegacyPool } from "../src/handlers/utils/server/allocations";
 
 describe("parseLegacyPool", () => {
   it("parses valid JSON array of numbers", () => {
-    expect(parseLegacyPool("[25565,25566,25567]")).toEqual([
+    expect(parseLegacyPool([25565, 25566, 25567])).toEqual([
       25565, 25566, 25567,
     ]);
   });
@@ -29,7 +29,9 @@ describe("parseLegacyPool", () => {
   });
 
   it("filters out non-number values", () => {
-    expect(parseLegacyPool('[25565,"bad",null,25566]')).toEqual([25565, 25566]);
+    expect(parseLegacyPool([25565, "bad", null, 25566])).toEqual([
+      25565, 25566,
+    ]);
   });
 
   it("handles empty array", () => {

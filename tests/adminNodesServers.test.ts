@@ -74,11 +74,15 @@ vi.mock("../src/handlers/utils/server/ports", () => ({
     .mockReturnValue([
       { name: "Game", internalPort: 25565, externalPort: 30001, primary: true },
     ]),
-  serializeServerPorts: vi
-    .fn()
-    .mockReturnValue(
-      '[{"name":"Game","internalPort":25565,"externalPort":30001,"Port":"30001:25565","primary":true}]',
-    ),
+  serializeServerPorts: vi.fn().mockReturnValue([
+    {
+      name: "Game",
+      internalPort: 25565,
+      externalPort: 30001,
+      Port: "30001:25565",
+      primary: true,
+    },
+  ]),
   validatePortAssignments: vi.fn().mockReturnValue(null),
   getUsedExternalPorts: vi.fn().mockReturnValue([]),
   getPrimaryExternalPort: vi.fn().mockReturnValue(30001),
@@ -121,7 +125,7 @@ const adminUser = {
   id: 1,
   isAdmin: true,
   totpEnabled: true,
-  permissions: "[]",
+  permissions: [],
   email: "a@b.c",
 };
 
@@ -449,12 +453,10 @@ describe("admin servers: resource bounds", () => {
 describe("admin server create: port handling uses canonical helpers", () => {
   const imageFixture = {
     id: 1,
-    portRequirements: "[]",
-    dockerImages: JSON.stringify([{ alpine: "pine/image:latest" }]),
+    portRequirements: [],
+    dockerImages: [{ alpine: "pine/image:latest" }],
     startup: "./start.sh",
-    variables: JSON.stringify([
-      { env_variable: "SRV_PORT", default_value: "25565" },
-    ]),
+    variables: [{ env_variable: "SRV_PORT", default_value: "25565" }],
   };
 
   it("round-trips the submitted port through parseServerPorts + serializeServerPorts", async () => {
@@ -468,7 +470,7 @@ describe("admin server create: port handling uses canonical helpers", () => {
       UUID: "srv-new",
       nodeId: 1,
       Queued: true,
-      Variables: JSON.stringify([]),
+      Variables: [],
     } as any);
     mockPrisma.$executeRaw.mockResolvedValue([]);
 

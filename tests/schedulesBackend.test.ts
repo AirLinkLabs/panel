@@ -145,7 +145,7 @@ describe("schedules manual run", () => {
     const task = {
       id: 1,
       action: "command",
-      payload: JSON.stringify({ command: "echo hi" }),
+      payload: { command: "echo hi" },
       timeOffset: 0,
     };
     const sched = scheduleFixture({ tasks: [task] });
@@ -191,7 +191,7 @@ describe("schedules manual run", () => {
     const task = {
       id: 1,
       action: "command",
-      payload: JSON.stringify({ command: "echo hi" }),
+      payload: { command: "echo hi" },
       timeOffset: 0,
     };
     const sched = scheduleFixture({ tasks: [task] });
@@ -293,7 +293,7 @@ describe("scheduled backup recording (runSchedule)", () => {
         {
           id: 2,
           action: "backup",
-          payload: JSON.stringify(payload),
+          payload: payload,
           timeOffset: 0,
         },
       ],

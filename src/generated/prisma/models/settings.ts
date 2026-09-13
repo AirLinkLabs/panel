@@ -100,7 +100,6 @@ export type SettingsMinAggregateOutputType = {
   virusTotalApiKey: string | null
   rateLimitEnabled: boolean | null
   rateLimitRpm: number | null
-  bannedIps: string | null
   allowUserCreateServer: boolean | null
   allowUserDeleteServer: boolean | null
   defaultServerLimit: number | null
@@ -176,7 +175,6 @@ export type SettingsMaxAggregateOutputType = {
   virusTotalApiKey: string | null
   rateLimitEnabled: boolean | null
   rateLimitRpm: number | null
-  bannedIps: string | null
   allowUserCreateServer: boolean | null
   allowUserDeleteServer: boolean | null
   defaultServerLimit: number | null
@@ -386,7 +384,6 @@ export type SettingsMinAggregateInputType = {
   virusTotalApiKey?: true
   rateLimitEnabled?: true
   rateLimitRpm?: true
-  bannedIps?: true
   allowUserCreateServer?: true
   allowUserDeleteServer?: true
   defaultServerLimit?: true
@@ -462,7 +459,6 @@ export type SettingsMaxAggregateInputType = {
   virusTotalApiKey?: true
   rateLimitEnabled?: true
   rateLimitRpm?: true
-  bannedIps?: true
   allowUserCreateServer?: true
   allowUserDeleteServer?: true
   defaultServerLimit?: true
@@ -701,7 +697,7 @@ export type SettingsGroupByOutputType = {
   virusTotalApiKey: string | null
   rateLimitEnabled: boolean
   rateLimitRpm: number
-  bannedIps: string
+  bannedIps: runtime.JsonValue
   allowUserCreateServer: boolean
   allowUserDeleteServer: boolean
   defaultServerLimit: number
@@ -800,7 +796,7 @@ export type settingsWhereInput = {
   virusTotalApiKey?: Prisma.StringNullableFilter<"settings"> | string | null
   rateLimitEnabled?: Prisma.BoolFilter<"settings"> | boolean
   rateLimitRpm?: Prisma.IntFilter<"settings"> | number
-  bannedIps?: Prisma.StringFilter<"settings"> | string
+  bannedIps?: Prisma.JsonFilter<"settings">
   allowUserCreateServer?: Prisma.BoolFilter<"settings"> | boolean
   allowUserDeleteServer?: Prisma.BoolFilter<"settings"> | boolean
   defaultServerLimit?: Prisma.IntFilter<"settings"> | number
@@ -955,7 +951,7 @@ export type settingsWhereUniqueInput = Prisma.AtLeast<{
   virusTotalApiKey?: Prisma.StringNullableFilter<"settings"> | string | null
   rateLimitEnabled?: Prisma.BoolFilter<"settings"> | boolean
   rateLimitRpm?: Prisma.IntFilter<"settings"> | number
-  bannedIps?: Prisma.StringFilter<"settings"> | string
+  bannedIps?: Prisma.JsonFilter<"settings">
   allowUserCreateServer?: Prisma.BoolFilter<"settings"> | boolean
   allowUserDeleteServer?: Prisma.BoolFilter<"settings"> | boolean
   defaultServerLimit?: Prisma.IntFilter<"settings"> | number
@@ -1115,7 +1111,7 @@ export type settingsScalarWhereWithAggregatesInput = {
   virusTotalApiKey?: Prisma.StringNullableWithAggregatesFilter<"settings"> | string | null
   rateLimitEnabled?: Prisma.BoolWithAggregatesFilter<"settings"> | boolean
   rateLimitRpm?: Prisma.IntWithAggregatesFilter<"settings"> | number
-  bannedIps?: Prisma.StringWithAggregatesFilter<"settings"> | string
+  bannedIps?: Prisma.JsonWithAggregatesFilter<"settings">
   allowUserCreateServer?: Prisma.BoolWithAggregatesFilter<"settings"> | boolean
   allowUserDeleteServer?: Prisma.BoolWithAggregatesFilter<"settings"> | boolean
   defaultServerLimit?: Prisma.IntWithAggregatesFilter<"settings"> | number
@@ -1190,7 +1186,7 @@ export type settingsCreateInput = {
   virusTotalApiKey?: string | null
   rateLimitEnabled?: boolean
   rateLimitRpm?: number
-  bannedIps?: string
+  bannedIps?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   allowUserCreateServer?: boolean
   allowUserDeleteServer?: boolean
   defaultServerLimit?: number
@@ -1266,7 +1262,7 @@ export type settingsUncheckedCreateInput = {
   virusTotalApiKey?: string | null
   rateLimitEnabled?: boolean
   rateLimitRpm?: number
-  bannedIps?: string
+  bannedIps?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   allowUserCreateServer?: boolean
   allowUserDeleteServer?: boolean
   defaultServerLimit?: number
@@ -1341,7 +1337,7 @@ export type settingsUpdateInput = {
   virusTotalApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rateLimitEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   rateLimitRpm?: Prisma.IntFieldUpdateOperationsInput | number
-  bannedIps?: Prisma.StringFieldUpdateOperationsInput | string
+  bannedIps?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   allowUserCreateServer?: Prisma.BoolFieldUpdateOperationsInput | boolean
   allowUserDeleteServer?: Prisma.BoolFieldUpdateOperationsInput | boolean
   defaultServerLimit?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1417,7 +1413,7 @@ export type settingsUncheckedUpdateInput = {
   virusTotalApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rateLimitEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   rateLimitRpm?: Prisma.IntFieldUpdateOperationsInput | number
-  bannedIps?: Prisma.StringFieldUpdateOperationsInput | string
+  bannedIps?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   allowUserCreateServer?: Prisma.BoolFieldUpdateOperationsInput | boolean
   allowUserDeleteServer?: Prisma.BoolFieldUpdateOperationsInput | boolean
   defaultServerLimit?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1493,7 +1489,7 @@ export type settingsCreateManyInput = {
   virusTotalApiKey?: string | null
   rateLimitEnabled?: boolean
   rateLimitRpm?: number
-  bannedIps?: string
+  bannedIps?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   allowUserCreateServer?: boolean
   allowUserDeleteServer?: boolean
   defaultServerLimit?: number
@@ -1568,7 +1564,7 @@ export type settingsUpdateManyMutationInput = {
   virusTotalApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rateLimitEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   rateLimitRpm?: Prisma.IntFieldUpdateOperationsInput | number
-  bannedIps?: Prisma.StringFieldUpdateOperationsInput | string
+  bannedIps?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   allowUserCreateServer?: Prisma.BoolFieldUpdateOperationsInput | boolean
   allowUserDeleteServer?: Prisma.BoolFieldUpdateOperationsInput | boolean
   defaultServerLimit?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1644,7 +1640,7 @@ export type settingsUncheckedUpdateManyInput = {
   virusTotalApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rateLimitEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   rateLimitRpm?: Prisma.IntFieldUpdateOperationsInput | number
-  bannedIps?: Prisma.StringFieldUpdateOperationsInput | string
+  bannedIps?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   allowUserCreateServer?: Prisma.BoolFieldUpdateOperationsInput | boolean
   allowUserDeleteServer?: Prisma.BoolFieldUpdateOperationsInput | boolean
   defaultServerLimit?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1824,7 +1820,6 @@ export type settingsMaxOrderByAggregateInput = {
   virusTotalApiKey?: Prisma.SortOrder
   rateLimitEnabled?: Prisma.SortOrder
   rateLimitRpm?: Prisma.SortOrder
-  bannedIps?: Prisma.SortOrder
   allowUserCreateServer?: Prisma.SortOrder
   allowUserDeleteServer?: Prisma.SortOrder
   defaultServerLimit?: Prisma.SortOrder
@@ -1900,7 +1895,6 @@ export type settingsMinOrderByAggregateInput = {
   virusTotalApiKey?: Prisma.SortOrder
   rateLimitEnabled?: Prisma.SortOrder
   rateLimitRpm?: Prisma.SortOrder
-  bannedIps?: Prisma.SortOrder
   allowUserCreateServer?: Prisma.SortOrder
   allowUserDeleteServer?: Prisma.SortOrder
   defaultServerLimit?: Prisma.SortOrder
@@ -2315,7 +2309,7 @@ export type $settingsPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     virusTotalApiKey: string | null
     rateLimitEnabled: boolean
     rateLimitRpm: number
-    bannedIps: string
+    bannedIps: runtime.JsonValue
     allowUserCreateServer: boolean
     allowUserDeleteServer: boolean
     defaultServerLimit: number
@@ -2811,7 +2805,7 @@ export interface settingsFieldRefs {
   readonly virusTotalApiKey: Prisma.FieldRef<"settings", 'String'>
   readonly rateLimitEnabled: Prisma.FieldRef<"settings", 'Boolean'>
   readonly rateLimitRpm: Prisma.FieldRef<"settings", 'Int'>
-  readonly bannedIps: Prisma.FieldRef<"settings", 'String'>
+  readonly bannedIps: Prisma.FieldRef<"settings", 'Json'>
   readonly allowUserCreateServer: Prisma.FieldRef<"settings", 'Boolean'>
   readonly allowUserDeleteServer: Prisma.FieldRef<"settings", 'Boolean'>
   readonly defaultServerLimit: Prisma.FieldRef<"settings", 'Int'>

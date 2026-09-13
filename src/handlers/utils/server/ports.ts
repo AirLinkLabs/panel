@@ -26,14 +26,14 @@ export function isValidPort(port: number): boolean {
 }
 
 export function parseImagePortRequirements(
-  raw: string | null | undefined,
+  raw: unknown,
 ): ImagePortRequirement[] {
   try {
-    const parsed = JSON.parse(raw || '[]');
-    if (!Array.isArray(parsed)) {
+    const arr = Array.isArray(raw) ? raw : [];
+    if (!arr.length) {
       return [];
     }
-    return parsed
+    return arr
       .map((port, index) => ({
         name: String(port?.name || `Port ${index + 1}`),
         internalPort: Number(port?.internalPort || port?.port),
@@ -45,22 +45,20 @@ export function parseImagePortRequirements(
 }
 
 function isServerPortRecord(value: unknown): value is ServerPortRecord {
-  return typeof value === 'object' && value !== null;
+  return typeof value === "object" && value !== null;
 }
 
-export function parseServerPorts(
-  raw: string | null | undefined,
-): ServerPortAssignment[] {
+export function parseServerPorts(raw: unknown): ServerPortAssignment[] {
   try {
-    const parsed = JSON.parse(raw || '[]');
-    if (!Array.isArray(parsed)) {
+    const arr = Array.isArray(raw) ? raw : [];
+    if (!arr.length) {
       return [];
     }
-    return parsed
+    return arr
       .filter(isServerPortRecord)
       .map((port, index) => {
         const legacyParts =
-          typeof port.Port === 'string' ? port.Port.split(':') : [];
+          typeof port.Port === "string" ? port.Port.split(":") : [];
         const externalPort = Number(
           port.externalPort ?? legacyParts[0] ?? port.Port,
         );
@@ -93,32 +91,30 @@ export function normalizeServerPorts(raw: unknown): ServerPortAssignment[] {
   }));
 }
 
-export function serializeServerPorts(ports: ServerPortAssignment[]): string {
-  return JSON.stringify(
-    ports.map((port, index) => ({
-      name: port.name || `Port ${index + 1}`,
-      internalPort: port.internalPort,
-      externalPort: port.externalPort,
-      Port: `${port.externalPort}:${port.internalPort}`,
-      primary: index === 0 ? true : Boolean(port.primary),
-    })),
-  );
+export function serializeServerPorts(
+  ports: ServerPortAssignment[],
+): Record<string, unknown>[] {
+  return ports.map((port, index) => ({
+    name: port.name || `Port ${index + 1}`,
+    internalPort: port.internalPort,
+    externalPort: port.externalPort,
+    Port: `${port.externalPort}:${port.internalPort}`,
+    primary: index === 0 ? true : Boolean(port.primary),
+  }));
 }
 
-export function portsToDaemonString(raw: string | null | undefined): string {
+export function portsToDaemonString(raw: unknown): string {
   return parseServerPorts(raw)
     .map((port) => `${port.externalPort}:${port.internalPort}`)
-    .join(',');
+    .join(",");
 }
 
-export function getPrimaryExternalPort(
-  raw: string | null | undefined,
-): number | undefined {
+export function getPrimaryExternalPort(raw: unknown): number | undefined {
   const ports = parseServerPorts(raw);
   return (ports.find((port) => port.primary) ?? ports[0])?.externalPort;
 }
 
-export function getUsedExternalPorts(servers: { Ports: string }[]): number[] {
+export function getUsedExternalPorts(servers: { Ports: unknown }[]): number[] {
   return servers.flatMap((server) =>
     parseServerPorts(server.Ports).map((port) => port.externalPort),
   );
@@ -159,7 +155,7 @@ export function validatePortAssignments(
   const seen = new Set<number>();
   for (const port of ports) {
     if (!port.name.trim()) {
-      return 'Each port needs a name.';
+      return "Each port needs a name.";
     }
     if (!isValidPort(port.internalPort)) {
       return `Internal port ${port.internalPort} is invalid.`;

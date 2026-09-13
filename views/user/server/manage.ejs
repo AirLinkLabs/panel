@@ -1,4 +1,4 @@
-<%- include('../../components/header', { title: t('console'), extraStyles: [assetPath('/vendor/@xterm/xterm/css/xterm.css')] }) %>
+<%- include('../../components/header', { title: t('console'), extraStyles: [assetUrl('/vendor/@xterm/xterm/css/xterm.css')] }) %>
 <%- include('../../components/server-features') %>
 
 <style>
@@ -422,7 +422,7 @@ function retryDaemonConnection() { window.location.reload(); }
   if (!root) return;
   try {
     const config = JSON.parse(root.dataset.config || '{}');
-    const { mount } = await import('<%= assetPath('/javascript/islands/server-console.js') %>');
+    const { mount } = await import('<%= assetUrl('/javascript/islands/server-console.js') %>');
     const controller = await mount(root, config);
     window._manageCleanup = controller && controller.teardown;
   } catch (error) {

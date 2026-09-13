@@ -56,7 +56,6 @@ export type UsersMinAggregateOutputType = {
   isAdmin: boolean | null
   description: string | null
   avatar: string | null
-  permissions: string | null
   serverLimit: number | null
   maxMemory: number | null
   maxCpu: number | null
@@ -82,7 +81,6 @@ export type UsersMaxAggregateOutputType = {
   isAdmin: boolean | null
   description: string | null
   avatar: string | null
-  permissions: string | null
   serverLimit: number | null
   maxMemory: number | null
   maxCpu: number | null
@@ -158,7 +156,6 @@ export type UsersMinAggregateInputType = {
   isAdmin?: true
   description?: true
   avatar?: true
-  permissions?: true
   serverLimit?: true
   maxMemory?: true
   maxCpu?: true
@@ -184,7 +181,6 @@ export type UsersMaxAggregateInputType = {
   isAdmin?: true
   description?: true
   avatar?: true
-  permissions?: true
   serverLimit?: true
   maxMemory?: true
   maxCpu?: true
@@ -323,7 +319,7 @@ export type UsersGroupByOutputType = {
   isAdmin: boolean
   description: string | null
   avatar: string | null
-  permissions: string | null
+  permissions: runtime.JsonValue | null
   serverLimit: number | null
   maxMemory: number | null
   maxCpu: number | null
@@ -372,7 +368,7 @@ export type UsersWhereInput = {
   isAdmin?: Prisma.BoolFilter<"Users"> | boolean
   description?: Prisma.StringNullableFilter<"Users"> | string | null
   avatar?: Prisma.StringNullableFilter<"Users"> | string | null
-  permissions?: Prisma.StringNullableFilter<"Users"> | string | null
+  permissions?: Prisma.JsonNullableFilter<"Users">
   serverLimit?: Prisma.IntNullableFilter<"Users"> | number | null
   maxMemory?: Prisma.IntNullableFilter<"Users"> | number | null
   maxCpu?: Prisma.IntNullableFilter<"Users"> | number | null
@@ -447,7 +443,7 @@ export type UsersWhereUniqueInput = Prisma.AtLeast<{
   isAdmin?: Prisma.BoolFilter<"Users"> | boolean
   description?: Prisma.StringNullableFilter<"Users"> | string | null
   avatar?: Prisma.StringNullableFilter<"Users"> | string | null
-  permissions?: Prisma.StringNullableFilter<"Users"> | string | null
+  permissions?: Prisma.JsonNullableFilter<"Users">
   serverLimit?: Prisma.IntNullableFilter<"Users"> | number | null
   maxMemory?: Prisma.IntNullableFilter<"Users"> | number | null
   maxCpu?: Prisma.IntNullableFilter<"Users"> | number | null
@@ -517,7 +513,7 @@ export type UsersScalarWhereWithAggregatesInput = {
   isAdmin?: Prisma.BoolWithAggregatesFilter<"Users"> | boolean
   description?: Prisma.StringNullableWithAggregatesFilter<"Users"> | string | null
   avatar?: Prisma.StringNullableWithAggregatesFilter<"Users"> | string | null
-  permissions?: Prisma.StringNullableWithAggregatesFilter<"Users"> | string | null
+  permissions?: Prisma.JsonNullableWithAggregatesFilter<"Users">
   serverLimit?: Prisma.IntNullableWithAggregatesFilter<"Users"> | number | null
   maxMemory?: Prisma.IntNullableWithAggregatesFilter<"Users"> | number | null
   maxCpu?: Prisma.IntNullableWithAggregatesFilter<"Users"> | number | null
@@ -542,7 +538,7 @@ export type UsersCreateInput = {
   isAdmin?: boolean
   description?: string | null
   avatar?: string | null
-  permissions?: string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: number | null
   maxMemory?: number | null
   maxCpu?: number | null
@@ -576,7 +572,7 @@ export type UsersUncheckedCreateInput = {
   isAdmin?: boolean
   description?: string | null
   avatar?: string | null
-  permissions?: string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: number | null
   maxMemory?: number | null
   maxCpu?: number | null
@@ -609,7 +605,7 @@ export type UsersUpdateInput = {
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  permissions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxMemory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxCpu?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -643,7 +639,7 @@ export type UsersUncheckedUpdateInput = {
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  permissions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxMemory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxCpu?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -677,7 +673,7 @@ export type UsersCreateManyInput = {
   isAdmin?: boolean
   description?: string | null
   avatar?: string | null
-  permissions?: string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: number | null
   maxMemory?: number | null
   maxCpu?: number | null
@@ -702,7 +698,7 @@ export type UsersUpdateManyMutationInput = {
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  permissions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxMemory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxCpu?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -726,7 +722,7 @@ export type UsersUncheckedUpdateManyInput = {
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  permissions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxMemory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxCpu?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -799,7 +795,6 @@ export type UsersMaxOrderByAggregateInput = {
   isAdmin?: Prisma.SortOrder
   description?: Prisma.SortOrder
   avatar?: Prisma.SortOrder
-  permissions?: Prisma.SortOrder
   serverLimit?: Prisma.SortOrder
   maxMemory?: Prisma.SortOrder
   maxCpu?: Prisma.SortOrder
@@ -825,7 +820,6 @@ export type UsersMinOrderByAggregateInput = {
   isAdmin?: Prisma.SortOrder
   description?: Prisma.SortOrder
   avatar?: Prisma.SortOrder
-  permissions?: Prisma.SortOrder
   serverLimit?: Prisma.SortOrder
   maxMemory?: Prisma.SortOrder
   maxCpu?: Prisma.SortOrder
@@ -1083,7 +1077,7 @@ export type UsersCreateWithoutRoleRelationInput = {
   isAdmin?: boolean
   description?: string | null
   avatar?: string | null
-  permissions?: string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: number | null
   maxMemory?: number | null
   maxCpu?: number | null
@@ -1116,7 +1110,7 @@ export type UsersUncheckedCreateWithoutRoleRelationInput = {
   isAdmin?: boolean
   description?: string | null
   avatar?: string | null
-  permissions?: string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: number | null
   maxMemory?: number | null
   maxCpu?: number | null
@@ -1178,7 +1172,7 @@ export type UsersScalarWhereInput = {
   isAdmin?: Prisma.BoolFilter<"Users"> | boolean
   description?: Prisma.StringNullableFilter<"Users"> | string | null
   avatar?: Prisma.StringNullableFilter<"Users"> | string | null
-  permissions?: Prisma.StringNullableFilter<"Users"> | string | null
+  permissions?: Prisma.JsonNullableFilter<"Users">
   serverLimit?: Prisma.IntNullableFilter<"Users"> | number | null
   maxMemory?: Prisma.IntNullableFilter<"Users"> | number | null
   maxCpu?: Prisma.IntNullableFilter<"Users"> | number | null
@@ -1203,7 +1197,7 @@ export type UsersCreateWithoutPasswordResetsInput = {
   isAdmin?: boolean
   description?: string | null
   avatar?: string | null
-  permissions?: string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: number | null
   maxMemory?: number | null
   maxCpu?: number | null
@@ -1236,7 +1230,7 @@ export type UsersUncheckedCreateWithoutPasswordResetsInput = {
   isAdmin?: boolean
   description?: string | null
   avatar?: string | null
-  permissions?: string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: number | null
   maxMemory?: number | null
   maxCpu?: number | null
@@ -1284,7 +1278,7 @@ export type UsersUpdateWithoutPasswordResetsInput = {
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  permissions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxMemory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxCpu?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1317,7 +1311,7 @@ export type UsersUncheckedUpdateWithoutPasswordResetsInput = {
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  permissions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxMemory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxCpu?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1349,7 +1343,7 @@ export type UsersCreateWithoutServersInput = {
   isAdmin?: boolean
   description?: string | null
   avatar?: string | null
-  permissions?: string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: number | null
   maxMemory?: number | null
   maxCpu?: number | null
@@ -1382,7 +1376,7 @@ export type UsersUncheckedCreateWithoutServersInput = {
   isAdmin?: boolean
   description?: string | null
   avatar?: string | null
-  permissions?: string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: number | null
   maxMemory?: number | null
   maxCpu?: number | null
@@ -1430,7 +1424,7 @@ export type UsersUpdateWithoutServersInput = {
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  permissions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxMemory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxCpu?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1463,7 +1457,7 @@ export type UsersUncheckedUpdateWithoutServersInput = {
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  permissions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxMemory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxCpu?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1495,7 +1489,7 @@ export type UsersCreateWithoutPreferredNodeInput = {
   isAdmin?: boolean
   description?: string | null
   avatar?: string | null
-  permissions?: string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: number | null
   maxMemory?: number | null
   maxCpu?: number | null
@@ -1528,7 +1522,7 @@ export type UsersUncheckedCreateWithoutPreferredNodeInput = {
   isAdmin?: boolean
   description?: string | null
   avatar?: string | null
-  permissions?: string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: number | null
   maxMemory?: number | null
   maxCpu?: number | null
@@ -1586,7 +1580,7 @@ export type UsersCreateWithoutFoldersInput = {
   isAdmin?: boolean
   description?: string | null
   avatar?: string | null
-  permissions?: string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: number | null
   maxMemory?: number | null
   maxCpu?: number | null
@@ -1619,7 +1613,7 @@ export type UsersUncheckedCreateWithoutFoldersInput = {
   isAdmin?: boolean
   description?: string | null
   avatar?: string | null
-  permissions?: string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: number | null
   maxMemory?: number | null
   maxCpu?: number | null
@@ -1667,7 +1661,7 @@ export type UsersUpdateWithoutFoldersInput = {
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  permissions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxMemory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxCpu?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1700,7 +1694,7 @@ export type UsersUncheckedUpdateWithoutFoldersInput = {
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  permissions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxMemory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxCpu?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1732,7 +1726,7 @@ export type UsersCreateWithoutApiKeysInput = {
   isAdmin?: boolean
   description?: string | null
   avatar?: string | null
-  permissions?: string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: number | null
   maxMemory?: number | null
   maxCpu?: number | null
@@ -1765,7 +1759,7 @@ export type UsersUncheckedCreateWithoutApiKeysInput = {
   isAdmin?: boolean
   description?: string | null
   avatar?: string | null
-  permissions?: string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: number | null
   maxMemory?: number | null
   maxCpu?: number | null
@@ -1813,7 +1807,7 @@ export type UsersUpdateWithoutApiKeysInput = {
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  permissions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxMemory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxCpu?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1846,7 +1840,7 @@ export type UsersUncheckedUpdateWithoutApiKeysInput = {
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  permissions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxMemory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxCpu?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1878,7 +1872,7 @@ export type UsersCreateWithoutLoginHistoryInput = {
   isAdmin?: boolean
   description?: string | null
   avatar?: string | null
-  permissions?: string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: number | null
   maxMemory?: number | null
   maxCpu?: number | null
@@ -1911,7 +1905,7 @@ export type UsersUncheckedCreateWithoutLoginHistoryInput = {
   isAdmin?: boolean
   description?: string | null
   avatar?: string | null
-  permissions?: string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: number | null
   maxMemory?: number | null
   maxCpu?: number | null
@@ -1959,7 +1953,7 @@ export type UsersUpdateWithoutLoginHistoryInput = {
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  permissions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxMemory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxCpu?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1992,7 +1986,7 @@ export type UsersUncheckedUpdateWithoutLoginHistoryInput = {
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  permissions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxMemory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxCpu?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2024,7 +2018,7 @@ export type UsersCreateWithoutSubUserAccessInput = {
   isAdmin?: boolean
   description?: string | null
   avatar?: string | null
-  permissions?: string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: number | null
   maxMemory?: number | null
   maxCpu?: number | null
@@ -2057,7 +2051,7 @@ export type UsersUncheckedCreateWithoutSubUserAccessInput = {
   isAdmin?: boolean
   description?: string | null
   avatar?: string | null
-  permissions?: string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: number | null
   maxMemory?: number | null
   maxCpu?: number | null
@@ -2105,7 +2099,7 @@ export type UsersUpdateWithoutSubUserAccessInput = {
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  permissions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxMemory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxCpu?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2138,7 +2132,7 @@ export type UsersUncheckedUpdateWithoutSubUserAccessInput = {
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  permissions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxMemory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxCpu?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2170,7 +2164,7 @@ export type UsersCreateWithoutActivityLogsInput = {
   isAdmin?: boolean
   description?: string | null
   avatar?: string | null
-  permissions?: string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: number | null
   maxMemory?: number | null
   maxCpu?: number | null
@@ -2203,7 +2197,7 @@ export type UsersUncheckedCreateWithoutActivityLogsInput = {
   isAdmin?: boolean
   description?: string | null
   avatar?: string | null
-  permissions?: string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: number | null
   maxMemory?: number | null
   maxCpu?: number | null
@@ -2251,7 +2245,7 @@ export type UsersUpdateWithoutActivityLogsInput = {
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  permissions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxMemory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxCpu?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2284,7 +2278,7 @@ export type UsersUncheckedUpdateWithoutActivityLogsInput = {
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  permissions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxMemory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxCpu?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2316,7 +2310,7 @@ export type UsersCreateWithoutPasskeysInput = {
   isAdmin?: boolean
   description?: string | null
   avatar?: string | null
-  permissions?: string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: number | null
   maxMemory?: number | null
   maxCpu?: number | null
@@ -2349,7 +2343,7 @@ export type UsersUncheckedCreateWithoutPasskeysInput = {
   isAdmin?: boolean
   description?: string | null
   avatar?: string | null
-  permissions?: string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: number | null
   maxMemory?: number | null
   maxCpu?: number | null
@@ -2397,7 +2391,7 @@ export type UsersUpdateWithoutPasskeysInput = {
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  permissions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxMemory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxCpu?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2430,7 +2424,7 @@ export type UsersUncheckedUpdateWithoutPasskeysInput = {
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  permissions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxMemory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxCpu?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2463,7 +2457,7 @@ export type UsersCreateManyRoleRelationInput = {
   isAdmin?: boolean
   description?: string | null
   avatar?: string | null
-  permissions?: string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: number | null
   maxMemory?: number | null
   maxCpu?: number | null
@@ -2487,7 +2481,7 @@ export type UsersUpdateWithoutRoleRelationInput = {
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  permissions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxMemory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxCpu?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2520,7 +2514,7 @@ export type UsersUncheckedUpdateWithoutRoleRelationInput = {
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  permissions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxMemory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxCpu?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2553,7 +2547,7 @@ export type UsersUncheckedUpdateManyWithoutRoleRelationInput = {
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  permissions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxMemory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxCpu?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2578,7 +2572,7 @@ export type UsersCreateManyPreferredNodeInput = {
   isAdmin?: boolean
   description?: string | null
   avatar?: string | null
-  permissions?: string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: number | null
   maxMemory?: number | null
   maxCpu?: number | null
@@ -2602,7 +2596,7 @@ export type UsersUpdateWithoutPreferredNodeInput = {
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  permissions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxMemory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxCpu?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2635,7 +2629,7 @@ export type UsersUncheckedUpdateWithoutPreferredNodeInput = {
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  permissions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxMemory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxCpu?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2668,7 +2662,7 @@ export type UsersUncheckedUpdateManyWithoutPreferredNodeInput = {
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  permissions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  permissions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   serverLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxMemory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxCpu?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2943,7 +2937,7 @@ export type $UsersPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     isAdmin: boolean
     description: string | null
     avatar: string | null
-    permissions: string | null
+    permissions: runtime.JsonValue | null
     serverLimit: number | null
     maxMemory: number | null
     maxCpu: number | null
@@ -3399,7 +3393,7 @@ export interface UsersFieldRefs {
   readonly isAdmin: Prisma.FieldRef<"Users", 'Boolean'>
   readonly description: Prisma.FieldRef<"Users", 'String'>
   readonly avatar: Prisma.FieldRef<"Users", 'String'>
-  readonly permissions: Prisma.FieldRef<"Users", 'String'>
+  readonly permissions: Prisma.FieldRef<"Users", 'Json'>
   readonly serverLimit: Prisma.FieldRef<"Users", 'Int'>
   readonly maxMemory: Prisma.FieldRef<"Users", 'Int'>
   readonly maxCpu: Prisma.FieldRef<"Users", 'Int'>

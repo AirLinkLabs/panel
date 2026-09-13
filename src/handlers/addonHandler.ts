@@ -144,16 +144,13 @@ function getApp(): Express {
 }
 
 function buildTailwind() {
-  const tailwindBin = path.join(
-    __dirname,
-    "../../node_modules/.bin/tailwindcss",
-  );
+  const viteBin = path.join(__dirname, "../../node_modules/.bin/vite");
   // execFile — never exec. Arguments are fixed literals, but shell-form
   // execution is one injection away from being dangerous; execFile skips the
   // shell entirely.
   execFile(
-    tailwindBin,
-    ["-i", "./public/styles/tw.css", "-o", "./public/styles.css"],
+    viteBin,
+    ["build"],
     { cwd: path.join(__dirname, "../..") },
     (error, stdout, stderr) => {
       if (error) {
@@ -476,7 +473,9 @@ function buildAddonAPI(
           if (!server.Ports) {
             return [];
           }
-          return JSON.parse(server.Ports) as AddonServerPort[];
+          return (
+            Array.isArray(server.Ports) ? server.Ports : []
+          ) as AddonServerPort[];
         } catch (error) {
           logger.error(logT("log.addonErrorParsingPorts"), error);
           return [];
@@ -487,7 +486,9 @@ function buildAddonAPI(
           if (!server.Ports) {
             return null;
           }
-          const ports = JSON.parse(server.Ports) as AddonServerPort[];
+          const ports = (
+            Array.isArray(server.Ports) ? server.Ports : []
+          ) as AddonServerPort[];
           return ports.find((port) => port.primary === true) ?? null;
         } catch (error) {
           logger.error(logT("log.addonErrorGetPrimaryPort"), error);
@@ -1267,9 +1268,12 @@ async function applyAddonMigrations(slug: string, manifest: AddonManifestV2) {
 
     for (const migration of pending) {
       // Validate migration SQL — only allow safe DDL verbs AND single statements
-      if (!ALLOWED_MIGRATION_SQL.test(migration.sql) || !isSingleStatement(migration.sql)) {
+      if (
+        !ALLOWED_MIGRATION_SQL.test(migration.sql) ||
+        !isSingleStatement(migration.sql)
+      ) {
         logger.error(
-          logT('log.addonMigrationRejected', { name: migration.name }),
+          logT("log.addonMigrationRejected", { name: migration.name }),
         );
         return {
           success: false,
@@ -1386,8 +1390,11 @@ export async function uninstallAddon(slug: string, app: Express | any) {
           .reverse();
 
         for (const migration of reversible) {
-          // Validate rollback SQL too
-          if (!ALLOWED_MIGRATION_SQL.test(migration.down!)) {
+          // Validate rollback SQL too — same rules as forward migrations
+          if (
+            !ALLOWED_MIGRATION_SQL.test(migration.down!) ||
+            !isSingleStatement(migration.down!)
+          ) {
             logger.warn(
               logT("log.addonRollbackRejected", { name: migration.name }),
             );

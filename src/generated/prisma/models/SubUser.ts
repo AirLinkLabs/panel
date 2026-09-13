@@ -40,7 +40,6 @@ export type SubUserMinAggregateOutputType = {
   id: number | null
   serverId: string | null
   userId: number | null
-  permissions: string | null
   createdAt: Date | null
 }
 
@@ -48,7 +47,6 @@ export type SubUserMaxAggregateOutputType = {
   id: number | null
   serverId: string | null
   userId: number | null
-  permissions: string | null
   createdAt: Date | null
 }
 
@@ -76,7 +74,6 @@ export type SubUserMinAggregateInputType = {
   id?: true
   serverId?: true
   userId?: true
-  permissions?: true
   createdAt?: true
 }
 
@@ -84,7 +81,6 @@ export type SubUserMaxAggregateInputType = {
   id?: true
   serverId?: true
   userId?: true
-  permissions?: true
   createdAt?: true
 }
 
@@ -187,7 +183,7 @@ export type SubUserGroupByOutputType = {
   id: number
   serverId: string
   userId: number
-  permissions: string
+  permissions: runtime.JsonValue
   createdAt: Date
   _count: SubUserCountAggregateOutputType | null
   _avg: SubUserAvgAggregateOutputType | null
@@ -218,7 +214,7 @@ export type SubUserWhereInput = {
   id?: Prisma.IntFilter<"SubUser"> | number
   serverId?: Prisma.StringFilter<"SubUser"> | string
   userId?: Prisma.IntFilter<"SubUser"> | number
-  permissions?: Prisma.StringFilter<"SubUser"> | string
+  permissions?: Prisma.JsonFilter<"SubUser">
   createdAt?: Prisma.DateTimeFilter<"SubUser"> | Date | string
   server?: Prisma.XOR<Prisma.ServerScalarRelationFilter, Prisma.ServerWhereInput>
   user?: Prisma.XOR<Prisma.UsersScalarRelationFilter, Prisma.UsersWhereInput>
@@ -242,7 +238,7 @@ export type SubUserWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.SubUserWhereInput | Prisma.SubUserWhereInput[]
   serverId?: Prisma.StringFilter<"SubUser"> | string
   userId?: Prisma.IntFilter<"SubUser"> | number
-  permissions?: Prisma.StringFilter<"SubUser"> | string
+  permissions?: Prisma.JsonFilter<"SubUser">
   createdAt?: Prisma.DateTimeFilter<"SubUser"> | Date | string
   server?: Prisma.XOR<Prisma.ServerScalarRelationFilter, Prisma.ServerWhereInput>
   user?: Prisma.XOR<Prisma.UsersScalarRelationFilter, Prisma.UsersWhereInput>
@@ -268,12 +264,12 @@ export type SubUserScalarWhereWithAggregatesInput = {
   id?: Prisma.IntWithAggregatesFilter<"SubUser"> | number
   serverId?: Prisma.StringWithAggregatesFilter<"SubUser"> | string
   userId?: Prisma.IntWithAggregatesFilter<"SubUser"> | number
-  permissions?: Prisma.StringWithAggregatesFilter<"SubUser"> | string
+  permissions?: Prisma.JsonWithAggregatesFilter<"SubUser">
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"SubUser"> | Date | string
 }
 
 export type SubUserCreateInput = {
-  permissions?: string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   server: Prisma.ServerCreateNestedOneWithoutSubUsersInput
   user: Prisma.UsersCreateNestedOneWithoutSubUserAccessInput
@@ -283,12 +279,12 @@ export type SubUserUncheckedCreateInput = {
   id?: number
   serverId: string
   userId: number
-  permissions?: string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
 }
 
 export type SubUserUpdateInput = {
-  permissions?: Prisma.StringFieldUpdateOperationsInput | string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   server?: Prisma.ServerUpdateOneRequiredWithoutSubUsersNestedInput
   user?: Prisma.UsersUpdateOneRequiredWithoutSubUserAccessNestedInput
@@ -298,7 +294,7 @@ export type SubUserUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   serverId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.IntFieldUpdateOperationsInput | number
-  permissions?: Prisma.StringFieldUpdateOperationsInput | string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -306,12 +302,12 @@ export type SubUserCreateManyInput = {
   id?: number
   serverId: string
   userId: number
-  permissions?: string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
 }
 
 export type SubUserUpdateManyMutationInput = {
-  permissions?: Prisma.StringFieldUpdateOperationsInput | string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -319,7 +315,7 @@ export type SubUserUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   serverId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.IntFieldUpdateOperationsInput | number
-  permissions?: Prisma.StringFieldUpdateOperationsInput | string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -355,7 +351,6 @@ export type SubUserMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   serverId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  permissions?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -363,7 +358,6 @@ export type SubUserMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   serverId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  permissions?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -457,7 +451,7 @@ export type SubUserUncheckedUpdateManyWithoutServerNestedInput = {
 }
 
 export type SubUserCreateWithoutUserInput = {
-  permissions?: string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   server: Prisma.ServerCreateNestedOneWithoutSubUsersInput
 }
@@ -465,7 +459,7 @@ export type SubUserCreateWithoutUserInput = {
 export type SubUserUncheckedCreateWithoutUserInput = {
   id?: number
   serverId: string
-  permissions?: string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
 }
 
@@ -502,12 +496,12 @@ export type SubUserScalarWhereInput = {
   id?: Prisma.IntFilter<"SubUser"> | number
   serverId?: Prisma.StringFilter<"SubUser"> | string
   userId?: Prisma.IntFilter<"SubUser"> | number
-  permissions?: Prisma.StringFilter<"SubUser"> | string
+  permissions?: Prisma.JsonFilter<"SubUser">
   createdAt?: Prisma.DateTimeFilter<"SubUser"> | Date | string
 }
 
 export type SubUserCreateWithoutServerInput = {
-  permissions?: string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   user: Prisma.UsersCreateNestedOneWithoutSubUserAccessInput
 }
@@ -515,7 +509,7 @@ export type SubUserCreateWithoutServerInput = {
 export type SubUserUncheckedCreateWithoutServerInput = {
   id?: number
   userId: number
-  permissions?: string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
 }
 
@@ -548,12 +542,12 @@ export type SubUserUpdateManyWithWhereWithoutServerInput = {
 export type SubUserCreateManyUserInput = {
   id?: number
   serverId: string
-  permissions?: string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
 }
 
 export type SubUserUpdateWithoutUserInput = {
-  permissions?: Prisma.StringFieldUpdateOperationsInput | string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   server?: Prisma.ServerUpdateOneRequiredWithoutSubUsersNestedInput
 }
@@ -561,26 +555,26 @@ export type SubUserUpdateWithoutUserInput = {
 export type SubUserUncheckedUpdateWithoutUserInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   serverId?: Prisma.StringFieldUpdateOperationsInput | string
-  permissions?: Prisma.StringFieldUpdateOperationsInput | string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type SubUserUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   serverId?: Prisma.StringFieldUpdateOperationsInput | string
-  permissions?: Prisma.StringFieldUpdateOperationsInput | string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type SubUserCreateManyServerInput = {
   id?: number
   userId: number
-  permissions?: string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
 }
 
 export type SubUserUpdateWithoutServerInput = {
-  permissions?: Prisma.StringFieldUpdateOperationsInput | string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UsersUpdateOneRequiredWithoutSubUserAccessNestedInput
 }
@@ -588,14 +582,14 @@ export type SubUserUpdateWithoutServerInput = {
 export type SubUserUncheckedUpdateWithoutServerInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.IntFieldUpdateOperationsInput | number
-  permissions?: Prisma.StringFieldUpdateOperationsInput | string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type SubUserUncheckedUpdateManyWithoutServerInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.IntFieldUpdateOperationsInput | number
-  permissions?: Prisma.StringFieldUpdateOperationsInput | string
+  permissions?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -663,7 +657,7 @@ export type $SubUserPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     id: number
     serverId: string
     userId: number
-    permissions: string
+    permissions: runtime.JsonValue
     createdAt: Date
   }, ExtArgs["result"]["subUser"]>
   composites: {}
@@ -1093,7 +1087,7 @@ export interface SubUserFieldRefs {
   readonly id: Prisma.FieldRef<"SubUser", 'Int'>
   readonly serverId: Prisma.FieldRef<"SubUser", 'String'>
   readonly userId: Prisma.FieldRef<"SubUser", 'Int'>
-  readonly permissions: Prisma.FieldRef<"SubUser", 'String'>
+  readonly permissions: Prisma.FieldRef<"SubUser", 'Json'>
   readonly createdAt: Prisma.FieldRef<"SubUser", 'DateTime'>
 }
     

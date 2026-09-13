@@ -30,9 +30,9 @@ describe("isValidPort", () => {
 
 describe("parseImagePortRequirements", () => {
   it("parses valid JSON array", () => {
-    const result = parseImagePortRequirements(
-      '[{"name":"Game","internalPort":25565}]',
-    );
+    const result = parseImagePortRequirements([
+      { name: "Game", internalPort: 25565 },
+    ]);
     expect(result).toEqual([{ name: "Game", internalPort: 25565 }]);
   });
 
@@ -51,31 +51,32 @@ describe("parseImagePortRequirements", () => {
   });
 
   it("filters out invalid ports", () => {
-    const result = parseImagePortRequirements(
-      '[{"name":"Valid","internalPort":25565},{"name":"Invalid","internalPort":99999}]',
-    );
+    const result = parseImagePortRequirements([
+      { name: "Valid", internalPort: 25565 },
+      { name: "Invalid", internalPort: 99999 },
+    ]);
     expect(result).toHaveLength(1);
     expect(result[0].name).toBe("Valid");
   });
 
   it("uses default name when missing", () => {
-    const result = parseImagePortRequirements('[{"internalPort":25565}]');
+    const result = parseImagePortRequirements([{ internalPort: 25565 }]);
     expect(result[0].name).toBe("Port 1");
   });
 });
 
 describe("parseServerPorts", () => {
   it("parses modern format", () => {
-    const result = parseServerPorts(
-      '[{"name":"Game","internalPort":25565,"externalPort":25565,"primary":true}]',
-    );
+    const result = parseServerPorts([
+      { name: "Game", internalPort: 25565, externalPort: 25565, primary: true },
+    ]);
     expect(result).toEqual([
       { name: "Game", internalPort: 25565, externalPort: 25565, primary: true },
     ]);
   });
 
   it('parses legacy Port format "ext:int"', () => {
-    const result = parseServerPorts('[{"Port":"25565:25565","primary":true}]');
+    const result = parseServerPorts([{ Port: "25565:25565", primary: true }]);
     expect(result).toEqual([
       {
         name: "Port 1",
@@ -87,7 +88,7 @@ describe("parseServerPorts", () => {
   });
 
   it("parses legacy Port format with different ports", () => {
-    const result = parseServerPorts('[{"Port":"25566:25565"}]');
+    const result = parseServerPorts([{ Port: "25566:25565" }]);
     expect(result).toEqual([
       {
         name: "Port 1",
@@ -99,7 +100,7 @@ describe("parseServerPorts", () => {
   });
 
   it("defaults primary to true for first port", () => {
-    const result = parseServerPorts('[{"Port":"25565:25565"}]');
+    const result = parseServerPorts([{ Port: "25565:25565" }]);
     expect(result[0].primary).toBe(true);
   });
 
@@ -108,7 +109,7 @@ describe("parseServerPorts", () => {
   });
 
   it("filters out invalid ports", () => {
-    const result = parseServerPorts('[{"Port":"99999:25565"}]');
+    const result = parseServerPorts([{ Port: "99999:25565" }]);
     expect(result).toEqual([]);
   });
 });
@@ -137,32 +138,28 @@ describe("normalizeServerPorts", () => {
 
 describe("serializeServerPorts", () => {
   it("serializes ports with legacy Port field", () => {
-    const result = JSON.parse(
-      serializeServerPorts([
-        {
-          name: "Game",
-          internalPort: 25565,
-          externalPort: 25565,
-          primary: true,
-        },
-      ]),
-    );
+    const result = serializeServerPorts([
+      {
+        name: "Game",
+        internalPort: 25565,
+        externalPort: 25565,
+        primary: true,
+      },
+    ]);
     expect(result[0].Port).toBe("25565:25565");
     expect(result[0].name).toBe("Game");
   });
 
   it("forces first port as primary", () => {
-    const result = JSON.parse(
-      serializeServerPorts([
-        {
-          name: "P1",
-          internalPort: 25565,
-          externalPort: 25565,
-          primary: false,
-        },
-        { name: "P2", internalPort: 25566, externalPort: 25566, primary: true },
-      ]),
-    );
+    const result = serializeServerPorts([
+      {
+        name: "P1",
+        internalPort: 25565,
+        externalPort: 25565,
+        primary: false,
+      },
+      { name: "P2", internalPort: 25566, externalPort: 25566, primary: true },
+    ]);
     expect(result[0].primary).toBe(true);
     expect(result[1].primary).toBe(true);
   });
@@ -170,12 +167,12 @@ describe("serializeServerPorts", () => {
 
 describe("portsToDaemonString", () => {
   it("converts to daemon format", () => {
-    expect(portsToDaemonString('[{"Port":"25565:25565"}]')).toBe("25565:25565");
+    expect(portsToDaemonString([{ Port: "25565:25565" }])).toBe("25565:25565");
   });
 
   it("handles multiple ports", () => {
     expect(
-      portsToDaemonString('[{"Port":"25565:25565"},{"Port":"25566:25566"}]'),
+      portsToDaemonString([{ Port: "25565:25565" }, { Port: "25566:25566" }]),
     ).toBe("25565:25565,25566:25566");
   });
 
@@ -187,12 +184,12 @@ describe("portsToDaemonString", () => {
 describe("getPrimaryExternalPort", () => {
   it("returns primary port", () => {
     expect(
-      getPrimaryExternalPort('[{"Port":"25565:25565","primary":true}]'),
+      getPrimaryExternalPort([{ Port: "25565:25565", primary: true }]),
     ).toBe(25565);
   });
 
   it("returns first port if no primary", () => {
-    expect(getPrimaryExternalPort('[{"Port":"25565:25565"}]')).toBe(25565);
+    expect(getPrimaryExternalPort([{ Port: "25565:25565" }])).toBe(25565);
   });
 
   it("returns undefined for empty/invalid", () => {
@@ -203,8 +200,8 @@ describe("getPrimaryExternalPort", () => {
 describe("getUsedExternalPorts", () => {
   it("collects ports from multiple servers", () => {
     const servers = [
-      { Ports: '[{"Port":"25565:25565"}]' },
-      { Ports: '[{"Port":"25566:25566"}]' },
+      { Ports: [{ Port: "25565:25565" }] },
+      { Ports: [{ Port: "25566:25566" }] },
     ];
     expect(getUsedExternalPorts(servers)).toEqual([25565, 25566]);
   });

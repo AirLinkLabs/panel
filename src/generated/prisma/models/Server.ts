@@ -58,12 +58,10 @@ export type ServerMinAggregateOutputType = {
   name: string | null
   description: string | null
   createdAt: Date | null
-  Ports: string | null
   Memory: number | null
   Swap: number | null
   Cpu: number | null
   Storage: number | null
-  Variables: string | null
   StartCommand: string | null
   dockerImage: string | null
   allowStartupEdit: boolean | null
@@ -85,12 +83,10 @@ export type ServerMaxAggregateOutputType = {
   name: string | null
   description: string | null
   createdAt: Date | null
-  Ports: string | null
   Memory: number | null
   Swap: number | null
   Cpu: number | null
   Storage: number | null
-  Variables: string | null
   StartCommand: string | null
   dockerImage: string | null
   allowStartupEdit: boolean | null
@@ -167,12 +163,10 @@ export type ServerMinAggregateInputType = {
   name?: true
   description?: true
   createdAt?: true
-  Ports?: true
   Memory?: true
   Swap?: true
   Cpu?: true
   Storage?: true
-  Variables?: true
   StartCommand?: true
   dockerImage?: true
   allowStartupEdit?: true
@@ -194,12 +188,10 @@ export type ServerMaxAggregateInputType = {
   name?: true
   description?: true
   createdAt?: true
-  Ports?: true
   Memory?: true
   Swap?: true
   Cpu?: true
   Storage?: true
-  Variables?: true
   StartCommand?: true
   dockerImage?: true
   allowStartupEdit?: true
@@ -335,12 +327,12 @@ export type ServerGroupByOutputType = {
   name: string
   description: string | null
   createdAt: Date
-  Ports: string
+  Ports: runtime.JsonValue
   Memory: number
   Swap: number
   Cpu: number
   Storage: number
-  Variables: string | null
+  Variables: runtime.JsonValue | null
   StartCommand: string | null
   dockerImage: string | null
   allowStartupEdit: boolean
@@ -385,12 +377,12 @@ export type ServerWhereInput = {
   name?: Prisma.StringFilter<"Server"> | string
   description?: Prisma.StringNullableFilter<"Server"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Server"> | Date | string
-  Ports?: Prisma.StringFilter<"Server"> | string
+  Ports?: Prisma.JsonFilter<"Server">
   Memory?: Prisma.IntFilter<"Server"> | number
   Swap?: Prisma.IntFilter<"Server"> | number
   Cpu?: Prisma.IntFilter<"Server"> | number
   Storage?: Prisma.IntFilter<"Server"> | number
-  Variables?: Prisma.StringNullableFilter<"Server"> | string | null
+  Variables?: Prisma.JsonNullableFilter<"Server">
   StartCommand?: Prisma.StringNullableFilter<"Server"> | string | null
   dockerImage?: Prisma.StringNullableFilter<"Server"> | string | null
   allowStartupEdit?: Prisma.BoolFilter<"Server"> | boolean
@@ -466,12 +458,12 @@ export type ServerWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"Server"> | string
   description?: Prisma.StringNullableFilter<"Server"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Server"> | Date | string
-  Ports?: Prisma.StringFilter<"Server"> | string
+  Ports?: Prisma.JsonFilter<"Server">
   Memory?: Prisma.IntFilter<"Server"> | number
   Swap?: Prisma.IntFilter<"Server"> | number
   Cpu?: Prisma.IntFilter<"Server"> | number
   Storage?: Prisma.IntFilter<"Server"> | number
-  Variables?: Prisma.StringNullableFilter<"Server"> | string | null
+  Variables?: Prisma.JsonNullableFilter<"Server">
   StartCommand?: Prisma.StringNullableFilter<"Server"> | string | null
   dockerImage?: Prisma.StringNullableFilter<"Server"> | string | null
   allowStartupEdit?: Prisma.BoolFilter<"Server"> | boolean
@@ -540,12 +532,12 @@ export type ServerScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"Server"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"Server"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Server"> | Date | string
-  Ports?: Prisma.StringWithAggregatesFilter<"Server"> | string
+  Ports?: Prisma.JsonWithAggregatesFilter<"Server">
   Memory?: Prisma.IntWithAggregatesFilter<"Server"> | number
   Swap?: Prisma.IntWithAggregatesFilter<"Server"> | number
   Cpu?: Prisma.IntWithAggregatesFilter<"Server"> | number
   Storage?: Prisma.IntWithAggregatesFilter<"Server"> | number
-  Variables?: Prisma.StringNullableWithAggregatesFilter<"Server"> | string | null
+  Variables?: Prisma.JsonNullableWithAggregatesFilter<"Server">
   StartCommand?: Prisma.StringNullableWithAggregatesFilter<"Server"> | string | null
   dockerImage?: Prisma.StringNullableWithAggregatesFilter<"Server"> | string | null
   allowStartupEdit?: Prisma.BoolWithAggregatesFilter<"Server"> | boolean
@@ -566,12 +558,12 @@ export type ServerCreateInput = {
   name: string
   description?: string | null
   createdAt?: Date | string
-  Ports: string
+  Ports: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory: number
   Swap?: number
   Cpu: number
   Storage: number
-  Variables?: string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: string | null
   dockerImage?: string | null
   allowStartupEdit?: boolean
@@ -602,12 +594,12 @@ export type ServerUncheckedCreateInput = {
   name: string
   description?: string | null
   createdAt?: Date | string
-  Ports: string
+  Ports: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory: number
   Swap?: number
   Cpu: number
   Storage: number
-  Variables?: string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: string | null
   dockerImage?: string | null
   allowStartupEdit?: boolean
@@ -637,12 +629,12 @@ export type ServerUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  Ports?: Prisma.StringFieldUpdateOperationsInput | string
+  Ports?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory?: Prisma.IntFieldUpdateOperationsInput | number
   Swap?: Prisma.IntFieldUpdateOperationsInput | number
   Cpu?: Prisma.IntFieldUpdateOperationsInput | number
   Storage?: Prisma.IntFieldUpdateOperationsInput | number
-  Variables?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allowStartupEdit?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -673,12 +665,12 @@ export type ServerUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  Ports?: Prisma.StringFieldUpdateOperationsInput | string
+  Ports?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory?: Prisma.IntFieldUpdateOperationsInput | number
   Swap?: Prisma.IntFieldUpdateOperationsInput | number
   Cpu?: Prisma.IntFieldUpdateOperationsInput | number
   Storage?: Prisma.IntFieldUpdateOperationsInput | number
-  Variables?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allowStartupEdit?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -709,12 +701,12 @@ export type ServerCreateManyInput = {
   name: string
   description?: string | null
   createdAt?: Date | string
-  Ports: string
+  Ports: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory: number
   Swap?: number
   Cpu: number
   Storage: number
-  Variables?: string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: string | null
   dockerImage?: string | null
   allowStartupEdit?: boolean
@@ -735,12 +727,12 @@ export type ServerUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  Ports?: Prisma.StringFieldUpdateOperationsInput | string
+  Ports?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory?: Prisma.IntFieldUpdateOperationsInput | number
   Swap?: Prisma.IntFieldUpdateOperationsInput | number
   Cpu?: Prisma.IntFieldUpdateOperationsInput | number
   Storage?: Prisma.IntFieldUpdateOperationsInput | number
-  Variables?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allowStartupEdit?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -759,12 +751,12 @@ export type ServerUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  Ports?: Prisma.StringFieldUpdateOperationsInput | string
+  Ports?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory?: Prisma.IntFieldUpdateOperationsInput | number
   Swap?: Prisma.IntFieldUpdateOperationsInput | number
   Cpu?: Prisma.IntFieldUpdateOperationsInput | number
   Storage?: Prisma.IntFieldUpdateOperationsInput | number
-  Variables?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allowStartupEdit?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -836,12 +828,10 @@ export type ServerMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  Ports?: Prisma.SortOrder
   Memory?: Prisma.SortOrder
   Swap?: Prisma.SortOrder
   Cpu?: Prisma.SortOrder
   Storage?: Prisma.SortOrder
-  Variables?: Prisma.SortOrder
   StartCommand?: Prisma.SortOrder
   dockerImage?: Prisma.SortOrder
   allowStartupEdit?: Prisma.SortOrder
@@ -863,12 +853,10 @@ export type ServerMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  Ports?: Prisma.SortOrder
   Memory?: Prisma.SortOrder
   Swap?: Prisma.SortOrder
   Cpu?: Prisma.SortOrder
   Storage?: Prisma.SortOrder
-  Variables?: Prisma.SortOrder
   StartCommand?: Prisma.SortOrder
   dockerImage?: Prisma.SortOrder
   allowStartupEdit?: Prisma.SortOrder
@@ -1168,12 +1156,12 @@ export type ServerCreateWithoutOwnerInput = {
   name: string
   description?: string | null
   createdAt?: Date | string
-  Ports: string
+  Ports: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory: number
   Swap?: number
   Cpu: number
   Storage: number
-  Variables?: string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: string | null
   dockerImage?: string | null
   allowStartupEdit?: boolean
@@ -1203,12 +1191,12 @@ export type ServerUncheckedCreateWithoutOwnerInput = {
   name: string
   description?: string | null
   createdAt?: Date | string
-  Ports: string
+  Ports: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory: number
   Swap?: number
   Cpu: number
   Storage: number
-  Variables?: string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: string | null
   dockerImage?: string | null
   allowStartupEdit?: boolean
@@ -1267,12 +1255,12 @@ export type ServerScalarWhereInput = {
   name?: Prisma.StringFilter<"Server"> | string
   description?: Prisma.StringNullableFilter<"Server"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Server"> | Date | string
-  Ports?: Prisma.StringFilter<"Server"> | string
+  Ports?: Prisma.JsonFilter<"Server">
   Memory?: Prisma.IntFilter<"Server"> | number
   Swap?: Prisma.IntFilter<"Server"> | number
   Cpu?: Prisma.IntFilter<"Server"> | number
   Storage?: Prisma.IntFilter<"Server"> | number
-  Variables?: Prisma.StringNullableFilter<"Server"> | string | null
+  Variables?: Prisma.JsonNullableFilter<"Server">
   StartCommand?: Prisma.StringNullableFilter<"Server"> | string | null
   dockerImage?: Prisma.StringNullableFilter<"Server"> | string | null
   allowStartupEdit?: Prisma.BoolFilter<"Server"> | boolean
@@ -1293,12 +1281,12 @@ export type ServerCreateWithoutServerMountsInput = {
   name: string
   description?: string | null
   createdAt?: Date | string
-  Ports: string
+  Ports: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory: number
   Swap?: number
   Cpu: number
   Storage: number
-  Variables?: string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: string | null
   dockerImage?: string | null
   allowStartupEdit?: boolean
@@ -1328,12 +1316,12 @@ export type ServerUncheckedCreateWithoutServerMountsInput = {
   name: string
   description?: string | null
   createdAt?: Date | string
-  Ports: string
+  Ports: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory: number
   Swap?: number
   Cpu: number
   Storage: number
-  Variables?: string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: string | null
   dockerImage?: string | null
   allowStartupEdit?: boolean
@@ -1378,12 +1366,12 @@ export type ServerUpdateWithoutServerMountsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  Ports?: Prisma.StringFieldUpdateOperationsInput | string
+  Ports?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory?: Prisma.IntFieldUpdateOperationsInput | number
   Swap?: Prisma.IntFieldUpdateOperationsInput | number
   Cpu?: Prisma.IntFieldUpdateOperationsInput | number
   Storage?: Prisma.IntFieldUpdateOperationsInput | number
-  Variables?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allowStartupEdit?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1413,12 +1401,12 @@ export type ServerUncheckedUpdateWithoutServerMountsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  Ports?: Prisma.StringFieldUpdateOperationsInput | string
+  Ports?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory?: Prisma.IntFieldUpdateOperationsInput | number
   Swap?: Prisma.IntFieldUpdateOperationsInput | number
   Cpu?: Prisma.IntFieldUpdateOperationsInput | number
   Storage?: Prisma.IntFieldUpdateOperationsInput | number
-  Variables?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allowStartupEdit?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1447,12 +1435,12 @@ export type ServerCreateWithoutDatabasesInput = {
   name: string
   description?: string | null
   createdAt?: Date | string
-  Ports: string
+  Ports: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory: number
   Swap?: number
   Cpu: number
   Storage: number
-  Variables?: string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: string | null
   dockerImage?: string | null
   allowStartupEdit?: boolean
@@ -1482,12 +1470,12 @@ export type ServerUncheckedCreateWithoutDatabasesInput = {
   name: string
   description?: string | null
   createdAt?: Date | string
-  Ports: string
+  Ports: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory: number
   Swap?: number
   Cpu: number
   Storage: number
-  Variables?: string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: string | null
   dockerImage?: string | null
   allowStartupEdit?: boolean
@@ -1532,12 +1520,12 @@ export type ServerUpdateWithoutDatabasesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  Ports?: Prisma.StringFieldUpdateOperationsInput | string
+  Ports?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory?: Prisma.IntFieldUpdateOperationsInput | number
   Swap?: Prisma.IntFieldUpdateOperationsInput | number
   Cpu?: Prisma.IntFieldUpdateOperationsInput | number
   Storage?: Prisma.IntFieldUpdateOperationsInput | number
-  Variables?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allowStartupEdit?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1567,12 +1555,12 @@ export type ServerUncheckedUpdateWithoutDatabasesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  Ports?: Prisma.StringFieldUpdateOperationsInput | string
+  Ports?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory?: Prisma.IntFieldUpdateOperationsInput | number
   Swap?: Prisma.IntFieldUpdateOperationsInput | number
   Cpu?: Prisma.IntFieldUpdateOperationsInput | number
   Storage?: Prisma.IntFieldUpdateOperationsInput | number
-  Variables?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allowStartupEdit?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1601,12 +1589,12 @@ export type ServerCreateWithoutSchedulesInput = {
   name: string
   description?: string | null
   createdAt?: Date | string
-  Ports: string
+  Ports: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory: number
   Swap?: number
   Cpu: number
   Storage: number
-  Variables?: string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: string | null
   dockerImage?: string | null
   allowStartupEdit?: boolean
@@ -1636,12 +1624,12 @@ export type ServerUncheckedCreateWithoutSchedulesInput = {
   name: string
   description?: string | null
   createdAt?: Date | string
-  Ports: string
+  Ports: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory: number
   Swap?: number
   Cpu: number
   Storage: number
-  Variables?: string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: string | null
   dockerImage?: string | null
   allowStartupEdit?: boolean
@@ -1686,12 +1674,12 @@ export type ServerUpdateWithoutSchedulesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  Ports?: Prisma.StringFieldUpdateOperationsInput | string
+  Ports?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory?: Prisma.IntFieldUpdateOperationsInput | number
   Swap?: Prisma.IntFieldUpdateOperationsInput | number
   Cpu?: Prisma.IntFieldUpdateOperationsInput | number
   Storage?: Prisma.IntFieldUpdateOperationsInput | number
-  Variables?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allowStartupEdit?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1721,12 +1709,12 @@ export type ServerUncheckedUpdateWithoutSchedulesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  Ports?: Prisma.StringFieldUpdateOperationsInput | string
+  Ports?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory?: Prisma.IntFieldUpdateOperationsInput | number
   Swap?: Prisma.IntFieldUpdateOperationsInput | number
   Cpu?: Prisma.IntFieldUpdateOperationsInput | number
   Storage?: Prisma.IntFieldUpdateOperationsInput | number
-  Variables?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allowStartupEdit?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1755,12 +1743,12 @@ export type ServerCreateWithoutImageInput = {
   name: string
   description?: string | null
   createdAt?: Date | string
-  Ports: string
+  Ports: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory: number
   Swap?: number
   Cpu: number
   Storage: number
-  Variables?: string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: string | null
   dockerImage?: string | null
   allowStartupEdit?: boolean
@@ -1790,12 +1778,12 @@ export type ServerUncheckedCreateWithoutImageInput = {
   name: string
   description?: string | null
   createdAt?: Date | string
-  Ports: string
+  Ports: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory: number
   Swap?: number
   Cpu: number
   Storage: number
-  Variables?: string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: string | null
   dockerImage?: string | null
   allowStartupEdit?: boolean
@@ -1850,12 +1838,12 @@ export type ServerCreateWithoutAllocationsInput = {
   name: string
   description?: string | null
   createdAt?: Date | string
-  Ports: string
+  Ports: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory: number
   Swap?: number
   Cpu: number
   Storage: number
-  Variables?: string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: string | null
   dockerImage?: string | null
   allowStartupEdit?: boolean
@@ -1885,12 +1873,12 @@ export type ServerUncheckedCreateWithoutAllocationsInput = {
   name: string
   description?: string | null
   createdAt?: Date | string
-  Ports: string
+  Ports: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory: number
   Swap?: number
   Cpu: number
   Storage: number
-  Variables?: string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: string | null
   dockerImage?: string | null
   allowStartupEdit?: boolean
@@ -1935,12 +1923,12 @@ export type ServerUpdateWithoutAllocationsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  Ports?: Prisma.StringFieldUpdateOperationsInput | string
+  Ports?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory?: Prisma.IntFieldUpdateOperationsInput | number
   Swap?: Prisma.IntFieldUpdateOperationsInput | number
   Cpu?: Prisma.IntFieldUpdateOperationsInput | number
   Storage?: Prisma.IntFieldUpdateOperationsInput | number
-  Variables?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allowStartupEdit?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1970,12 +1958,12 @@ export type ServerUncheckedUpdateWithoutAllocationsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  Ports?: Prisma.StringFieldUpdateOperationsInput | string
+  Ports?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory?: Prisma.IntFieldUpdateOperationsInput | number
   Swap?: Prisma.IntFieldUpdateOperationsInput | number
   Cpu?: Prisma.IntFieldUpdateOperationsInput | number
   Storage?: Prisma.IntFieldUpdateOperationsInput | number
-  Variables?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allowStartupEdit?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2004,12 +1992,12 @@ export type ServerCreateWithoutNodeInput = {
   name: string
   description?: string | null
   createdAt?: Date | string
-  Ports: string
+  Ports: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory: number
   Swap?: number
   Cpu: number
   Storage: number
-  Variables?: string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: string | null
   dockerImage?: string | null
   allowStartupEdit?: boolean
@@ -2039,12 +2027,12 @@ export type ServerUncheckedCreateWithoutNodeInput = {
   name: string
   description?: string | null
   createdAt?: Date | string
-  Ports: string
+  Ports: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory: number
   Swap?: number
   Cpu: number
   Storage: number
-  Variables?: string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: string | null
   dockerImage?: string | null
   allowStartupEdit?: boolean
@@ -2099,12 +2087,12 @@ export type ServerCreateWithoutFolderInput = {
   name: string
   description?: string | null
   createdAt?: Date | string
-  Ports: string
+  Ports: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory: number
   Swap?: number
   Cpu: number
   Storage: number
-  Variables?: string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: string | null
   dockerImage?: string | null
   allowStartupEdit?: boolean
@@ -2134,12 +2122,12 @@ export type ServerUncheckedCreateWithoutFolderInput = {
   name: string
   description?: string | null
   createdAt?: Date | string
-  Ports: string
+  Ports: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory: number
   Swap?: number
   Cpu: number
   Storage: number
-  Variables?: string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: string | null
   dockerImage?: string | null
   allowStartupEdit?: boolean
@@ -2184,12 +2172,12 @@ export type ServerUpdateWithoutFolderInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  Ports?: Prisma.StringFieldUpdateOperationsInput | string
+  Ports?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory?: Prisma.IntFieldUpdateOperationsInput | number
   Swap?: Prisma.IntFieldUpdateOperationsInput | number
   Cpu?: Prisma.IntFieldUpdateOperationsInput | number
   Storage?: Prisma.IntFieldUpdateOperationsInput | number
-  Variables?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allowStartupEdit?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2219,12 +2207,12 @@ export type ServerUncheckedUpdateWithoutFolderInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  Ports?: Prisma.StringFieldUpdateOperationsInput | string
+  Ports?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory?: Prisma.IntFieldUpdateOperationsInput | number
   Swap?: Prisma.IntFieldUpdateOperationsInput | number
   Cpu?: Prisma.IntFieldUpdateOperationsInput | number
   Storage?: Prisma.IntFieldUpdateOperationsInput | number
-  Variables?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allowStartupEdit?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2253,12 +2241,12 @@ export type ServerCreateWithoutBackupsInput = {
   name: string
   description?: string | null
   createdAt?: Date | string
-  Ports: string
+  Ports: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory: number
   Swap?: number
   Cpu: number
   Storage: number
-  Variables?: string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: string | null
   dockerImage?: string | null
   allowStartupEdit?: boolean
@@ -2288,12 +2276,12 @@ export type ServerUncheckedCreateWithoutBackupsInput = {
   name: string
   description?: string | null
   createdAt?: Date | string
-  Ports: string
+  Ports: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory: number
   Swap?: number
   Cpu: number
   Storage: number
-  Variables?: string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: string | null
   dockerImage?: string | null
   allowStartupEdit?: boolean
@@ -2338,12 +2326,12 @@ export type ServerUpdateWithoutBackupsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  Ports?: Prisma.StringFieldUpdateOperationsInput | string
+  Ports?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory?: Prisma.IntFieldUpdateOperationsInput | number
   Swap?: Prisma.IntFieldUpdateOperationsInput | number
   Cpu?: Prisma.IntFieldUpdateOperationsInput | number
   Storage?: Prisma.IntFieldUpdateOperationsInput | number
-  Variables?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allowStartupEdit?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2373,12 +2361,12 @@ export type ServerUncheckedUpdateWithoutBackupsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  Ports?: Prisma.StringFieldUpdateOperationsInput | string
+  Ports?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory?: Prisma.IntFieldUpdateOperationsInput | number
   Swap?: Prisma.IntFieldUpdateOperationsInput | number
   Cpu?: Prisma.IntFieldUpdateOperationsInput | number
   Storage?: Prisma.IntFieldUpdateOperationsInput | number
-  Variables?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allowStartupEdit?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2407,12 +2395,12 @@ export type ServerCreateWithoutSftpCredentialInput = {
   name: string
   description?: string | null
   createdAt?: Date | string
-  Ports: string
+  Ports: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory: number
   Swap?: number
   Cpu: number
   Storage: number
-  Variables?: string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: string | null
   dockerImage?: string | null
   allowStartupEdit?: boolean
@@ -2442,12 +2430,12 @@ export type ServerUncheckedCreateWithoutSftpCredentialInput = {
   name: string
   description?: string | null
   createdAt?: Date | string
-  Ports: string
+  Ports: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory: number
   Swap?: number
   Cpu: number
   Storage: number
-  Variables?: string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: string | null
   dockerImage?: string | null
   allowStartupEdit?: boolean
@@ -2492,12 +2480,12 @@ export type ServerUpdateWithoutSftpCredentialInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  Ports?: Prisma.StringFieldUpdateOperationsInput | string
+  Ports?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory?: Prisma.IntFieldUpdateOperationsInput | number
   Swap?: Prisma.IntFieldUpdateOperationsInput | number
   Cpu?: Prisma.IntFieldUpdateOperationsInput | number
   Storage?: Prisma.IntFieldUpdateOperationsInput | number
-  Variables?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allowStartupEdit?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2527,12 +2515,12 @@ export type ServerUncheckedUpdateWithoutSftpCredentialInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  Ports?: Prisma.StringFieldUpdateOperationsInput | string
+  Ports?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory?: Prisma.IntFieldUpdateOperationsInput | number
   Swap?: Prisma.IntFieldUpdateOperationsInput | number
   Cpu?: Prisma.IntFieldUpdateOperationsInput | number
   Storage?: Prisma.IntFieldUpdateOperationsInput | number
-  Variables?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allowStartupEdit?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2561,12 +2549,12 @@ export type ServerCreateWithoutSubUsersInput = {
   name: string
   description?: string | null
   createdAt?: Date | string
-  Ports: string
+  Ports: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory: number
   Swap?: number
   Cpu: number
   Storage: number
-  Variables?: string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: string | null
   dockerImage?: string | null
   allowStartupEdit?: boolean
@@ -2596,12 +2584,12 @@ export type ServerUncheckedCreateWithoutSubUsersInput = {
   name: string
   description?: string | null
   createdAt?: Date | string
-  Ports: string
+  Ports: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory: number
   Swap?: number
   Cpu: number
   Storage: number
-  Variables?: string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: string | null
   dockerImage?: string | null
   allowStartupEdit?: boolean
@@ -2646,12 +2634,12 @@ export type ServerUpdateWithoutSubUsersInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  Ports?: Prisma.StringFieldUpdateOperationsInput | string
+  Ports?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory?: Prisma.IntFieldUpdateOperationsInput | number
   Swap?: Prisma.IntFieldUpdateOperationsInput | number
   Cpu?: Prisma.IntFieldUpdateOperationsInput | number
   Storage?: Prisma.IntFieldUpdateOperationsInput | number
-  Variables?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allowStartupEdit?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2681,12 +2669,12 @@ export type ServerUncheckedUpdateWithoutSubUsersInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  Ports?: Prisma.StringFieldUpdateOperationsInput | string
+  Ports?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory?: Prisma.IntFieldUpdateOperationsInput | number
   Swap?: Prisma.IntFieldUpdateOperationsInput | number
   Cpu?: Prisma.IntFieldUpdateOperationsInput | number
   Storage?: Prisma.IntFieldUpdateOperationsInput | number
-  Variables?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allowStartupEdit?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2715,12 +2703,12 @@ export type ServerCreateWithoutActivityLogsInput = {
   name: string
   description?: string | null
   createdAt?: Date | string
-  Ports: string
+  Ports: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory: number
   Swap?: number
   Cpu: number
   Storage: number
-  Variables?: string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: string | null
   dockerImage?: string | null
   allowStartupEdit?: boolean
@@ -2750,12 +2738,12 @@ export type ServerUncheckedCreateWithoutActivityLogsInput = {
   name: string
   description?: string | null
   createdAt?: Date | string
-  Ports: string
+  Ports: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory: number
   Swap?: number
   Cpu: number
   Storage: number
-  Variables?: string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: string | null
   dockerImage?: string | null
   allowStartupEdit?: boolean
@@ -2800,12 +2788,12 @@ export type ServerUpdateWithoutActivityLogsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  Ports?: Prisma.StringFieldUpdateOperationsInput | string
+  Ports?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory?: Prisma.IntFieldUpdateOperationsInput | number
   Swap?: Prisma.IntFieldUpdateOperationsInput | number
   Cpu?: Prisma.IntFieldUpdateOperationsInput | number
   Storage?: Prisma.IntFieldUpdateOperationsInput | number
-  Variables?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allowStartupEdit?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2835,12 +2823,12 @@ export type ServerUncheckedUpdateWithoutActivityLogsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  Ports?: Prisma.StringFieldUpdateOperationsInput | string
+  Ports?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory?: Prisma.IntFieldUpdateOperationsInput | number
   Swap?: Prisma.IntFieldUpdateOperationsInput | number
   Cpu?: Prisma.IntFieldUpdateOperationsInput | number
   Storage?: Prisma.IntFieldUpdateOperationsInput | number
-  Variables?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allowStartupEdit?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2870,12 +2858,12 @@ export type ServerCreateManyOwnerInput = {
   name: string
   description?: string | null
   createdAt?: Date | string
-  Ports: string
+  Ports: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory: number
   Swap?: number
   Cpu: number
   Storage: number
-  Variables?: string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: string | null
   dockerImage?: string | null
   allowStartupEdit?: boolean
@@ -2895,12 +2883,12 @@ export type ServerUpdateWithoutOwnerInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  Ports?: Prisma.StringFieldUpdateOperationsInput | string
+  Ports?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory?: Prisma.IntFieldUpdateOperationsInput | number
   Swap?: Prisma.IntFieldUpdateOperationsInput | number
   Cpu?: Prisma.IntFieldUpdateOperationsInput | number
   Storage?: Prisma.IntFieldUpdateOperationsInput | number
-  Variables?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allowStartupEdit?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2930,12 +2918,12 @@ export type ServerUncheckedUpdateWithoutOwnerInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  Ports?: Prisma.StringFieldUpdateOperationsInput | string
+  Ports?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory?: Prisma.IntFieldUpdateOperationsInput | number
   Swap?: Prisma.IntFieldUpdateOperationsInput | number
   Cpu?: Prisma.IntFieldUpdateOperationsInput | number
   Storage?: Prisma.IntFieldUpdateOperationsInput | number
-  Variables?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allowStartupEdit?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2965,12 +2953,12 @@ export type ServerUncheckedUpdateManyWithoutOwnerInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  Ports?: Prisma.StringFieldUpdateOperationsInput | string
+  Ports?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory?: Prisma.IntFieldUpdateOperationsInput | number
   Swap?: Prisma.IntFieldUpdateOperationsInput | number
   Cpu?: Prisma.IntFieldUpdateOperationsInput | number
   Storage?: Prisma.IntFieldUpdateOperationsInput | number
-  Variables?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allowStartupEdit?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2991,12 +2979,12 @@ export type ServerCreateManyImageInput = {
   name: string
   description?: string | null
   createdAt?: Date | string
-  Ports: string
+  Ports: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory: number
   Swap?: number
   Cpu: number
   Storage: number
-  Variables?: string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: string | null
   dockerImage?: string | null
   allowStartupEdit?: boolean
@@ -3016,12 +3004,12 @@ export type ServerUpdateWithoutImageInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  Ports?: Prisma.StringFieldUpdateOperationsInput | string
+  Ports?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory?: Prisma.IntFieldUpdateOperationsInput | number
   Swap?: Prisma.IntFieldUpdateOperationsInput | number
   Cpu?: Prisma.IntFieldUpdateOperationsInput | number
   Storage?: Prisma.IntFieldUpdateOperationsInput | number
-  Variables?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allowStartupEdit?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3051,12 +3039,12 @@ export type ServerUncheckedUpdateWithoutImageInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  Ports?: Prisma.StringFieldUpdateOperationsInput | string
+  Ports?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory?: Prisma.IntFieldUpdateOperationsInput | number
   Swap?: Prisma.IntFieldUpdateOperationsInput | number
   Cpu?: Prisma.IntFieldUpdateOperationsInput | number
   Storage?: Prisma.IntFieldUpdateOperationsInput | number
-  Variables?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allowStartupEdit?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3086,12 +3074,12 @@ export type ServerUncheckedUpdateManyWithoutImageInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  Ports?: Prisma.StringFieldUpdateOperationsInput | string
+  Ports?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory?: Prisma.IntFieldUpdateOperationsInput | number
   Swap?: Prisma.IntFieldUpdateOperationsInput | number
   Cpu?: Prisma.IntFieldUpdateOperationsInput | number
   Storage?: Prisma.IntFieldUpdateOperationsInput | number
-  Variables?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allowStartupEdit?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3112,12 +3100,12 @@ export type ServerCreateManyNodeInput = {
   name: string
   description?: string | null
   createdAt?: Date | string
-  Ports: string
+  Ports: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory: number
   Swap?: number
   Cpu: number
   Storage: number
-  Variables?: string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: string | null
   dockerImage?: string | null
   allowStartupEdit?: boolean
@@ -3137,12 +3125,12 @@ export type ServerUpdateWithoutNodeInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  Ports?: Prisma.StringFieldUpdateOperationsInput | string
+  Ports?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory?: Prisma.IntFieldUpdateOperationsInput | number
   Swap?: Prisma.IntFieldUpdateOperationsInput | number
   Cpu?: Prisma.IntFieldUpdateOperationsInput | number
   Storage?: Prisma.IntFieldUpdateOperationsInput | number
-  Variables?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allowStartupEdit?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3172,12 +3160,12 @@ export type ServerUncheckedUpdateWithoutNodeInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  Ports?: Prisma.StringFieldUpdateOperationsInput | string
+  Ports?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory?: Prisma.IntFieldUpdateOperationsInput | number
   Swap?: Prisma.IntFieldUpdateOperationsInput | number
   Cpu?: Prisma.IntFieldUpdateOperationsInput | number
   Storage?: Prisma.IntFieldUpdateOperationsInput | number
-  Variables?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allowStartupEdit?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3207,12 +3195,12 @@ export type ServerUncheckedUpdateManyWithoutNodeInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  Ports?: Prisma.StringFieldUpdateOperationsInput | string
+  Ports?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   Memory?: Prisma.IntFieldUpdateOperationsInput | number
   Swap?: Prisma.IntFieldUpdateOperationsInput | number
   Cpu?: Prisma.IntFieldUpdateOperationsInput | number
   Storage?: Prisma.IntFieldUpdateOperationsInput | number
-  Variables?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  Variables?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   StartCommand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allowStartupEdit?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3488,12 +3476,12 @@ export type $ServerPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     name: string
     description: string | null
     createdAt: Date
-    Ports: string
+    Ports: runtime.JsonValue
     Memory: number
     Swap: number
     Cpu: number
     Storage: number
-    Variables: string | null
+    Variables: runtime.JsonValue | null
     StartCommand: string | null
     dockerImage: string | null
     allowStartupEdit: boolean
@@ -3947,12 +3935,12 @@ export interface ServerFieldRefs {
   readonly name: Prisma.FieldRef<"Server", 'String'>
   readonly description: Prisma.FieldRef<"Server", 'String'>
   readonly createdAt: Prisma.FieldRef<"Server", 'DateTime'>
-  readonly Ports: Prisma.FieldRef<"Server", 'String'>
+  readonly Ports: Prisma.FieldRef<"Server", 'Json'>
   readonly Memory: Prisma.FieldRef<"Server", 'Int'>
   readonly Swap: Prisma.FieldRef<"Server", 'Int'>
   readonly Cpu: Prisma.FieldRef<"Server", 'Int'>
   readonly Storage: Prisma.FieldRef<"Server", 'Int'>
-  readonly Variables: Prisma.FieldRef<"Server", 'String'>
+  readonly Variables: Prisma.FieldRef<"Server", 'Json'>
   readonly StartCommand: Prisma.FieldRef<"Server", 'String'>
   readonly dockerImage: Prisma.FieldRef<"Server", 'String'>
   readonly allowStartupEdit: Prisma.FieldRef<"Server", 'Boolean'>

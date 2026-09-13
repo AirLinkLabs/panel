@@ -167,6 +167,7 @@ describe("admin activity module", () => {
       res.locals.airlinkVersion = "test";
       res.locals.airlinkCodename = "test";
       res.locals.isMobileViewport = false;
+      res.locals.assetUrl = (p: string) => p;
       next();
     });
     app.use("/", activityModule.router());

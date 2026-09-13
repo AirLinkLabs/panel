@@ -1,13 +1,16 @@
-import prisma from '../db';
-import { validateVariableRules } from '../modules/user/server/startup';
-import type { ServerVariable } from '../modules/user/server/shared';
+import prisma from "../db";
+import { validateVariableRules } from "../modules/user/server/startup";
+import type { ServerVariable } from "../modules/user/server/shared";
 
 /**
  * Parse dockerImage JSON from a server record, returning the first value or null.
  */
-function parseDockerImage(raw: string | null): string | null {
+function parseDockerImage(raw: unknown): string | null {
   try {
-    const d = JSON.parse(raw || '{}');
+    const d = (raw && typeof raw === "object" ? raw : {}) as Record<
+      string,
+      string
+    >;
     return (Object.values(d)[0] as string) ?? null;
   } catch {
     return null;
@@ -17,9 +20,9 @@ function parseDockerImage(raw: string | null): string | null {
 /**
  * Parse Variables JSON from a server record into an array.
  */
-function parseVariables(raw: string | null): ServerVariable[] {
+function parseVariables(raw: unknown): ServerVariable[] {
   try {
-    const parsed = JSON.parse(raw || '[]');
+    const parsed = raw ?? [];
     return Array.isArray(parsed) ? parsed : [];
   } catch {
     return [];
@@ -76,7 +79,7 @@ export async function updateStartup(
     include: { node: true, image: true },
   });
   if (!server) {
-    return { error: 'Server not found' };
+    return { error: "Server not found" };
   }
 
   const updateData: Record<string, unknown> = {};
@@ -89,13 +92,14 @@ export async function updateStartup(
     let valid = false;
     let imageObj: Record<string, string> = {};
     try {
-      const arr = JSON.parse(server.image?.dockerImages || '[]');
+      const arr = server.image?.dockerImages;
       if (Array.isArray(arr)) {
         for (const obj of arr) {
-          for (const key of Object.keys(obj)) {
+          const record = obj as Record<string, string>;
+          for (const key of Object.keys(record)) {
             if (key === data.dockerImage) {
               valid = true;
-              imageObj = { [key]: obj[key] };
+              imageObj = { [key]: String(record[key]) };
             }
           }
         }
@@ -104,19 +108,23 @@ export async function updateStartup(
       // invalid docker images config
     }
     if (!valid) {
-      return { error: 'Invalid Docker image selected' };
+      return { error: "Invalid Docker image selected" };
     }
-    updateData.dockerImage = JSON.stringify(imageObj);
+    updateData.dockerImage = imageObj;
   }
 
   if (data.variables !== undefined) {
     if (!Array.isArray(data.variables)) {
-      return { error: 'Variables must be an array' };
+      return { error: "Variables must be an array" };
     }
 
     let defs: { env?: string; rules?: string; rulesMessage?: string }[];
     try {
-      defs = JSON.parse(server.Variables || '[]');
+      defs = (server.Variables ?? []) as {
+        env?: string;
+        rules?: string;
+        rulesMessage?: string;
+      }[];
     } catch {
       defs = [];
     }
@@ -129,16 +137,16 @@ export async function updateStartup(
         : v;
       const err = validateVariableRules(
         rulesSource as ServerVariable,
-        String(v.value ?? ''),
+        String(v.value ?? ""),
       );
       if (err) {
         return {
-          error: 'Variable validation failed.',
+          error: "Variable validation failed.",
           fields: [{ key: String(v.env), error: err }],
         };
       }
     }
-    updateData.Variables = JSON.stringify(data.variables);
+    updateData.Variables = data.variables;
   }
 
   if (Object.keys(updateData).length > 0) {
