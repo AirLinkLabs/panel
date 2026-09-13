@@ -55,8 +55,7 @@ const opts = {
 // ── Help ──────────────────────────────────────────────────────────────────────
 
 function showHelp() {
-  const lines = [
-    "db-backup.mjs  —  PostgreSQL backup tool",
+  box("db-backup.mjs — PostgreSQL backup tool", [
     "",
     "  node scripts/db-backup.mjs [flags]",
     "",
@@ -66,8 +65,7 @@ function showHelp() {
     "  --help, -h        Show this message",
     "",
     "  Env: BACKUP_PASSWORD   alternative to --password",
-  ];
-  Logger.banner(lines);
+  ]).forEach((l) => console.log(l));
   process.exit(0);
 }
 
@@ -148,8 +146,7 @@ async function main() {
 
   // Banner
   const mode = opts.encrypt ? "ENCRYPTED BACKUP" : "PLAIN BACKUP";
-  Logger.banner([
-    `${mode}`,
+  box(mode, [
     "",
     "  Creates a pg_dump of the airlink database.",
     opts.encrypt
@@ -157,7 +154,7 @@ async function main() {
       : "  Archive will be stored in plaintext.",
     "",
     "  Backups are stored in a root-protected directory.",
-  ]);
+  ]).forEach((l) => console.log(l));
 
   // Load .env
   const env = readEnv();

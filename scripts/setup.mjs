@@ -37,37 +37,42 @@
 
 import { execSync, execFileSync, spawnSync } from "node:child_process";
 import { existsSync, writeFileSync, readFileSync } from "node:fs";
-import { randomBytes }   from "node:crypto";
+import { randomBytes } from "node:crypto";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import os                from "node:os";
+import os from "node:os";
 
-import { Logger, prompt, confirm, spinner } from "./ui.mjs";
+import { Logger, box, prompt, confirm, spinner } from "./ui.mjs";
 
-const __dirname  = dirname(fileURLToPath(import.meta.url));
+const __dirname = dirname(fileURLToPath(import.meta.url));
 const projectDir = resolve(__dirname, "..");
 
 // ── Platform ──────────────────────────────────────────────────────────────────
 
 const PLATFORM = process.platform;
-const ARCH     = process.arch;
-const IS_WIN   = PLATFORM === "win32";
-const IS_MAC   = PLATFORM === "darwin";
+const ARCH = process.arch;
+const IS_WIN = PLATFORM === "win32";
+const IS_MAC = PLATFORM === "darwin";
 const IS_LINUX = PLATFORM === "linux";
 
 // ── Package metadata ──────────────────────────────────────────────────────────
 
 function loadPackageMeta() {
-  for (const p of [resolve(projectDir, "package.json"), resolve(__dirname, "package.json")]) {
+  for (const p of [
+    resolve(projectDir, "package.json"),
+    resolve(__dirname, "package.json"),
+  ]) {
     if (!existsSync(p)) continue;
     try {
       const raw = JSON.parse(readFileSync(p, "utf-8"));
       return {
-        name   : raw.name     ?? "Panel",
-        version: raw.version  ?? "0.0.0",
-        engines: raw.engines  ?? {},
+        name: raw.name ?? "Panel",
+        version: raw.version ?? "0.0.0",
+        engines: raw.engines ?? {},
       };
-    } catch { /* try next */ }
+    } catch {
+      /* try next */
+    }
   }
   return { name: "Panel", version: "0.0.0", engines: {} };
 }
@@ -82,41 +87,39 @@ function flag(name, fallback = null) {
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === name && argv[i + 1] && !argv[i + 1].startsWith("-"))
       return argv[i + 1];
-    if (argv[i].startsWith(`${name}=`))
-      return argv[i].slice(name.length + 1);
+    if (argv[i].startsWith(`${name}=`)) return argv[i].slice(name.length + 1);
   }
   return fallback;
 }
 
 const opts = {
-  yes          : argv.includes("--yes")          || argv.includes("-y"),
-  help         : argv.includes("--help")         || argv.includes("-h"),
-  skipServices : argv.includes("--skip-services"),
-  skipBuild    : argv.includes("--skip-build"),
-  dbHost       : flag("--db-host",         "127.0.0.1"),
-  dbPort       : flag("--db-port",         "5432"),
-  dbName       : flag("--db-name",         "airlink"),
-  dbUser       : flag("--db-user",         "airlink"),
-  redisUrl     : flag("--redis-url",       null),
-  url          : flag("--url",             "http://localhost:3000"),
-  assetUrl     : flag("--asset-url",       ""),
-  assetBaseUrl : flag("--asset-base-url",  ""),
-  trustProxy   : argv.includes("--trust-proxy"),
-  cookieDomain : flag("--cookie-domain",   ""),
-  cspEnabled   : argv.includes("--csp-enabled"),
-  rateLimit    : flag("--rate-limit",      "500"),
-  logLevel     : flag("--log-level",       "info"),
-  smtpHost     : flag("--smtp-host",       ""),
-  smtpPort     : flag("--smtp-port",       "587"),
-  smtpUser     : flag("--smtp-user",       ""),
-  smtpPass     : flag("--smtp-pass",       ""),
+  yes: argv.includes("--yes") || argv.includes("-y"),
+  help: argv.includes("--help") || argv.includes("-h"),
+  skipServices: argv.includes("--skip-services"),
+  skipBuild: argv.includes("--skip-build"),
+  dbHost: flag("--db-host", "127.0.0.1"),
+  dbPort: flag("--db-port", "5432"),
+  dbName: flag("--db-name", "airlink"),
+  dbUser: flag("--db-user", "airlink"),
+  redisUrl: flag("--redis-url", null),
+  url: flag("--url", "http://localhost:3000"),
+  assetUrl: flag("--asset-url", ""),
+  assetBaseUrl: flag("--asset-base-url", ""),
+  trustProxy: argv.includes("--trust-proxy"),
+  cookieDomain: flag("--cookie-domain", ""),
+  cspEnabled: argv.includes("--csp-enabled"),
+  rateLimit: flag("--rate-limit", "500"),
+  logLevel: flag("--log-level", "info"),
+  smtpHost: flag("--smtp-host", ""),
+  smtpPort: flag("--smtp-port", "587"),
+  smtpUser: flag("--smtp-user", ""),
+  smtpPass: flag("--smtp-pass", ""),
 };
 
 // ── Help ──────────────────────────────────────────────────────────────────────
 
 function showHelp() {
-  Logger.banner([
-    `${PKG.name} v${PKG.version}  —  First-run setup`,
+  box(`${PKG.name} v${PKG.version} — First-run setup`, [
     "",
     "  node scripts/setup.mjs [flags]",
     "",
@@ -139,7 +142,7 @@ function showHelp() {
     "  --smtp-user USER       SMTP username",
     "  --smtp-pass PASS       SMTP password",
     "  --help, -h             Show this message",
-  ]);
+  ]).forEach((l) => console.log(l));
   process.exit(0);
 }
 
@@ -148,9 +151,9 @@ function showHelp() {
 function run(cmd, extraOpts = {}) {
   try {
     const out = execSync(cmd, {
-      stdio  : "pipe",
+      stdio: "pipe",
       timeout: 120_000,
-      cwd    : projectDir,
+      cwd: projectDir,
       ...extraOpts,
     });
     return out?.toString().trim() ?? "";
@@ -161,17 +164,26 @@ function run(cmd, extraOpts = {}) {
 
 function runFile(file, args) {
   try {
-    return execFileSync(file, args, { stdio: "pipe", timeout: 120_000, cwd: projectDir })
-      ?.toString().trim() ?? "";
-  } catch { return null; }
+    return (
+      execFileSync(file, args, {
+        stdio: "pipe",
+        timeout: 120_000,
+        cwd: projectDir,
+      })
+        ?.toString()
+        .trim() ?? ""
+    );
+  } catch {
+    return null;
+  }
 }
 
 function runLive(cmd, label) {
   Logger.info(label);
   const result = spawnSync(cmd, {
-    shell  : true,
-    stdio  : "inherit",
-    cwd    : projectDir,
+    shell: true,
+    stdio: "inherit",
+    cwd: projectDir,
     timeout: 300_000,
   });
   if (result.status !== 0) {
@@ -207,24 +219,35 @@ function buildInstallCmd(pkgMgr, map) {
   const pkg = map[pkgMgr];
   if (!pkg) return null;
   switch (pkgMgr) {
-    case "apt-get": return `sudo apt-get update -qq && sudo apt-get install -y ${pkg}`;
-    case "dnf":     return `sudo dnf install -y ${pkg}`;
-    case "yum":     return `sudo yum install -y ${pkg}`;
-    case "pacman":  return `sudo pacman -Sy --noconfirm ${pkg}`;
-    case "zypper":  return `sudo zypper install -y ${pkg}`;
-    case "apk":     return `sudo apk add --no-cache ${pkg}`;
-    case "brew":    return `brew install ${pkg}`;
-    case "winget":  return `winget install --silent --accept-package-agreements --accept-source-agreements ${pkg}`;
-    case "choco":   return `choco install ${pkg} -y`;
-    case "scoop":   return `scoop install ${pkg}`;
-    default:        return null;
+    case "apt-get":
+      return `sudo apt-get update -qq && sudo apt-get install -y ${pkg}`;
+    case "dnf":
+      return `sudo dnf install -y ${pkg}`;
+    case "yum":
+      return `sudo yum install -y ${pkg}`;
+    case "pacman":
+      return `sudo pacman -Sy --noconfirm ${pkg}`;
+    case "zypper":
+      return `sudo zypper install -y ${pkg}`;
+    case "apk":
+      return `sudo apk add --no-cache ${pkg}`;
+    case "brew":
+      return `brew install ${pkg}`;
+    case "winget":
+      return `winget install --silent --accept-package-agreements --accept-source-agreements ${pkg}`;
+    case "choco":
+      return `choco install ${pkg} -y`;
+    case "scoop":
+      return `scoop install ${pkg}`;
+    default:
+      return null;
   }
 }
 
 // ── Crypto helpers ────────────────────────────────────────────────────────────
 
 const genPassword = () => randomBytes(32).toString("base64url");
-const genSecret   = () => randomBytes(32).toString("hex");
+const genSecret = () => randomBytes(32).toString("hex");
 
 // ── .env helpers ──────────────────────────────────────────────────────────────
 
@@ -234,7 +257,9 @@ function readEnvFile() {
   return Object.fromEntries(
     readFileSync(envPath, "utf8")
       .split(/\r?\n/)
-      .map((l) => l.match(/^\s*([A-Z_][A-Z0-9_]*)\s*=\s*["']?([^"']*)["']?\s*$/i))
+      .map((l) =>
+        l.match(/^\s*([A-Z_][A-Z0-9_]*)\s*=\s*["']?([^"']*)["']?\s*$/i),
+      )
       .filter(Boolean)
       .map((m) => [m[1], m[2]]),
   );
@@ -244,7 +269,9 @@ const isTemplateEnv = (env) => env.SESSION_SECRET === "change_me";
 
 function assertSqlIdentifier(val, label) {
   if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(val))
-    throw new Error(`${label} may only contain letters, numbers, and underscores.`);
+    throw new Error(
+      `${label} may only contain letters, numbers, and underscores.`,
+    );
 }
 
 // ── Service helpers ───────────────────────────────────────────────────────────
@@ -252,9 +279,13 @@ function assertSqlIdentifier(val, label) {
 function serviceIsActive(name) {
   if (IS_WIN) return !!run(`sc query "${name}" 2>nul`)?.includes("RUNNING");
   if (IS_MAC) return !!run(`launchctl list 2>/dev/null | grep "${name}"`);
-  if (run(`systemctl is-active "${name}" 2>/dev/null`) === "active") return true;
-  return run(`service "${name}" status 2>/dev/null; echo $?`, { timeout: 5_000 })
-    ?.split("\n").pop() === "0";
+  if (run(`systemctl is-active "${name}" 2>/dev/null`) === "active")
+    return true;
+  return (
+    run(`service "${name}" status 2>/dev/null; echo $?`, { timeout: 5_000 })
+      ?.split("\n")
+      .pop() === "0"
+  );
 }
 
 function startService(name, binaryFallback = null) {
@@ -263,8 +294,7 @@ function startService(name, binaryFallback = null) {
   else if (IS_LINUX) {
     if (existsSync("/run/systemd/system"))
       run(`sudo systemctl start "${name}" 2>/dev/null`, { timeout: 15_000 });
-    else
-      run(`sudo service "${name}" start 2>/dev/null`, { timeout: 5_000 });
+    else run(`sudo service "${name}" start 2>/dev/null`, { timeout: 5_000 });
     if (!serviceIsActive(name) && binaryFallback) run(binaryFallback);
   }
   return serviceIsActive(name);
@@ -272,7 +302,7 @@ function startService(name, binaryFallback = null) {
 
 function enableService(name) {
   if (IS_MAC) run(`brew services restart "${name}" 2>/dev/null`);
-  else        run(`sudo systemctl enable "${name}" 2>/dev/null || true`);
+  else run(`sudo systemctl enable "${name}" 2>/dev/null || true`);
 }
 
 // ── Node / pnpm check ────────────────────────────────────────────────────────
@@ -293,11 +323,19 @@ function checkNode() {
 
 function checkPkgMgr() {
   const pnpmVer = run("pnpm --version");
-  if (pnpmVer) { PKG_MGR = "pnpm"; Logger.ok(`pnpm ${pnpmVer}`); return; }
+  if (pnpmVer) {
+    PKG_MGR = "pnpm";
+    Logger.ok(`pnpm ${pnpmVer}`);
+    return;
+  }
 
   Logger.warn("pnpm not found — installing via npm...");
   run("npm install -g pnpm", { stdio: "inherit" });
-  if (which("pnpm")) { PKG_MGR = "pnpm"; Logger.ok(`pnpm ${run("pnpm --version")} (just installed)`); return; }
+  if (which("pnpm")) {
+    PKG_MGR = "pnpm";
+    Logger.ok(`pnpm ${run("pnpm --version")} (just installed)`);
+    return;
+  }
 
   Logger.warn("Could not install pnpm — falling back to npm");
   PKG_MGR = "npm";
@@ -314,12 +352,34 @@ async function ensureRedis() {
     Logger.warn("redis-server not found on PATH");
     if (!opts.yes) {
       const go = await confirm("Install Redis automatically?");
-      if (!go) { Logger.fail("Redis is required. Install it manually."); process.exit(1); }
+      if (!go) {
+        Logger.fail("Redis is required. Install it manually.");
+        process.exit(1);
+      }
     }
 
-    const mgr = IS_MAC ? (which("brew") ? "brew" : null) : IS_LINUX ? detectLinuxPkgMgr() : null;
-    const cmd = mgr ? buildInstallCmd(mgr, { "apt-get": "redis-server", dnf: "redis", yum: "redis", pacman: "redis", zypper: "redis", apk: "redis", brew: "redis" }) : null;
-    if (!cmd) { Logger.fail("Cannot determine how to install Redis."); process.exit(1); }
+    const mgr = IS_MAC
+      ? which("brew")
+        ? "brew"
+        : null
+      : IS_LINUX
+        ? detectLinuxPkgMgr()
+        : null;
+    const cmd = mgr
+      ? buildInstallCmd(mgr, {
+          "apt-get": "redis-server",
+          dnf: "redis",
+          yum: "redis",
+          pacman: "redis",
+          zypper: "redis",
+          apk: "redis",
+          brew: "redis",
+        })
+      : null;
+    if (!cmd) {
+      Logger.fail("Cannot determine how to install Redis.");
+      process.exit(1);
+    }
 
     await spinner("Installing Redis", async () => {
       if (run(cmd) === null) throw new Error("Redis install failed");
@@ -329,8 +389,8 @@ async function ensureRedis() {
     Logger.ok(`redis-server found at ${redisBin}`);
   }
 
-  const svcName   = IS_WIN ? "Redis" : IS_MAC ? "redis" : "redis-server";
-  const redisCli  = which("redis-cli") || "redis-cli";
+  const svcName = IS_WIN ? "Redis" : IS_MAC ? "redis" : "redis-server";
+  const redisCli = which("redis-cli") || "redis-cli";
   const redisReady = () => run(`${redisCli} ping 2>/dev/null`) === "PONG";
 
   if (!redisReady() && !serviceIsActive(svcName)) {
@@ -363,20 +423,34 @@ async function ensurePostgres() {
     Logger.warn("psql not found on PATH");
     if (!opts.yes) {
       const go = await confirm("Install PostgreSQL automatically?");
-      if (!go) { Logger.fail("PostgreSQL is required. Install it manually."); process.exit(1); }
+      if (!go) {
+        Logger.fail("PostgreSQL is required. Install it manually.");
+        process.exit(1);
+      }
     }
 
-    const mgr = IS_MAC ? (which("brew") ? "brew" : null) : IS_LINUX ? detectLinuxPkgMgr() : null;
-    const cmd = mgr ? buildInstallCmd(mgr, {
-      "apt-get": "postgresql postgresql-contrib",
-      dnf:  "postgresql-server postgresql",
-      yum:  "postgresql-server postgresql",
-      pacman: "postgresql",
-      zypper: "postgresql-server postgresql",
-      apk:  "postgresql postgresql-contrib",
-      brew: "postgresql@16",
-    }) : null;
-    if (!cmd) { Logger.fail("Cannot determine how to install PostgreSQL."); process.exit(1); }
+    const mgr = IS_MAC
+      ? which("brew")
+        ? "brew"
+        : null
+      : IS_LINUX
+        ? detectLinuxPkgMgr()
+        : null;
+    const cmd = mgr
+      ? buildInstallCmd(mgr, {
+          "apt-get": "postgresql postgresql-contrib",
+          dnf: "postgresql-server postgresql",
+          yum: "postgresql-server postgresql",
+          pacman: "postgresql",
+          zypper: "postgresql-server postgresql",
+          apk: "postgresql postgresql-contrib",
+          brew: "postgresql@16",
+        })
+      : null;
+    if (!cmd) {
+      Logger.fail("Cannot determine how to install PostgreSQL.");
+      process.exit(1);
+    }
 
     await spinner("Installing PostgreSQL", async () => {
       if (run(cmd) === null) throw new Error("PostgreSQL install failed");
@@ -386,17 +460,22 @@ async function ensurePostgres() {
     Logger.ok(`psql found at ${pgBin}`);
   }
 
-  const svcName = IS_WIN ? "postgresql-x64-16" : IS_MAC ? "postgresql" : "postgresql";
+  const svcName = IS_WIN
+    ? "postgresql-x64-16"
+    : IS_MAC
+      ? "postgresql"
+      : "postgresql";
   const pgReady = () => {
-    const r = run(`sudo -u postgres psql -t -c "SELECT 1" 2>/dev/null`, { timeout: 5_000 });
+    const r = run(`sudo -u postgres psql -t -c "SELECT 1" 2>/dev/null`, {
+      timeout: 5_000,
+    });
     return r?.trim() === "1";
   };
 
   if (!pgReady()) {
     Logger.warn(`PostgreSQL service '${svcName}' is not responding`);
     await spinner("Starting PostgreSQL", async () => {
-      if (!startService(svcName))
-        throw new Error("Could not start PostgreSQL");
+      if (!startService(svcName)) throw new Error("Could not start PostgreSQL");
     });
     enableService(svcName);
     Logger.ok("PostgreSQL started and enabled");
@@ -429,12 +508,16 @@ async function setupDatabase() {
   Logger.section("Database");
 
   const existingEnv = readEnvFile();
-  const loadedUrl   = !isTemplateEnv(existingEnv) && existingEnv.DATABASE_URL;
+  const loadedUrl = !isTemplateEnv(existingEnv) && existingEnv.DATABASE_URL;
   let parsed;
-  try { parsed = loadedUrl ? new URL(loadedUrl) : null; } catch { parsed = null; }
+  try {
+    parsed = loadedUrl ? new URL(loadedUrl) : null;
+  } catch {
+    parsed = null;
+  }
 
   const dbHost = parsed?.hostname ?? opts.dbHost;
-  const dbPort = parsed?.port     ?? opts.dbPort;
+  const dbPort = parsed?.port ?? opts.dbPort;
   const dbName = parsed?.pathname?.slice(1) || opts.dbName;
   const dbUser = parsed?.username ?? opts.dbUser;
   const dbPass = existingEnv.PGPASSWORD ?? parsed?.password ?? genPassword();
@@ -443,17 +526,22 @@ async function setupDatabase() {
   assertSqlIdentifier(dbUser, "Database user");
 
   // Allow interactive override when not in CI mode
-  let finalHost = dbHost, finalPort = dbPort, finalName = dbName, finalUser = dbUser;
+  let finalHost = dbHost,
+    finalPort = dbPort,
+    finalName = dbName,
+    finalUser = dbUser;
   if (!opts.yes && !loadedUrl) {
     Logger.info("Press Enter to accept defaults");
-    finalHost = await prompt({ label: "PostgreSQL host",     default: dbHost });
-    finalPort = await prompt({ label: "PostgreSQL port",     default: dbPort });
-    finalName = await prompt({ label: "Database name",       default: dbName });
-    finalUser = await prompt({ label: "Database username",   default: dbUser });
+    finalHost = await prompt({ label: "PostgreSQL host", default: dbHost });
+    finalPort = await prompt({ label: "PostgreSQL port", default: dbPort });
+    finalName = await prompt({ label: "Database name", default: dbName });
+    finalUser = await prompt({ label: "Database username", default: dbUser });
   }
 
   // Create database if missing
-  const dbExists = psql(`SELECT 1 FROM pg_database WHERE datname = '${finalName}'`);
+  const dbExists = psql(
+    `SELECT 1 FROM pg_database WHERE datname = '${finalName}'`,
+  );
   if (!dbExists?.trim()) {
     await spinner(`Creating database '${finalName}'`, async () => {
       if (psql(`CREATE DATABASE "${finalName}"`) === null)
@@ -464,7 +552,9 @@ async function setupDatabase() {
   }
 
   // Create / refresh role
-  const roleExists = psql(`SELECT 1 FROM pg_roles WHERE rolname = '${finalUser}'`);
+  const roleExists = psql(
+    `SELECT 1 FROM pg_roles WHERE rolname = '${finalUser}'`,
+  );
   if (!roleExists?.trim()) {
     await spinner(`Creating role '${finalUser}'`, async () => {
       psql(`CREATE ROLE "${finalUser}" WITH LOGIN PASSWORD '${dbPass}'`);
@@ -482,8 +572,12 @@ async function setupDatabase() {
     psql(`GRANT CREATE ON SCHEMA public TO "${finalUser}"`);
     psql(`GRANT ALL ON ALL TABLES    IN SCHEMA public TO "${finalUser}"`);
     psql(`GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO "${finalUser}"`);
-    psql(`ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES    TO "${finalUser}"`);
-    psql(`ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO "${finalUser}"`);
+    psql(
+      `ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES    TO "${finalUser}"`,
+    );
+    psql(
+      `ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO "${finalUser}"`,
+    );
   });
 
   // Verify connection
@@ -495,7 +589,13 @@ async function setupDatabase() {
   }
   Logger.ok(`Connection as '${finalUser}' verified`);
 
-  return { dbHost: finalHost, dbPort: finalPort, dbName: finalName, dbUser: finalUser, dbPass };
+  return {
+    dbHost: finalHost,
+    dbPort: finalPort,
+    dbName: finalName,
+    dbUser: finalUser,
+    dbPass,
+  };
 }
 
 // ── .env generation ───────────────────────────────────────────────────────────
@@ -503,7 +603,7 @@ async function setupDatabase() {
 async function generateEnv(creds) {
   Logger.section("Environment file");
 
-  const envPath     = resolve(projectDir, ".env");
+  const envPath = resolve(projectDir, ".env");
   const existingEnv = readEnvFile();
 
   if (existsSync(envPath) && !isTemplateEnv(existingEnv)) {
@@ -512,19 +612,25 @@ async function generateEnv(creds) {
     return;
   }
 
-  let panelUrl     = opts.url;
-  let assetUrl     = opts.assetUrl;
+  let panelUrl = opts.url;
+  let assetUrl = opts.assetUrl;
   let assetBaseUrl = opts.assetBaseUrl;
 
   if (!opts.yes) {
     Logger.info("Panel configuration — press Enter to accept defaults");
-    panelUrl     = await prompt({ label: "Panel public URL",     default: panelUrl });
-    assetUrl     = await prompt({ label: "Asset CDN URL (empty for local)", default: assetUrl });
-    assetBaseUrl = await prompt({ label: "Asset base URL (empty for local)", default: assetBaseUrl });
+    panelUrl = await prompt({ label: "Panel public URL", default: panelUrl });
+    assetUrl = await prompt({
+      label: "Asset CDN URL (empty for local)",
+      default: assetUrl,
+    });
+    assetBaseUrl = await prompt({
+      label: "Asset base URL (empty for local)",
+      default: assetBaseUrl,
+    });
   }
 
   const { dbHost, dbPort, dbName, dbUser, dbPass } = creds;
-  const redisUrl      = opts.redisUrl ?? "redis://127.0.0.1:6379";
+  const redisUrl = opts.redisUrl ?? "redis://127.0.0.1:6379";
   const sessionSecret = genSecret();
 
   const lines = [
@@ -603,8 +709,12 @@ async function generateEnv(creds) {
 async function runPrisma() {
   Logger.section("Prisma");
   const exec = PKG_MGR === "pnpm" ? "pnpm exec" : "npx";
-  await spinner("prisma generate",  async () => runLive(`${exec} prisma generate`, "prisma generate"));
-  await spinner("prisma db push",   async () => runLive(`${exec} prisma db push`,  "prisma db push"));
+  await spinner("prisma generate", async () =>
+    runLive(`${exec} prisma generate`, "prisma generate"),
+  );
+  await spinner("prisma db push", async () =>
+    runLive(`${exec} prisma db push`, "prisma db push"),
+  );
 }
 
 // ── Build ─────────────────────────────────────────────────────────────────────
@@ -612,9 +722,11 @@ async function runPrisma() {
 async function runBuild() {
   Logger.section("Build");
   const installCmd = PKG_MGR === "pnpm" ? "pnpm install" : "npm install";
-  const exec       = PKG_MGR === "pnpm" ? "pnpm exec"    : "npx";
+  const exec = PKG_MGR === "pnpm" ? "pnpm exec" : "npx";
 
-  await spinner("Installing dependencies", async () => runLive(installCmd, "install"));
+  await spinner("Installing dependencies", async () =>
+    runLive(installCmd, "install"),
+  );
 
   await spinner("tsc (main)", async () => {
     const r = run(`${exec} tsc 2>&1`);
@@ -623,12 +735,16 @@ async function runBuild() {
 
   await spinner("tsc (prisma config)", async () => {
     const r = run(`${exec} tsc -p tsconfig.prisma.json 2>&1`);
-    if (r === null) Logger.warn("tsc (prisma) reported errors — check manually");
+    if (r === null)
+      Logger.warn("tsc (prisma) reported errors — check manually");
   });
 
   await spinner("Tailwind CSS", async () => {
-    const r = run(`${exec} tailwindcss -i ./public/styles/tw.css -o ./public/styles.css 2>&1`);
-    if (r === null) Logger.warn("Tailwind build failed — run build:css manually");
+    const r = run(
+      `${exec} tailwindcss -i ./public/styles/tw.css -o ./public/styles.css 2>&1`,
+    );
+    if (r === null)
+      Logger.warn("Tailwind build failed — run build:css manually");
   });
 }
 
@@ -659,7 +775,6 @@ function printSummary(creds) {
     "    .env              — configuration file",
   ];
 
-  const { box: boxFn } = await import("./ui.mjs").catch(() => ({ box: null }));
   lines.forEach((l) => console.log(`  ${l}`));
   Logger.gap();
 }
@@ -669,13 +784,9 @@ function printSummary(creds) {
 async function main() {
   if (opts.help) showHelp();
 
-  Logger.banner([
-    `${PKG.name} v${PKG.version}`,
-    "",
-    `  Platform : ${PLATFORM} (${ARCH})`,
-    `  Node     : ${process.version}`,
-    `  Project  : ${projectDir}`,
-  ]);
+  Logger.banner(`${PKG.name}`, PKG.version, `${PLATFORM} (${ARCH})`);
+  Logger.dim(`  Node    : ${process.version}`);
+  Logger.dim(`  Project : ${projectDir}`);
 
   checkNode();
   checkPkgMgr();

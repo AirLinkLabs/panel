@@ -9,6 +9,7 @@
  */
 
 import { spawnSync } from "node:child_process";
+import { readFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { Logger, box } from "./ui.mjs";
@@ -113,6 +114,13 @@ const commands = {
   },
 
   // Misc
+  help: {
+    desc: "Show all available commands",
+    run: () => {
+      showHelp();
+      return "";
+    },
+  },
   secret: {
     desc: "Generate new SESSION_SECRET",
     run: () => exec("node dist/cli/secret.js"),
@@ -149,7 +157,7 @@ const sections = [
       "db:status",
     ],
   },
-  { label: "Misc", cmds: ["secret"] },
+  { label: "Misc", cmds: ["help", "secret"] },
 ];
 
 // ── Routed scripts (own .mjs files) ──────────────────────────────────────────
@@ -204,19 +212,22 @@ function showHelp() {
     ...routed.map((r) => r.name),
   );
 
+  // Read version from package.json
+  let version = "2.5.x";
+  try {
+    const pkg = JSON.parse(
+      readFileSync(resolve(projectDir, "package.json"), "utf8"),
+    );
+    version = pkg.version || version;
+  } catch {}
+
   if (TTY) {
-    const banner = box(64, "", [
-      "  Airlink Panel  v2.5.x",
-      "",
-      "  Unified dispatcher for all package.json scripts.",
-    ]);
-    console.log();
-    banner.forEach((l) => console.log(`  ${l}`));
-    console.log();
+    Logger.banner("Airlink Panel", version, "Unified script dispatcher");
   }
 
-  console.log("  Usage");
-  console.log("  node scripts/executer.mjs <command> [flags]\n");
+  console.log(`  Usage`);
+  console.log(`  node scripts/executer.mjs <command> [flags]`);
+  console.log();
 
   for (const section of sections) {
     console.log(`  ${section.label}`);
@@ -228,7 +239,7 @@ function showHelp() {
     console.log();
   }
 
-  console.log("  Routed (own .mjs files)");
+  console.log(`  Routed (own .mjs files)`);
   for (const r of routed) {
     console.log(`    ${r.name.padEnd(maxCmd + 2)} ${r.desc}`);
   }

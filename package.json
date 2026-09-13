@@ -52,7 +52,7 @@
     "test:e2e:ui": "node scripts/executer.mjs test:e2e:ui",
     "test:docker": "node scripts/executer.mjs test:docker",
     "test:all": "node scripts/executer.mjs test:all",
-    "postinstall": "prisma generate"
+    "help": "node scripts/executer.mjs help"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1100.0",
