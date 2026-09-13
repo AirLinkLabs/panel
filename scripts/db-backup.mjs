@@ -1,53 +1,44 @@
 #!/usr/bin/env node
-
 /**
  * db-backup.mjs — Backup PostgreSQL database with optional AES encryption.
  *
- * Creates a pg_dump of the airlink database, optionally encrypts it with
- * a user-supplied password via openssl, and stores it in a root-protected
- * backup directory that requires root/sudo to delete.
+ * Creates a pg_dump of the airlink database, optionally encrypts it with a
+ * user-supplied password via openssl AES-256-CBC, and stores the result in a
+ * root-protected backup directory.
  *
  * Flags:
- *   --encrypt / -e    Prompt for an encryption password (AES-256-CBC via openssl).
- *   --yes / -y        Skip confirmation prompt (non-interactive / CI).
- *   --help / -h       Show this message.
+ *   --encrypt / -e    Prompt for an encryption password.
+ *   --password / -p   Supply encryption password non-interactively.
+ *   --yes / -y        Skip confirmation prompt.
+ *   --help / -h       Show help.
  *
  * Usage:
- *   node scripts/db-backup.mjs              # plain backup
- *   node scripts/db-backup.mjs --encrypt    # encrypted backup
- *   node scripts/db-backup.mjs -e -y        # encrypted, no prompts
+ *   node scripts/db-backup.mjs
+ *   node scripts/db-backup.mjs --encrypt
+ *   node scripts/db-backup.mjs -e -y
  */
 
 import { execSync } from "node:child_process";
 import { existsSync, readFileSync, mkdirSync, chmodSync } from "node:fs";
-import { createInterface } from "node:readline";
 import { resolve, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { homedir } from "node:os";
-import chalk from "chalk";
-import boxen from "boxen";
+
+import { Logger, box, prompt, secret, confirm, spinner } from "./ui.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const projectDir = resolve(__dirname, "..");
 
-// ── Arg parsing ──────────────────────────────────────────────────────────────
+// ── Arg parsing ───────────────────────────────────────────────────────────────
 
 const argv = process.argv.slice(2);
 
-function flagVal(name, fallback = null) {
+function flagVal(name) {
   for (let i = 0; i < argv.length; i++) {
-    if (
-      argv[i] === name &&
-      argv[i + 1] !== undefined &&
-      !argv[i + 1].startsWith("-")
-    ) {
+    if (argv[i] === name && argv[i + 1] && !argv[i + 1].startsWith("-"))
       return argv[i + 1];
-    }
-    if (argv[i].startsWith(`${name}=`)) {
-      return argv[i].slice(name.length + 1);
-    }
+    if (argv[i].startsWith(`${name}=`)) return argv[i].slice(name.length + 1);
   }
-  return fallback;
+  return null;
 }
 
 const opts = {
@@ -55,312 +46,241 @@ const opts = {
   yes: argv.includes("--yes") || argv.includes("-y"),
   help: argv.includes("--help") || argv.includes("-h"),
   password:
-    flagVal("--password") ||
-    flagVal("-p") ||
-    process.env.BACKUP_PASSWORD ||
+    flagVal("--password") ??
+    flagVal("-p") ??
+    process.env.BACKUP_PASSWORD ??
     null,
 };
 
-// ── Logging ──────────────────────────────────────────────────────────────────
-
-const TTY = process.stdout.isTTY;
-
-const ok = (msg) => console.log(`  ${chalk.green("+")} ${msg}`);
-const warn = (msg) =>
-  console.log(`  ${chalk.yellow("!")} ${chalk.yellow(msg)}`);
-const fail = (msg) => console.log(`  ${chalk.red("x")} ${chalk.red(msg)}`);
-const info = (msg) => console.log(`  ${chalk.cyan("->")} ${msg}`);
-const dim = (msg) => console.log(`  ${chalk.dim(msg)}`);
-const gap = () => console.log();
-
-function banner() {
-  if (TTY) {
-    const mode = opts.encrypt
-      ? chalk.bold.magenta("  ENCRYPTED BACKUP  ")
-      : chalk.bold.cyan("  PLAIN BACKUP  ");
-    console.log(
-      boxen(
-        [
-          mode,
-          "",
-          chalk.dim("  Creates a pg_dump of the airlink database."),
-          opts.encrypt
-            ? chalk.dim("  Archive will be AES-256-CBC encrypted.")
-            : chalk.dim("  Archive will be stored in plaintext."),
-          "",
-          chalk.dim("  Backups are stored in a root-protected directory."),
-        ].join("\n"),
-        {
-          padding: 1,
-          margin: 1,
-          borderStyle: "round",
-          borderColor: opts.encrypt ? "magenta" : "blue",
-        },
-      ),
-    );
-  } else {
-    info(opts.encrypt ? "Creating encrypted backup..." : "Creating backup...");
-  }
-}
+// ── Help ──────────────────────────────────────────────────────────────────────
 
 function showHelp() {
-  console.log(`${chalk.bold("Usage")}
-  node scripts/db-backup.mjs [flags]
-
-${chalk.bold("Flags")}
-  --encrypt, -e     Encrypt backup with a password (AES-256-CBC).
-  --yes, -y         Skip confirmation prompt (CI / non-interactive).
-  --help, -h        Show this message.
-
-${chalk.bold("What it does")}
-  1. Runs pg_dump on the airlink database.
-  2. Optionally encrypts the dump with openssl AES-256-CBC.
-  3. Stores the backup in a root-protected directory.
-  4. Sets file permissions so only root can delete it.
-
-${chalk.bold("Examples")}
-  node scripts/db-backup.mjs
-  node scripts/db-backup.mjs --encrypt
-  node scripts/db-backup.mjs -e -y
-`);
+  const lines = [
+    "db-backup.mjs  —  PostgreSQL backup tool",
+    "",
+    "  node scripts/db-backup.mjs [flags]",
+    "",
+    "  --encrypt, -e     Encrypt backup with AES-256-CBC",
+    "  --password, -p    Encryption password (non-interactive)",
+    "  --yes, -y         Skip confirmation prompt",
+    "  --help, -h        Show this message",
+    "",
+    "  Env: BACKUP_PASSWORD   alternative to --password",
+  ];
+  Logger.banner(lines);
+  process.exit(0);
 }
 
-// ── Prompt ───────────────────────────────────────────────────────────────────
-
-function ask(question) {
-  const rl = createInterface({ input: process.stdin, output: process.stdout });
-  return new Promise((res) => {
-    rl.question(`  ${chalk.yellow("?")} ${question} `, (ans) => {
-      rl.close();
-      res(ans);
-    });
-  });
-}
-
-function confirm(question) {
-  if (opts.yes) return Promise.resolve(true);
-  const rl = createInterface({ input: process.stdin, output: process.stdout });
-  return new Promise((res) => {
-    rl.question(
-      `  ${chalk.yellow("?")} ${question} ${chalk.dim("[y/N]")} `,
-      (ans) => {
-        rl.close();
-        const lower = ans.trim().toLowerCase();
-        res(lower === "y" || lower === "yes");
-      },
-    );
-  });
-}
-
-// ── .env parsing ─────────────────────────────────────────────────────────────
+// ── .env / DB helpers ─────────────────────────────────────────────────────────
 
 function readEnv() {
   const envPath = resolve(projectDir, ".env");
   if (!existsSync(envPath)) return {};
   const env = {};
   for (const line of readFileSync(envPath, "utf8").split(/\r?\n/)) {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith("#")) continue;
-    const eq = trimmed.indexOf("=");
+    const t = line.trim();
+    if (!t || t.startsWith("#")) continue;
+    const eq = t.indexOf("=");
     if (eq === -1) continue;
-    const key = trimmed.slice(0, eq).trim();
-    let val = trimmed.slice(eq + 1).trim();
-    if (
-      (val.startsWith('"') && val.endsWith('"')) ||
-      (val.startsWith("'") && val.endsWith("'"))
-    ) {
-      val = val.slice(1, -1);
-    }
-    env[key] = val;
+    let val = t
+      .slice(eq + 1)
+      .trim()
+      .replace(/^["']|["']$/g, "");
+    env[t.slice(0, eq).trim()] = val;
   }
   return env;
 }
 
 function parseDatabaseUrl(url) {
-  const match = url.match(
-    /^postgresql:\/\/([^:]+):([^@]+)@([^:]+):(\d+)\/(.+)$/,
-  );
-  if (!match) return null;
-  return {
-    user: match[1],
-    pass: match[2],
-    host: match[3],
-    port: match[4],
-    db: match[5],
-  };
+  const m = url.match(/^postgresql:\/\/([^:]+):([^@]+)@([^:]+):(\d+)\/(.+)$/);
+  if (!m) return null;
+  return { user: m[1], pass: m[2], host: m[3], port: m[4], db: m[5] };
 }
 
-// ── Shell ────────────────────────────────────────────────────────────────────
-
-function run(cmd, opts = {}) {
+function run(cmd, extraOpts = {}) {
   try {
-    return execSync(cmd, { encoding: "utf-8", stdio: "pipe", ...opts });
+    return execSync(cmd, { encoding: "utf-8", stdio: "pipe", ...extraOpts });
   } catch {
     return null;
   }
 }
 
-// ── Backup directory (root-protected) ────────────────────────────────────────
+// ── Backup directory ──────────────────────────────────────────────────────────
 
 const BACKUP_DIR = resolve(projectDir, ".backups");
 
 function ensureBackupDir() {
   if (!existsSync(BACKUP_DIR)) {
     mkdirSync(BACKUP_DIR, { recursive: true });
-    info("Created backup directory.");
+    Logger.ok("Created backup directory");
   }
 }
 
-function lockFileForDeleteProtection(filePath) {
-  // chmod 000 so only root can change permissions or delete
+function lockFile(filePath) {
   try {
     chmodSync(filePath, 0o000);
-    ok("File locked — only root can delete or modify it.");
+    Logger.ok("File locked — only root can modify or delete it");
   } catch {
-    warn("Could not set chmod 000. File is still readable by owner.");
+    Logger.warn("Could not set chmod 000; file is still readable by owner");
   }
 }
 
-function lockDirForDeleteProtection(dirPath) {
-  // chattr +i makes the directory immutable (Linux only, requires root)
-  const result = run(`sudo chattr +i "${dirPath}" 2>/dev/null`);
-  if (result !== null) {
-    ok("Backup directory set immutable (chattr +i) — root required to remove.");
-  } else {
-    warn("chattr +i failed (needs root). Falling back to chmod 000.");
-    try {
-      chmodSync(dirPath, 0o000);
-    } catch {
-      /* ignore */
-    }
+function lockDir(dirPath) {
+  try {
+    chmodSync(dirPath, 0o000);
+  } catch {
+    /* ignore */
   }
 }
 
-// ── Main ─────────────────────────────────────────────────────────────────────
+function unlockDir(dirPath) {
+  try {
+    chmodSync(dirPath, 0o755);
+  } catch {
+    /* ignore */
+  }
+}
+
+// ── Main ──────────────────────────────────────────────────────────────────────
 
 async function main() {
-  if (opts.help) {
-    showHelp();
-    process.exit(0);
-  }
+  if (opts.help) showHelp();
 
-  banner();
+  // Banner
+  const mode = opts.encrypt ? "ENCRYPTED BACKUP" : "PLAIN BACKUP";
+  Logger.banner([
+    `${mode}`,
+    "",
+    "  Creates a pg_dump of the airlink database.",
+    opts.encrypt
+      ? "  Archive will be AES-256-CBC encrypted."
+      : "  Archive will be stored in plaintext.",
+    "",
+    "  Backups are stored in a root-protected directory.",
+  ]);
 
+  // Load .env
   const env = readEnv();
-  const databaseUrl = env.DATABASE_URL;
-  if (!databaseUrl) {
-    fail("DATABASE_URL not found in .env — cannot proceed.");
+  if (!env.DATABASE_URL) {
+    Logger.fail("DATABASE_URL not found in .env");
     process.exit(1);
   }
 
-  const db = parseDatabaseUrl(databaseUrl);
+  const db = parseDatabaseUrl(env.DATABASE_URL);
   if (!db) {
-    fail(
-      "Could not parse DATABASE_URL — expected postgresql://user:pass@host:port/dbname",
-    );
+    Logger.fail("Could not parse DATABASE_URL");
     process.exit(1);
   }
 
-  info(`Database: ${db.host}:${db.port}/${db.db} (user: ${db.user})`);
-  gap();
+  Logger.info(`Database  ${db.host}:${db.port}/${db.db}  (user: ${db.user})`);
+  Logger.gap();
 
-  // ── Collect encryption password ───────────────────────────────────────
+  // Collect encryption password
   let password = null;
   if (opts.encrypt) {
-    password = await ask(chalk.bold.magenta("Enter encryption password:"));
-    if (!password || password.trim().length < 4) {
-      fail("Password must be at least 4 characters.");
+    if (opts.password) {
+      password = opts.password;
+      if (password.trim().length < 4) {
+        Logger.fail("Password must be at least 4 characters");
+        process.exit(1);
+      }
+      Logger.info("Encryption: AES-256-CBC (from --password flag)");
+    } else if (process.stdout.isTTY) {
+      password = await secret({
+        label: "Encryption password",
+        hint: "Minimum 4 characters",
+      });
+      if (!password || password.trim().length < 4) {
+        Logger.fail("Password must be at least 4 characters");
+        process.exit(1);
+      }
+      const confirm2 = await secret({ label: "Confirm password" });
+      if (password !== confirm2) {
+        Logger.fail("Passwords do not match");
+        process.exit(1);
+      }
+      Logger.ok("Encryption: AES-256-CBC");
+    } else {
+      Logger.fail("Non-interactive: use --password or BACKUP_PASSWORD env var");
       process.exit(1);
     }
-    const confirmPw = await ask(chalk.bold.magenta("Confirm password:"));
-    if (password !== confirmPw) {
-      fail("Passwords do not match.");
-      process.exit(1);
+  }
+
+  // Confirm
+  if (!opts.yes) {
+    const go = await confirm("Create backup now?");
+    if (!go) {
+      Logger.warn("Aborted");
+      process.exit(0);
     }
-    info("Encryption enabled (AES-256-CBC).");
   }
 
-  const confirmed = await confirm(chalk.bold("Create backup now?"));
-  if (!confirmed) {
-    warn("Aborted.");
-    process.exit(0);
-  }
+  Logger.gap();
 
-  gap();
-
-  // ── Step 1: Ensure backup directory ───────────────────────────────────
+  // Step 1: backup directory (unlock if locked from previous run)
+  unlockDir(BACKUP_DIR);
   ensureBackupDir();
 
-  // ── Step 2: pg_dump ───────────────────────────────────────────────────
-  const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
-  const dumpName = `airlink-${timestamp}`;
+  // Step 2: pg_dump
+  const stamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+  const dumpName = `airlink-${stamp}`;
   const dumpPath = join(BACKUP_DIR, `${dumpName}.sql`);
 
-  info("Running pg_dump...");
-  const dumpCmd = `PGPASSWORD=${db.pass} pg_dump -h ${db.host} -p ${db.port} -U ${db.user} -d ${db.db} --no-owner --no-privileges -Fp -f "${dumpPath}"`;
-  const dumpResult = run(dumpCmd);
+  await spinner("Running pg_dump", async () => {
+    const cmd = `PGPASSWORD=${db.pass} pg_dump -h ${db.host} -p ${db.port} -U ${db.user} -d ${db.db} --no-owner --no-privileges -Fp -f "${dumpPath}"`;
+    const result = run(cmd);
+    if (result === null && !existsSync(dumpPath)) {
+      throw new Error("pg_dump failed — check connection and credentials");
+    }
+    if (!existsSync(dumpPath)) {
+      throw new Error("pg_dump produced no output file");
+    }
+  });
 
-  if (dumpResult === null && !existsSync(dumpPath)) {
-    fail("pg_dump failed. Check database connection and credentials.");
-    process.exit(1);
-  }
+  const dumpBytes = Number(run(`stat -c%s "${dumpPath}"`) || 0);
+  Logger.dim(`  ${dumpName}.sql  (${dumpBytes.toLocaleString()} bytes)`);
 
-  if (!existsSync(dumpPath)) {
-    fail("pg_dump did not produce output file.");
-    process.exit(1);
-  }
-
-  const dumpSize = run(`stat -c%s "${dumpPath}"`) || "unknown";
-  ok(
-    `Dump created: ${dumpName}.sql (${Number(dumpSize).toLocaleString()} bytes)`,
-  );
-
-  // ── Step 3: Encrypt (optional) ────────────────────────────────────────
+  // Step 3: encrypt (optional)
   let finalPath = dumpPath;
   if (opts.encrypt && password) {
     const encPath = `${dumpPath}.enc`;
-    info("Encrypting backup with AES-256-CBC...");
-    const encCmd = `openssl enc -aes-256-cbc -salt -pbkdf2 -iter 100000 -in "${dumpPath}" -out "${encPath}" -pass stdin`;
-    const encResult = run(encCmd, { input: password + "\n" });
-
-    if (encResult === null && !existsSync(encPath)) {
-      fail("Encryption failed. The unencrypted dump is still available.");
-      finalPath = dumpPath;
-    } else {
-      // Remove plaintext dump after successful encryption
+    await spinner("Encrypting with AES-256-CBC", async () => {
+      const cmd = `openssl enc -aes-256-cbc -salt -pbkdf2 -iter 100000 -in "${dumpPath}" -out "${encPath}" -pass stdin`;
+      const result = run(cmd, { input: password + "\n" });
+      if (result === null && !existsSync(encPath)) {
+        throw new Error(
+          "Encryption failed — unencrypted dump is still available",
+        );
+      }
       run(`rm -f "${dumpPath}"`);
-      finalPath = encPath;
-      const encSize = run(`stat -c%s "${encPath}"`) || "unknown";
-      ok(
-        `Encrypted: ${dumpName}.sql.enc (${Number(encSize).toLocaleString()} bytes)`,
-      );
-    }
+    });
+
+    finalPath = encPath;
+    const encBytes = Number(run(`stat -c%s "${encPath}"`) || 0);
+    Logger.dim(`  ${dumpName}.sql.enc  (${encBytes.toLocaleString()} bytes)`);
   }
 
-  // ── Step 4: Protect from deletion ─────────────────────────────────────
-  gap();
-  info("Setting deletion protection...");
-  lockFileForDeleteProtection(finalPath);
+  // Step 4: protect
+  Logger.gap();
+  Logger.section("Delete protection");
+  lockFile(finalPath);
+  lockDir(BACKUP_DIR);
 
-  // Lock directory too (requires root on first run, cached after)
-  lockDirForDeleteProtection(BACKUP_DIR);
+  // Done
+  Logger.gap();
+  Logger.ok("Backup complete");
+  Logger.dim(`Location: ${finalPath}`);
+  Logger.gap();
 
-  // ── Done ──────────────────────────────────────────────────────────────
-  gap();
-  ok(chalk.bold("Backup complete."));
-  dim(`Location: ${finalPath}`);
-  if (opts.encrypt) {
-    dim(
-      `To restore: openssl enc -d -aes-256-cbc -pbkdf2 -iter 100000 -in "${finalPath}" | psql -h ${db.host} -p ${db.port} -U ${db.user} -d ${db.db}`,
-    );
-  } else {
-    dim(
-      `To restore: psql -h ${db.host} -p ${db.port} -U ${db.user} -d ${db.db} < "${finalPath}"`,
-    );
-  }
+  const restoreCmd = opts.encrypt
+    ? `openssl enc -d -aes-256-cbc -pbkdf2 -iter 100000 -in "${finalPath}" | psql -h ${db.host} -p ${db.port} -U ${db.user} -d ${db.db}`
+    : `psql -h ${db.host} -p ${db.port} -U ${db.user} -d ${db.db} < "${finalPath}"`;
+
+  Logger.dim("To restore:");
+  Logger.dim(`  ${restoreCmd}`);
 }
 
 main().catch((err) => {
-  fail(err.message || String(err));
+  Logger.fail(err.message || String(err));
   process.exit(1);
 });

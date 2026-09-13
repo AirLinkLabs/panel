@@ -1,18 +1,17 @@
 #!/usr/bin/env node
 /**
- * db-reset.mjs — Nuclear database + Redis reset.
+ * db-cleanup.mjs — Drop the database and role permanently. No recreate.
  *
- * Drops the database and role, recreates both, flushes Redis, then
- * runs prisma generate + migrate dev.
+ * Drops the airlink PostgreSQL database, role, all owned objects, and flushes
+ * Redis. Does NOT recreate anything. Run setup.mjs to start fresh afterward.
  *
  * Flags:
- *   --yes / -y       Skip confirmation prompt.
- *   --no-migrate     Skip prisma generate + migrate after reset.
- *   --help / -h      Show help.
+ *   --yes / -y     Skip confirmation prompt.
+ *   --help / -h    Show help.
  *
  * Usage:
- *   node scripts/db-reset.mjs
- *   node scripts/db-reset.mjs --yes
+ *   node scripts/db-cleanup.mjs
+ *   node scripts/db-cleanup.mjs --yes
  */
 
 import { execSync }                from "node:child_process";
@@ -20,8 +19,8 @@ import { existsSync, readFileSync } from "node:fs";
 import { resolve, dirname }        from "node:path";
 import { fileURLToPath }           from "node:url";
 
-import { Logger, box, confirm, spinner }                 from "./ui.mjs";
-import { runAsSuper, dropRoleCleanly, detectMethod }     from "./pg-super.mjs";
+import { Logger, box, confirm }         from "./ui.mjs";
+import { runAsSuper, dropRoleCleanly, detectMethod } from "./pg-super.mjs";
 
 const __dirname  = dirname(fileURLToPath(import.meta.url));
 const projectDir = resolve(__dirname, "..");
@@ -31,32 +30,27 @@ const projectDir = resolve(__dirname, "..");
 const argv = process.argv.slice(2);
 
 const opts = {
-  yes       : argv.includes("--yes")        || argv.includes("-y"),
-  noMigrate : argv.includes("--no-migrate"),
-  help      : argv.includes("--help")       || argv.includes("-h"),
+  yes  : argv.includes("--yes")  || argv.includes("-y"),
+  help : argv.includes("--help") || argv.includes("-h"),
 };
 
 // ── Help ──────────────────────────────────────────────────────────────────────
 
 function showHelp() {
   Logger.banner([
-    "db-reset.mjs  —  Nuclear database + Redis reset",
+    "db-cleanup.mjs  —  Permanent database cleanup",
     "",
-    "  node scripts/db-reset.mjs [flags]",
+    "  node scripts/db-cleanup.mjs [flags]",
     "",
-    "  --yes, -y       Skip confirmation prompt",
-    "  --no-migrate    Skip prisma generate + migrate after reset",
-    "  --help, -h      Show this message",
+    "  --yes, -y      Skip confirmation prompt",
+    "  --help, -h     Show this message",
     "",
     "  What it does:",
-    "    1. Drops all owned objects and revokes privileges",
-    "    2. Drops the PostgreSQL role",
-    "    3. Drops the database",
-    "    4. Recreates the role with login + createdb",
-    "    5. Recreates the database with the role as owner",
-    "    6. Grants full database privileges",
-    "    7. Flushes all Redis data",
-    "    8. Runs prisma generate + migrate dev",
+    "    1. Revokes all privileges from the role",
+    "    2. Drops the airlink PostgreSQL role",
+    "    3. Drops the airlink database",
+    "    4. Flushes all Redis data",
+    "    Does NOT recreate anything.",
   ]);
   process.exit(0);
 }
@@ -84,7 +78,7 @@ function parseDatabaseUrl(url) {
 }
 
 function run(cmd) {
-  try { return execSync(cmd, { encoding: "utf-8", stdio: "pipe", cwd: projectDir }); }
+  try { return execSync(cmd, { encoding: "utf-8", stdio: "pipe" }); }
   catch { return null; }
 }
 
@@ -95,15 +89,15 @@ async function main() {
 
   // Warning banner
   const width = 56;
-  const warning = box(width, "!! DESTRUCTIVE OPERATION !!", [
+  const warning = box(width, "!! PERMANENT CLEANUP !!", [
     "",
-    "  This will PERMANENTLY DELETE:",
+    "  This will PERMANENTLY DELETE and NOT recreate:",
     "",
     "    * The entire airlink PostgreSQL database",
     "    * The PostgreSQL role and all owned objects",
     "    * All Redis session and cache data",
     "",
-    "  There is NO undo for this action.",
+    "  Re-run 'pnpm run setup' to start from scratch.",
     "",
   ]);
   console.log();
@@ -135,7 +129,7 @@ async function main() {
   // Confirm
   if (!opts.yes) {
     const go = await confirm(
-      "PERMANENTLY destroy all data and rebuild from scratch?",
+      "PERMANENTLY destroy all data and NOT recreate?",
       false,
     );
     if (!go) { Logger.warn("Aborted"); process.exit(0); }
@@ -143,7 +137,7 @@ async function main() {
 
   Logger.gap();
 
-  // Detect sudo
+  // Detect sudo access
   Logger.section("Superuser access");
   try {
     const m = await detectMethod();
@@ -154,61 +148,29 @@ async function main() {
   }
 
   // Step 1: drop database
-  Logger.section("Drop");
-  await spinner("Dropping database", async () => {
-    const r = await runAsSuper(`DROP DATABASE IF EXISTS ${db.db}`);
-    if (!r.ok) Logger.warn("Database drop reported an error — continuing");
-  });
+  Logger.section("Database");
+  Logger.info("Dropping database...");
+  const dropDb = await runAsSuper(`DROP DATABASE IF EXISTS ${db.db}`);
+  if (dropDb.ok) Logger.ok("Database dropped");
+  else           Logger.warn("Failed to drop database — continuing");
 
-  await spinner(`Dropping role '${db.user}'`, async () => {
-    const r = await dropRoleCleanly(db.user);
-    if (!r.ok) Logger.warn("Role drop reported an error — continuing");
-  });
-
-  // Step 2: recreate
-  Logger.section("Recreate");
-  await spinner("Creating role", async () => {
-    const r = await runAsSuper(
-      `CREATE ROLE ${db.user} WITH LOGIN PASSWORD '${db.pass}' CREATEDB`,
-    );
-    if (!r.ok) throw new Error(`Failed to create role: ${r.output}`);
-  });
-
-  await spinner("Creating database", async () => {
-    const r = await runAsSuper(`CREATE DATABASE ${db.db} OWNER ${db.user}`);
-    if (!r.ok) throw new Error(`Failed to create database: ${r.output}`);
-  });
-
-  await spinner("Granting privileges", async () => {
-    await runAsSuper(`GRANT ALL PRIVILEGES ON DATABASE ${db.db} TO ${db.user}`);
-    await runAsSuper(`GRANT ALL ON SCHEMA public TO ${db.user}`);
-  });
+  // Step 2: drop role
+  Logger.info("Dropping role and revoking all privileges...");
+  const dropRole = await dropRoleCleanly(db.user);
+  if (dropRole.ok) Logger.ok(`Role '${db.user}' dropped`);
+  else             Logger.warn("Failed to drop role — continuing");
 
   // Step 3: flush Redis
   Logger.section("Redis");
-  await spinner("Flushing Redis", async () => {
-    const result = run(`redis-cli -h ${redisHost} -p ${redisPort} FLUSHALL`);
-    if (result?.trim() !== "OK") Logger.warn("Redis may not be running — continuing");
-  });
-
-  // Step 4: Prisma
-  if (!opts.noMigrate) {
-    Logger.section("Prisma");
-    await spinner("prisma generate", async () => {
-      const r = run("npx prisma generate");
-      if (r === null) throw new Error("prisma generate failed");
-    });
-
-    await spinner("prisma migrate dev", async () => {
-      const r = run("npx prisma migrate dev");
-      if (r === null) throw new Error("prisma migrate dev failed");
-    });
-  }
+  Logger.info("Flushing Redis...");
+  const redisResult = run(`redis-cli -h ${redisHost} -p ${redisPort} FLUSHALL`);
+  if (redisResult?.trim() === "OK") Logger.ok("Redis flushed");
+  else                               Logger.warn("Redis flush failed — may not be running");
 
   // Done
   Logger.gap();
-  Logger.ok("Reset complete. Database, role, and Redis are clean.");
-  if (!opts.noMigrate) Logger.ok("Schema migrations applied.");
+  Logger.ok("Cleanup complete. Nothing remains.");
+  Logger.dim("Run 'pnpm run setup' to recreate from scratch.");
 }
 
 main().catch((err) => {

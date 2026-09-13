@@ -1,70 +1,27 @@
 #!/usr/bin/env node
 
 /**
- * executer.mjs — unified script dispatcher for all package.json commands.
- *
- * Replaces raw shell commands in package.json with a single entry point that
- * provides consistent logging, error handling, and argument forwarding.
+ * executer.mjs — Unified script dispatcher for all package.json commands.
  *
  * Usage:
  *   node scripts/executer.mjs <command> [args...]
- *
- * Commands:
- *   start              Start the panel server
- *   dev                Start in development mode (prisma + vite watch + nodemon)
- *   build              Full build (tsc + prisma generate + vite)
- *   build:assets       Vite build only
- *   typecheck          TypeScript type checking
- *   lint               ESLint with --fix
- *   format             Prettier formatting
- *   test               Run vitest
- *   test:watch         Run vitest in watch mode
- *   test:coverage      Run vitest with coverage
- *   test:e2e           Run Playwright e2e tests
- *   test:e2e:ui        Run Playwright e2e with UI
- *   test:docker        Run tests in Docker
- *   test:all           Run vitest + Playwright
- *   db:generate        Prisma generate
- *   db:push            Prisma db push
- *   db:migrate         Prisma migrate dev
- *   db:migrate:deploy  Prisma migrate deploy + generate
- *   db:seed            Run seed script
- *   db:studio          Prisma studio
- *   db:status          Prisma migrate status
- *   db:backup          Backup database (optional AES encryption)
- *   secret             Generate new SESSION_SECRET
- *
- * Flags:
- *   --help / -h        Show this message
+ *   node scripts/executer.mjs --help
  */
 
 import { spawnSync } from "node:child_process";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import chalk from "chalk";
-import boxen from "boxen";
+import { Logger, box } from "./ui.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const projectDir = resolve(__dirname, "..");
 
-// ── Logging ──────────────────────────────────────────────────────────────────
-
 const TTY = process.stdout.isTTY;
 
-const ok = (msg) => console.log(`  ${chalk.green("+")} ${msg}`);
-const fail = (msg) => console.log(`  ${chalk.red("x")} ${chalk.red(msg)}`);
-const info = (msg) => console.log(`  ${chalk.cyan("->")} ${msg}`);
-const dim = (msg) => console.log(`  ${chalk.dim(msg)}`);
-const gap = () => console.log();
+// ── Commands ─────────────────────────────────────────────────────────────────
 
-// ── Command registry ─────────────────────────────────────────────────────────
-
-/**
- * Each command maps to a shell command string or function.
- * Shell commands are executed with spawnSync (stdio: inherit).
- */
 const commands = {
-  // ── Server ───────────────────────────────────────────────────────────
+  // Server
   start: {
     desc: "Start the panel server",
     run: () => exec("node --env-file=.env dist/app.js"),
@@ -77,7 +34,7 @@ const commands = {
       ),
   },
 
-  // ── Build ────────────────────────────────────────────────────────────
+  // Build
   build: {
     desc: "Full build (tsc + prisma generate + vite)",
     run: () => exec("tsc && tsc -p tsconfig.prisma.json && vite build"),
@@ -87,29 +44,20 @@ const commands = {
     run: () => exec("vite build"),
   },
 
-  // ── Quality ──────────────────────────────────────────────────────────
+  // Quality
   typecheck: {
     desc: "TypeScript type checking (no emit)",
     run: () => exec("tsc --noEmit && tsc -p tsconfig.prisma.json --noEmit"),
   },
-  lint: {
-    desc: "ESLint with auto-fix",
-    run: () => exec("eslint src --fix"),
-  },
+  lint: { desc: "ESLint with auto-fix", run: () => exec("eslint src --fix") },
   format: {
     desc: "Prettier formatting on src/",
     run: () => exec("prettier --write src/"),
   },
 
-  // ── Testing ──────────────────────────────────────────────────────────
-  test: {
-    desc: "Run vitest (single pass)",
-    run: () => exec("vitest run"),
-  },
-  "test:watch": {
-    desc: "Run vitest in watch mode",
-    run: () => exec("vitest"),
-  },
+  // Testing
+  test: { desc: "Run vitest (single pass)", run: () => exec("vitest run") },
+  "test:watch": { desc: "Run vitest in watch mode", run: () => exec("vitest") },
   "test:coverage": {
     desc: "Run vitest with coverage report",
     run: () => exec("vitest run --coverage"),
@@ -134,7 +82,7 @@ const commands = {
     run: () => exec("vitest run && npx playwright test"),
   },
 
-  // ── Database ─────────────────────────────────────────────────────────
+  // Database
   "db:generate": {
     desc: "Prisma generate (regenerate client)",
     run: () => exec("prisma generate"),
@@ -163,127 +111,127 @@ const commands = {
     desc: "Show Prisma migration status",
     run: () => exec("prisma migrate status"),
   },
-  "db:backup": {
-    desc: "Backup database (optional AES encryption)",
-    run: () => exec("node scripts/db-backup.mjs"),
-  },
 
-  // ── Misc ─────────────────────────────────────────────────────────────
+  // Misc
   secret: {
     desc: "Generate new SESSION_SECRET",
     run: () => exec("node dist/cli/secret.js"),
   },
 };
 
+// ── Sections (for help display) ──────────────────────────────────────────────
+
+const sections = [
+  { label: "Server", cmds: ["start", "dev"] },
+  { label: "Build", cmds: ["build", "build:assets"] },
+  { label: "Quality", cmds: ["typecheck", "lint", "format"] },
+  {
+    label: "Testing",
+    cmds: [
+      "test",
+      "test:watch",
+      "test:coverage",
+      "test:e2e",
+      "test:e2e:ui",
+      "test:docker",
+      "test:all",
+    ],
+  },
+  {
+    label: "Database",
+    cmds: [
+      "db:generate",
+      "db:push",
+      "db:migrate",
+      "db:migrate:deploy",
+      "db:seed",
+      "db:studio",
+      "db:status",
+    ],
+  },
+  { label: "Misc", cmds: ["secret"] },
+];
+
+// ── Routed scripts (own .mjs files) ──────────────────────────────────────────
+
+const routed = [
+  { name: "setup", file: "setup.mjs", desc: "Interactive panel setup" },
+  {
+    name: "db:reset",
+    file: "db-reset.mjs",
+    desc: "Nuclear database reset + recreate",
+  },
+  {
+    name: "db:backup",
+    file: "db-backup.mjs",
+    desc: "Backup database (optional AES encryption)",
+  },
+  {
+    name: "db:cleanup",
+    file: "db-cleanup.mjs",
+    desc: "Drop database + role permanently (no recreate)",
+  },
+];
+
 // ── Execution ────────────────────────────────────────────────────────────────
 
 function exec(cmd) {
   const t0 = Date.now();
+  const binPath = resolve(projectDir, "node_modules/.bin");
+  const env = { ...process.env, PATH: `${binPath}:${process.env.PATH}` };
   const result = spawnSync(cmd, {
     shell: true,
     stdio: "inherit",
     cwd: projectDir,
+    env,
     timeout: 600_000,
   });
   const elapsed = `${((Date.now() - t0) / 1000).toFixed(1)}s`;
   if (result.status !== 0) {
-    fail(`Command failed (${elapsed}, exit ${result.status ?? "unknown"})`);
+    Logger.fail(
+      `Command failed (${elapsed}, exit ${result.status ?? "unknown"})`,
+    );
     process.exit(result.status ?? 1);
   }
   return elapsed;
 }
 
+// ── Help ─────────────────────────────────────────────────────────────────────
+
 function showHelp() {
-  const maxLen = Math.max(...Object.keys(commands).map((k) => k.length));
-
-  // Group commands by section
-  const sections = [
-    {
-      label: "Server",
-      cmds: ["start", "dev"],
-    },
-    {
-      label: "Build",
-      cmds: ["build", "build:assets"],
-    },
-    {
-      label: "Quality",
-      cmds: ["typecheck", "lint", "format"],
-    },
-    {
-      label: "Testing",
-      cmds: [
-        "test",
-        "test:watch",
-        "test:coverage",
-        "test:e2e",
-        "test:e2e:ui",
-        "test:docker",
-        "test:all",
-      ],
-    },
-    {
-      label: "Database",
-      cmds: [
-        "db:generate",
-        "db:push",
-        "db:migrate",
-        "db:migrate:deploy",
-        "db:seed",
-        "db:studio",
-        "db:status",
-        "db:backup",
-      ],
-    },
-    {
-      label: "Misc",
-      cmds: ["secret"],
-    },
-  ];
-
-  if (TTY) {
-    console.log(
-      boxen(
-        [
-          chalk.bold.cyan("  Airlink Panel") + chalk.dim("  v2.5.x"),
-          "",
-          chalk.dim(
-            "  Unified script dispatcher for all package.json commands.",
-          ),
-        ].join("\n"),
-        {
-          padding: 1,
-          margin: 1,
-          borderStyle: "round",
-          borderColor: "cyan",
-        },
-      ),
-    );
-  }
-
-  console.log(
-    `  ${chalk.bold("Usage")}\n  node scripts/executer.mjs ${chalk.cyan("<command>")} ${chalk.dim("[flags]")}\n`,
+  const maxCmd = Math.max(
+    ...(commands.keys ? [...commands.keys()] : Object.keys(commands)),
+    ...routed.map((r) => r.name),
   );
 
+  if (TTY) {
+    const banner = box(64, "", [
+      "  Airlink Panel  v2.5.x",
+      "",
+      "  Unified dispatcher for all package.json scripts.",
+    ]);
+    console.log();
+    banner.forEach((l) => console.log(`  ${l}`));
+    console.log();
+  }
+
+  console.log("  Usage");
+  console.log("  node scripts/executer.mjs <command> [flags]\n");
+
   for (const section of sections) {
-    console.log(`  ${chalk.bold.underline(section.label)}`);
+    console.log(`  ${section.label}`);
     for (const name of section.cmds) {
       const cmd = commands[name];
       if (!cmd) continue;
-      console.log(
-        `    ${chalk.cyan(name.padEnd(maxLen + 2))} ${chalk.dim(cmd.desc)}`,
-      );
+      console.log(`    ${name.padEnd(maxCmd + 2)} ${cmd.desc}`);
     }
     console.log();
   }
 
-  console.log(`  ${chalk.dim("Routed scripts (own .mjs files):")}`);
-  console.log(
-    `    ${chalk.cyan("setup".padEnd(maxLen + 2))} ${chalk.dim("node scripts/setup.mjs — interactive panel setup")}`,
-  );
-  console.log(
-    `    ${chalk.cyan("db:reset".padEnd(maxLen + 2))} ${chalk.dim("node scripts/db-reset.mjs — nuclear database reset")}`,
-  );
+  console.log("  Routed (own .mjs files)");
+  for (const r of routed) {
+    console.log(`    ${r.name.padEnd(maxCmd + 2)} ${r.desc}`);
+  }
   console.log();
 }
 
@@ -296,45 +244,30 @@ if (!command || command === "--help" || command === "-h") {
   process.exit(0);
 }
 
-// Route special scripts to their own .mjs files
-if (command === "setup") {
+// Route to own .mjs files
+const route = routed.find((r) => r.name === command);
+if (route) {
   const args = rest.map((a) => `"${a}"`).join(" ");
-  exec(`node scripts/setup.mjs ${args}`);
-  process.exit(0);
-}
-
-if (command === "db:reset") {
-  const args = rest.map((a) => `"${a}"`).join(" ");
-  exec(`node scripts/db-reset.mjs ${args}`);
-  process.exit(0);
-}
-
-if (command === "db:backup") {
-  const args = rest.map((a) => `"${a}"`).join(" ");
-  exec(`node scripts/db-backup.mjs ${args}`);
+  exec(`node scripts/${route.file} ${args}`);
   process.exit(0);
 }
 
 const cmd = commands[command];
 if (!cmd) {
-  fail(`Unknown command: ${command}`);
-  console.log(
-    `  Run ${chalk.cyan("node scripts/executer.mjs --help")} for available commands.`,
-  );
+  Logger.fail(`Unknown command: ${command}`);
+  Logger.dim(`Run 'node scripts/executer.mjs --help' for available commands.`);
   process.exit(1);
 }
 
 if (TTY) {
-  gap();
-  console.log(
-    `  ${chalk.bold.cyan("airlink")} ${chalk.dim("->")} ${chalk.bold(command)}`,
-  );
-  gap();
+  Logger.gap();
+  console.log(`  airlink -> ${command}`);
+  Logger.gap();
 }
 
 const elapsed = cmd.run();
 
 if (TTY && elapsed) {
-  gap();
-  ok(chalk.dim(`Done in ${elapsed}`));
+  Logger.gap();
+  Logger.ok(`Done in ${elapsed}`);
 }

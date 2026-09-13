@@ -38,6 +38,7 @@
     "db:migrate:deploy": "node scripts/executer.mjs db:migrate:deploy",
     "db:seed": "node scripts/executer.mjs db:seed",
     "db:reset": "node scripts/db-reset.mjs",
+    "db:cleanup": "node scripts/executer.mjs db:cleanup",
     "db:backup": "node scripts/executer.mjs db:backup",
     "db:studio": "node scripts/executer.mjs db:studio",
     "db:status": "node scripts/executer.mjs db:status",
