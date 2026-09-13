@@ -48,8 +48,8 @@ const wallpaperExcluded = req && req.path && (
     <script nonce="<%- nonce %>" defer src="<%= assetUrl('/javascript/shared/csrf.js') %>?v=8"></script>
     <script nonce="<%- nonce %>" defer src="<%= assetUrl('/javascript/shared/al-icon.js') %>?v=8"></script>
 
-    <!-- Vendor bundles -->
-    <script nonce="<%- nonce %>" defer src="<%= assetUrl('/javascript/vendor/query-core.js') %>"></script>
+    <!-- Vendor bundles — query-core must load before state.js (no defer) -->
+    <script nonce="<%- nonce %>" src="<%= assetUrl('/javascript/vendor/query-core.js') %>"></script>
     <script nonce="<%- nonce %>" defer src="<%= assetUrl('/vendor/reconnecting-websocket/dist/reconnecting-websocket-iife.min.js') %>"></script>
 
     <!-- htmx -->

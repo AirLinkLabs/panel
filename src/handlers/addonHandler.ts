@@ -158,19 +158,7 @@ function buildTailwind() {
         return;
       }
       if (stderr) {
-        // Count individual warnings to condense lightningcss noise
-        const warnings = stderr
-          .split("\n")
-          .filter(
-            (l) =>
-              l.includes("[lightningcss minify]") ||
-              l.includes("Unknown at rule"),
-          );
-        if (warnings.length > 0) {
-          logger.info(
-            `Asset build: ${warnings.length} lightningcss warnings (non-blocking)`,
-          );
-        }
+        logger.info(`Asset build completed`);
       }
     },
   );
