@@ -25,7 +25,7 @@ const wallpaperExcluded = req && req.path && (
         <% } %>
       })();
     </script>
-    <link rel="stylesheet" href="<%= assetUrl('/styles/tw.css') %>">
+    <link rel="stylesheet" href="<%= assetUrl('/styles.css') %>?v=8">
     <link rel="stylesheet" href="<%= assetUrl('/styles/layout-animations.css') %>?v=8">
     <link rel="stylesheet" href="<%= assetUrl('/styles/motion.css') %>?v=8">
     <link rel="icon" href="<%= settings.favicon && settings.favicon.startsWith('/') ? assetUrl(settings.favicon) : assetUrl('/favicon.ico') %>" type="image/x-icon">
