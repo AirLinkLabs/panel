@@ -158,9 +158,19 @@ function buildTailwind() {
         return;
       }
       if (stderr) {
-        logger.warn(logT("log.tailwindReportedWarnings"), {
-          stderr: stderr.trim(),
-        });
+        // Count individual warnings to condense lightningcss noise
+        const warnings = stderr
+          .split("\n")
+          .filter(
+            (l) =>
+              l.includes("[lightningcss minify]") ||
+              l.includes("Unknown at rule"),
+          );
+        if (warnings.length > 0) {
+          logger.info(
+            `Asset build: ${warnings.length} lightningcss warnings (non-blocking)`,
+          );
+        }
       }
     },
   );
