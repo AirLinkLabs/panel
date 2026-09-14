@@ -243,5 +243,10 @@ export function i18nMiddleware(
   res.locals.tn = (req as any).tn;
   res.locals.lang = lang;
 
+  // EJS templates use `window.__i18n.X` inside <%%= %> tags — but EJS runs
+  // server-side where `window` doesn't exist.  Expose a stub so every
+  // `<%%= window.__i18n.foo || "fallback" %>` resolves without crashing.
+  (res.locals as any).window = { __i18n: req.translations || {} };
+
   next();
 }

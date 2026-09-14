@@ -66,16 +66,14 @@
                 class="al-btn-ghost p-2 min-w-[44px] min-h-[44px] flex items-center justify-center">
                 <%- icon('pencil', { size: 16, class: 'shrink-0' }) %>
               </a>
-              <form method="POST" action="/api/v2/admin/nodes/<%= node.id %>" class="inline" onsubmit="return confirm('<%= t('deleteNodeConfirm') %>');">
-                <input type="hidden" name="_method" value="DELETE">
-                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                <button type="submit"
-                  title="<%= t('deleteNodeAria') %>" aria-label="<%= t('deleteNodeAria') %>"
-                  class="al-btn-ghost p-2 min-w-[44px] min-h-[44px] flex items-center justify-center"
-                  style="color:var(--theme-danger);">
-                  <%- icon('trash-2', { size: 16, class: 'shrink-0' }) %>
-                </button>
-              </form>
+              <button type="button"
+                title="<%= t('deleteNodeAria') %>" aria-label="<%= t('deleteNodeAria') %>"
+                class="al-btn-ghost p-2 min-w-[44px] min-h-[44px] flex items-center justify-center"
+                style="color:var(--theme-danger);"
+                data-node-id="<%= node.id %>"
+                onclick="deleteNode(this)">
+                <%- icon('trash-2', { size: 16, class: 'shrink-0' }) %>
+              </button>
             </div>
           </td>
         </tr>

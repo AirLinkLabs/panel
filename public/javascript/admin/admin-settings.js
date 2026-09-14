@@ -30,9 +30,9 @@ function adminSettings() {
           input.addEventListener("change", () => this.saveFeatures());
         });
 
-      document
-        .getElementById("banIpBtn")
-        .addEventListener("click", async () => {
+      var banIpBtn = document.getElementById("banIpBtn");
+      if (banIpBtn) {
+        banIpBtn.addEventListener("click", async () => {
           const ip = document.getElementById("banIpInput").value.trim();
           if (!ip) return showToast("Enter an IP address", "error");
           const d = await Api.admin.settings.banIp({ ip });
@@ -42,10 +42,11 @@ function adminSettings() {
             this.addBanRow(ip);
           } else if (d) showToast(d.error || "Failed", "error");
         });
+      }
 
-      document
-        .getElementById("bannedIpList")
-        .addEventListener("click", async (e) => {
+      var bannedIpList = document.getElementById("bannedIpList");
+      if (bannedIpList) {
+        bannedIpList.addEventListener("click", async (e) => {
           var btn = e.target.closest(".unban-btn");
           if (!btn) return;
           const d = await Api.admin.settings.unbanIp({ ip: btn.dataset.ip });
@@ -54,10 +55,11 @@ function adminSettings() {
             this.removeBanRow(btn);
           } else if (d) showToast(d.error || "Failed", "error");
         });
+      }
 
-      document
-        .getElementById("smtpTestBtn")
-        .addEventListener("click", async () => {
+      var smtpTestBtn = document.getElementById("smtpTestBtn");
+      if (smtpTestBtn) {
+        smtpTestBtn.addEventListener("click", async () => {
           const btn = document.getElementById("smtpTestBtn"),
             result = document.getElementById("smtpTestResult"),
             orig = btn.innerHTML;
@@ -86,10 +88,11 @@ function adminSettings() {
             btn.innerHTML = orig;
           }
         });
+      }
 
-      document
-        .getElementById("s3TestBtn")
-        .addEventListener("click", async () => {
+      var s3TestBtn = document.getElementById("s3TestBtn");
+      if (s3TestBtn) {
+        s3TestBtn.addEventListener("click", async () => {
           const btn = document.getElementById("s3TestBtn"),
             result = document.getElementById("s3TestResult"),
             orig = btn.innerHTML;
@@ -118,6 +121,7 @@ function adminSettings() {
             btn.innerHTML = orig;
           }
         });
+      }
 
       document.querySelectorAll('input[type="radio"]').forEach((radio) => {
         radio.addEventListener("change", function () {

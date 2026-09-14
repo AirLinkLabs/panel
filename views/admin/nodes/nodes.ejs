@@ -480,4 +480,67 @@ document.getElementById('submitLocationBtn').addEventListener('click', async fun
 })();
 </script>
 
+<script nonce="<%- nonce %>">
+function deleteLocation(btn) {
+  var id = btn.dataset.locationId;
+  var name = btn.dataset.locationName;
+  modal.confirm({
+    title: '<%= t("deleteLocation") %>',
+    body: '<%= t("deleteLocationConfirm", { name: "\"+name+\"" }) %>',
+    danger: true,
+    confirmLabel: '<%= t("delete") %>',
+    onConfirm: async function() {
+      var loader = showProgressToast('<%= t("deletingLocation") || "Deleting location..." %>');
+      try {
+        var res = await fetch('/api/v2/admin/locations/' + id, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json', 'CSRF-Token': csrfToken }
+        });
+        var data = await res.json();
+        if (data.success !== false) {
+          loader.complete(true, '<%= t("locationDeleted") || "Location deleted." %>');
+          var card = btn.closest('[data-location-id]');
+          if (card) card.remove();
+        } else {
+          loader.close();
+          showToast(data.error || '<%= t("failedToDeleteLocation") || "Failed to delete location." %>', 'error');
+        }
+      } catch(e) {
+        loader.close();
+        showToast('<%= t("failedToDeleteLocation") || "Failed to delete location." %>', 'error');
+      }
+    }
+  });
+}
+function deleteNode(btn) {
+  var id = btn.dataset.nodeId;
+  modal.confirm({
+    title: '<%= t("deleteNode") %>',
+    body: '<%= t("deleteNodeConfirm") %>',
+    danger: true,
+    confirmLabel: '<%= t("delete") %>',
+    onConfirm: async function() {
+      var loader = showProgressToast('<%= t("deletingNode") || "Deleting node..." %>');
+      try {
+        var res = await fetch('/api/v2/admin/nodes/' + id, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json', 'CSRF-Token': csrfToken }
+        });
+        var data = await res.json();
+        if (data.success !== false) {
+          loader.complete(true, '<%= t("nodeDeleted") || "Node deleted." %>');
+          window.location.reload();
+        } else {
+          loader.close();
+          showToast(data.error || '<%= t("failedToDeleteNode") || "Failed to delete node." %>', 'error');
+        }
+      } catch(e) {
+        loader.close();
+        showToast('<%= t("failedToDeleteNode") || "Failed to delete node." %>', 'error');
+      }
+    }
+  });
+}
+</script>
+
 <%- include('../../components/footer') %>
