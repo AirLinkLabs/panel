@@ -930,7 +930,7 @@ function openCreateFileModal() {
           showToast('<%= window.__i18n.uploadTimedOut || "Upload timed out. Try a smaller file." %>', 'error');
         };
 
-        xhr.timeout = <%= fileUploadTimeoutMs %>;
+        xhr.timeout = <%= FILE_UPLOAD_TIMEOUT_MS %>;
 
         xhr.send(formData);
       } catch (error) {

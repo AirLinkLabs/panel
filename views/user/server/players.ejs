@@ -85,7 +85,7 @@
             <div class="relative p-4 al-card shadow-lg group transition-all duration-200">
               <div class="flex items-center">
                 <img
-                  src="<%= crafatarAvatarBase %><%= player.uuid %>?size=64&overlay"
+                  src="<%= CRAFATAR_AVATAR_BASE %><%= player.uuid %>?size=64&overlay"
                   alt="<%= player.name %>'s Avatar"
                   loading="lazy"
                   class="rounded-lg mr-4"
@@ -162,8 +162,8 @@
       <!-- Scoped auto-refresh script -->
       <script nonce="<%- nonce %>">
         (function() {
-          const REFRESH_MS = <%= playerListRefreshMs %>;
-          const CRAFATAR_BASE = '<%= crafatarAvatarBase %>';
+          const REFRESH_MS = <%= PLAYER_LIST_REFRESH_MS %>;
+          const CRAFATAR_BASE = '<%= CRAFATAR_AVATAR_BASE %>';
           const section = document.getElementById('players-section');
           const countdownEl = document.getElementById('refresh-countdown');
           let lastRefresh = Date.now();

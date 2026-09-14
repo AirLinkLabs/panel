@@ -475,7 +475,7 @@ function createServerPage() {
                   <%= t('storage') %>
                 </label>
                 <!-- hidden field always holds MB -->
-                <input type="hidden" id="Storage" value="<%= defaultMaxStorageMb %>">
+                <input type="hidden" id="Storage" value="<%= DEFAULT_MAX_STORAGE_MB %>">
                 <div class="flex items-stretch gap-0">
                   <button type="button" class="stepper-btn rounded-l-xl" data-action="dec" data-target="StorageDisplay" data-step="1" data-min="1" aria-label="Decrease storage">−</button>
                   <input id="StorageDisplay" type="number" value="5" min="1" class="stepper-input flex-1" aria-label="Storage value">

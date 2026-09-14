@@ -68,7 +68,7 @@
             ]; %>
             <% leads.forEach(function(lead) { %>
             <div class="al-card flex items-center gap-4 px-5 py-4">
-              <img src="<%= githubAvatarUrl(lead.login) %>?size=80"
+              <img src="<%= GITHUB_AVATAR_URL(lead.login) %>?size=80"
                    alt="<%= lead.login %>"
                    loading="lazy"
                    class="h-12 w-12 rounded-xl object-cover shrink-0"
