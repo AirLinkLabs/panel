@@ -115,7 +115,6 @@
   </div>
 </main>
 
-<%- include('../../components/loading-popup') %>
 <%- include('../../components/footer') %>
 
 <script nonce="<%- nonce %>">
@@ -146,7 +145,7 @@
             <% } else { %>
             fetch('/api/v2/servers/<%= server.UUID %>', { method: 'DELETE' })
               .then(r => r.json())
-              .then(d => { loader.close(); if (d.success) window.location.href = '/'; else showToast(d.error || '<%= req.translations.couldntDeleteServer || "Couldn\u0027t delete the server." %>', 'error'); })
+              .then(d => { loader.close(); if (d.success) window.location.href = '/'; else showToast((d.error?.message) || '<%= req.translations.couldntDeleteServer || "Couldn\u0027t delete the server." %>', 'error'); })
               .catch(() => { loader.close(); showToast('<%= req.translations.somethingWentWrong || "Something went wrong." %>', 'error'); });
             <% } %>
           }

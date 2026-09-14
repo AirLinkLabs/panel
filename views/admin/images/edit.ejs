@@ -6,7 +6,7 @@
       <%- include('../../components/sidebar') %>
     </div>
 <%- include('../../components/template') %>
-    <div id="page-content" x-data="imageEditor()" class="flex-1 overflow-y-auto pt-0 pb-12">
+    <div id="page-content" class="flex-1 overflow-y-auto pt-0 pb-12">
       <%- include('../../components/ui/breadcrumb', { items: [
         { label: t('admin') },
         { label: t('breadcrumbImages'), href: '/admin/images' },
@@ -242,6 +242,13 @@
 </script>
 
 <script nonce="<%- nonce %>">
+(function() {
+  var editor = imageEditor();
+  if (editor && typeof editor.init === 'function') {
+    document.addEventListener('DOMContentLoaded', function() { editor.init(); });
+  }
+})();
+
 function imageEditor() {
   const MONACO_FONT_SIZE = 13;
   const MONACO_TAB_SIZE = 2;
@@ -431,7 +438,7 @@ function imageEditor() {
       const data = await r.json();
       if (data.success) {
         showToast(req.translations.saved || 'Saved.', 'success');
-        originalData = JSON.parse(JSON.stringify(state));
+        window.location.reload();
       } else {
         showToast(data.error || (req.translations.failedToSave || 'Failed to save.'), 'error');
       }

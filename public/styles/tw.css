@@ -363,22 +363,8 @@
   dialog.al-dialog {
     @apply m-auto p-0 border-0 bg-transparent;
   }
-  dialog.al-dialog[open] {
-    animation: al-dialog-in var(--motion-fast, 120ms)
-      var(--motion-ease-decelerate, cubic-bezier(0, 0, 0.2, 1));
-  }
   dialog.al-dialog::backdrop {
     background: var(--overlay-bg);
-  }
-  @keyframes al-dialog-in {
-    from {
-      opacity: 0;
-      transform: translateY(6px) scale(0.98);
-    }
-    to {
-      opacity: 1;
-      transform: none;
-    }
   }
 
   /* ── al-state: section state panels ─────────────────────────────────── */
@@ -670,19 +656,6 @@ html.dark {
   opacity: 0.4;
   cursor: not-allowed;
 }
-.tab-panel {
-  animation: tabIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-@keyframes tabIn {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 
 /* ── Resource format switcher (MB/GB/Cores/%) ───────────────── */
 .al-format-switcher {
@@ -723,24 +696,6 @@ html.dark {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;
-  }
-
-  /* Subtle opacity pulse replaces rotation for busy indicators so a busy
-     action is still announced without a traveling animation. */
-  .al-spin,
-  .al-action-spinner,
-  .al-refresh-spinning {
-    animation: al-motion-pulse 1.2s ease-in-out infinite !important;
-  }
-
-  @keyframes al-motion-pulse {
-    0%,
-    100% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0.35;
-    }
   }
 
   /* Traveling entrances (dialogs, sheets, cards) land at their final state
@@ -1000,26 +955,6 @@ html.dark {
 }
 
 /* ── Ports allocator (shared) ──────────────────────────────────── */
-.pa-row {
-  animation: pa-row-in var(--dur-enter, 320ms)
-    var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)) both;
-  animation-delay: calc(var(--pa-i, 0) * var(--dur-stagger, 40ms));
-}
-@keyframes pa-row-in {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .pa-row {
-    animation: none;
-  }
-}
 
 /* ── Settings tab highlight — theme-driven active state ────────
    Active pill uses --theme-accent / --theme-accent-text so every
@@ -1156,12 +1091,6 @@ input[type="button"]:disabled {
       max-height: 92dvh;
       overflow-y: auto;
     }
-    .al-sheet-overlay.open .al-sheet-panel {
-      animation: al-sheet-in 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
-    }
-    .al-sheet-overlay .al-sheet-panel.closing {
-      animation: al-sheet-out 200ms cubic-bezier(0.4, 0, 1, 1) both;
-    }
     @media (prefers-reduced-motion: reduce) {
       .al-sheet-overlay.open .al-sheet-panel {
         animation: none;
@@ -1191,22 +1120,6 @@ input[type="button"]:disabled {
     .al-sheet-header a,
     .al-sheet-footer a {
       min-height: 2.75rem;
-    }
-  }
-  @keyframes al-sheet-in {
-    from {
-      transform: translateY(100%);
-    }
-    to {
-      transform: translateY(0);
-    }
-  }
-  @keyframes al-sheet-out {
-    from {
-      transform: translateY(0);
-    }
-    to {
-      transform: translateY(100%);
     }
   }
 }
@@ -1346,17 +1259,6 @@ input[type="button"]:disabled {
 }
 
 /* ── Top loading line animation ─────────────────────────────── */
-@keyframes al-page-loader-sweep {
-  0% {
-    transform: translateX(-110%);
-  }
-  50% {
-    transform: translateX(10%);
-  }
-  100% {
-    transform: translateX(110%);
-  }
-}
 @media (prefers-reduced-motion: reduce) {
   #al-page-loader {
     animation: none !important;

@@ -51,27 +51,21 @@
             <div class="flex items-center gap-2 w-full max-w-xs">
               <code class="select-all flex-1 truncate rounded-lg px-3 py-2 text-sm font-mono text-center" style="background:var(--theme-bg-secondary);color:var(--theme-text-strong)"><%= secretBase32 %></code>
               <button type="button" id="copySecret" class="al-btn-ghost shrink-0" aria-label="Copy secret key"
-                @click="navigator.clipboard.writeText('<%= secretBase32 %>').then(function () { if (window.showToast) showToast('Secret key copied to clipboard.', 'success'); }).catch(function () { if (window.showToast) showToast('Could not copy secret key.', 'error'); })">
+                onclick="navigator.clipboard.writeText('<%= secretBase32 %>').then(function () { if (window.showToast) showToast('Secret key copied to clipboard.', 'success'); }).catch(function () { if (window.showToast) showToast('Could not copy secret key.', 'error'); })">
                 <%- icon('copy', { size: 14 }) %>
               </button>
             </div>
           </div>
 
-          <div id="two-factor-setup-status"></div>
-
           <form id="enable2faForm" novalidate
-            hx-post="/api/v2/account/2fa/enable"
-            hx-target="#two-factor-setup-status"
-            hx-swap="innerHTML"
-            hx-disabled-elt="find button[type='submit']"
-            hx-indicator="#enable-form-status">
+            method="POST"
+            action="/api/v2/account/2fa/enable">
             <%- include('../components/csrf') %>
             <label class="block text-sm font-medium mb-2" style="color:var(--theme-text-strong)"><%= t('twoFactorCodeLabel') %></label>
             <div class="flex gap-2">
               <input id="totpToken" name="token" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="one-time-code" autofocus placeholder="••••••" class="al-input flex-1 text-center font-mono text-lg tracking-[0.4em]">
               <button id="enableBtn" type="submit" class="al-btn-primary px-5"><%- icon('shield', { class: 'size-4', strokeWidth: 1.5 }) %><%= t('enabled2FA') %></button>
             </div>
-            <p id="enable-form-status" class="htmx-indicator text-sm mt-2" aria-live="polite" style="color:var(--theme-text-muted)"><%= t('enabling') %></p>
           </form>
 
           <div class="mt-7 pt-4 text-xs" style="border-top:1px solid var(--theme-border); color:var(--theme-text-muted)">

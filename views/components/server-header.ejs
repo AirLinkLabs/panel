@@ -1,4 +1,4 @@
-<div class="sm:flex-auto" x-data="serverHeader()">
+<div class="sm:flex-auto">
   <div class="flex items-center">
     <h1 class="text-lg font-semibold leading-6 truncate max-w-[300px]" style="color:var(--theme-text-strong);">
       <%= server.name.charAt(0).toUpperCase() + server.name.slice(1) %>
@@ -60,9 +60,7 @@ function formatUptime(seconds) {
   document.getElementById('server-header-data').dataset.daemonOffline = '<%= typeof serverStatus !== "undefined" && serverStatus.daemonOffline ? "true" : "false" %>';
 </script>
 <script nonce="<%- nonce %>">
-function serverHeader() {
-  return {
-    init() {
+(function() {
       var SECONDS_PER_DAY = 86400;
       var SECONDS_PER_HOUR = 3600;
       var SECONDS_PER_MINUTE = 60;
@@ -201,10 +199,12 @@ function serverHeader() {
       function wireRealtime() {
         if (realtimeWired) return;
         var rt = window.alRealtime;
-        var st = window.alState;
-        if (!rt || !st) return;
+        if (!rt) return;
         realtimeWired = true;
-        stopStatusObserver = st.observe('server:status:' + serverUUID, onRealtimeStatus);
+        var st = window.alState;
+        if (st && typeof st.observe === 'function') {
+          stopStatusObserver = st.observe('server:status:' + serverUUID, onRealtimeStatus);
+        }
         rt.watch(serverUUID);
         rt.watchEvents(serverUUID);
         function teardownRealtime() {
@@ -216,8 +216,6 @@ function serverHeader() {
 
       if (window.alRealtime) wireRealtime();
       else window.addEventListener('al:realtime-ready', wireRealtime);
-    }
-  };
-}
+})();
 </script>
 <% } %>

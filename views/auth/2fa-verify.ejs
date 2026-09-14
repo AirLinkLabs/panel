@@ -37,11 +37,6 @@
 
     <form
       id="verifyForm"
-      hx-post="/2fa"
-      hx-target="#two-factor-verify-status"
-      hx-swap="innerHTML"
-      hx-disabled-elt="find button[type='submit']"
-      hx-indicator="#verify-form-status"
       method="POST"
       action="/2fa"
       autocomplete="off"
@@ -59,7 +54,6 @@
           <span class="btn-label"><%= t('verifyAndSignIn') %></span>
           <span class="spinner"></span>
         </button>
-        <p id="verify-form-status" class="htmx-indicator text-sm text-center" style="color:var(--theme-text-muted)">Verifying…</p>
       </div>
     </form>
 

@@ -882,8 +882,8 @@ export async function mount(root, config) {
   }
 
   // Realtime
-  const rt = window.alRealtime,
-    st = window.alState;
+  const rt = window.alRealtime;
+  const st = window.alState;
   function resubscribeRealtime() {
     if (rt) {
       rt.watch(config.serverUUID);
@@ -891,37 +891,39 @@ export async function mount(root, config) {
     }
   }
 
-  if (rt && st) {
+  if (rt) {
     resubscribeRealtime();
     rt.onStatusChange((s) => {
       if (s === "connected") resubscribeRealtime();
     });
-    st.observe("server:status:" + config.serverUUID, (snap) => {
-      if (!snap || snap.status !== "success" || !snap.data) return;
-      if (snap.data.running === false) {
-        if (!lifecycleActive) {
-          setAllStatsOffline();
-          surfaceStoppedState(snap.data);
+    if (st && typeof st.observe === "function") {
+      st.observe("server:status:" + config.serverUUID, (snap) => {
+        if (!snap || snap.status !== "success" || !snap.data) return;
+        if (snap.data.running === false) {
+          if (!lifecycleActive) {
+            setAllStatsOffline();
+            surfaceStoppedState(snap.data);
+          }
+          return;
         }
-        return;
-      }
-      updateStatus({ data: snap.data });
-    });
-    st.observe("server:stats:" + config.serverUUID, (snap) => {
-      if (!snap || snap.status !== "success" || !snap.data) return;
-      updateRamUsage({ data: snap.data });
-      updateCpuUsage({ data: snap.data });
-      updateDiskUsage({ data: snap.data });
-    });
-    st.observe("server:queue:" + config.serverUUID, (snap) => {
-      if (!snap?.data) return;
-      const q = snap.data;
-      if (q.queued && typeof q.position === "number") {
-        setStatusText("Queued", "var(--theme-warning)");
-        setStatusLog("Waiting for capacity...");
-        showQueueStatus(q.position, q.total, q.available);
-      } else hideQueueStatus();
-    });
+        updateStatus({ data: snap.data });
+      });
+      st.observe("server:stats:" + config.serverUUID, (snap) => {
+        if (!snap || snap.status !== "success" || !snap.data) return;
+        updateRamUsage({ data: snap.data });
+        updateCpuUsage({ data: snap.data });
+        updateDiskUsage({ data: snap.data });
+      });
+      st.observe("server:queue:" + config.serverUUID, (snap) => {
+        if (!snap?.data) return;
+        const q = snap.data;
+        if (q.queued && typeof q.position === "number") {
+          setStatusText("Queued", "var(--theme-warning)");
+          setStatusLog("Waiting for capacity...");
+          showQueueStatus(q.position, q.total, q.available);
+        } else hideQueueStatus();
+      });
+    }
     rt.subscribe((evt) => {
       if (!evt || typeof evt.type !== "string") return;
       const rid =

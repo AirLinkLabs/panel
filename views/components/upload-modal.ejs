@@ -96,17 +96,16 @@
     clearUploadModalSelection();
 
     overlay.classList.remove('opacity-0', 'pointer-events-none');
-    Animate.openModal(overlay, panel);
+    overlay.classList.add('open'); panel.classList.add('open');
     document.body.style.overflow = 'hidden';
   }
   window.openUploadModal = openUploadModal;
 
   function closeUploadModal() {
-    Animate.closeModal(overlay, panel, function() {
-      overlay.classList.add('opacity-0', 'pointer-events-none');
-      document.body.style.overflow = '';
-      currentOnFile = null;
-    });
+    overlay.classList.remove('open'); panel.classList.remove('open');
+    overlay.classList.add('opacity-0', 'pointer-events-none');
+    document.body.style.overflow = '';
+    currentOnFile = null;
   }
   window.closeUploadModal = closeUploadModal;
 

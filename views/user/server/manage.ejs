@@ -33,12 +33,6 @@
     }
 
     .console-wrap {
-        animation: console-appear 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
-    }
-
-    @keyframes console-appear {
-        from { opacity: 0; transform: translateY(6px); }
-        to   { opacity: 1; transform: translateY(0); }
     }
 
     /* Mobile terminal */
@@ -64,7 +58,6 @@
 
     #mobile-terminal-container {
         overscroll-behavior: contain;
-        animation: console-appear 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
 </style>
 
@@ -290,7 +283,6 @@
       </div>
 
       <div class="px-0 mt-1">
-        <%- include('../../components/loading-popup') %>
       </div>
 
       <% if (server.Suspended) { %>
@@ -416,7 +408,7 @@
 <%- include('../../components/footer') %>
 
 <script nonce="<%- nonce %>">
-function retryDaemonConnection() { Turbo.visit(window.location.href); }
+function retryDaemonConnection() { window.location.reload(); }
 (async function () {
   const root = document.getElementById('manage-root');
   if (!root) return;
@@ -424,17 +416,13 @@ function retryDaemonConnection() { Turbo.visit(window.location.href); }
     const config = JSON.parse(root.dataset.config || '{}');
     const { mount } = await import('<%= assetUrl('/javascript/islands/server-console.js') %>');
     const controller = await mount(root, config);
-    // Store teardown for Turbo cleanup
     const cleanup = () => {
       if (controller && typeof controller.teardown === 'function') {
         controller.teardown();
       }
     };
 
-    // Call teardown before Turbo swaps the page
-    document.addEventListener('turbo:before-render', cleanup, { once: true });
-
-    // Also call on pagehide for full browser navigation
+    // Call teardown on full browser navigation
     window.addEventListener('pagehide', cleanup, { once: true });
 
     // Clean up old listeners if we navigate away and back

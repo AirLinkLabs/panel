@@ -9,7 +9,7 @@
   <div class="flex min-h-screen">
     <div class="hidden lg:block w-60 shrink-0"><%- include('../../components/sidebar') %></div>
 <%- include('../../components/template') %>
-    <div id="page-content" x-data="imageApprovals()" class="flex-1 overflow-y-auto pt-0 pb-12">
+    <div id="page-content" class="flex-1 overflow-y-auto pt-0 pb-12">
 
       <%- include('../../components/ui/breadcrumb', { items: [
         { label: t('admin') },
@@ -117,6 +117,13 @@
 ></div>
 
 <script nonce="<%- nonce %>">
+(function() {
+  var approvals = imageApprovals();
+  if (approvals && typeof approvals.init === 'function') {
+    document.addEventListener('DOMContentLoaded', function() { approvals.init(); });
+  }
+})();
+
 function imageApprovals() {
   const pd = document.getElementById('page-data')?.dataset;
   return {
@@ -147,8 +154,7 @@ function imageApprovals() {
       function removePendingCard(id, card) {
         const list = document.getElementById('pendingApprovalsList');
         const remaining = list ? Math.max(0, list.querySelectorAll('.pending-card').length - 1) : 0;
-        if (card && window.al) al.removeRow(card);
-        else if (card) card.remove();
+        window.location.reload();
         const badge = document.getElementById('tabCountApprovals');
         if (badge) {
           if (remaining > 0) badge.textContent = remaining;
@@ -180,7 +186,7 @@ function imageApprovals() {
                   showToast(data.error, 'error');
                 } else {
                   showToast(data.message || pd.approved, 'success');
-                  removePendingCard(id, card);
+                  window.location.reload();
                 }
               } catch (error) {
                 console.error('Failed to approve image:', error);
@@ -214,7 +220,7 @@ function imageApprovals() {
             showToast(data.error, 'error');
           } else {
             showToast(data.message || pd.rejected, 'success');
-            removePendingCard(id, card);
+            window.location.reload();
           }
         } catch (error) {
           closeReject();

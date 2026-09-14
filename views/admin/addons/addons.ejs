@@ -1,5 +1,4 @@
 <%- include('../../components/header', { title: t('addonsTitle') }) %>
-<%- include('../../components/loading-popup') %>
 
 <style>
   ::-webkit-scrollbar { display: none; }
@@ -9,7 +8,7 @@
   <div class="flex min-h-screen">
     <div class="hidden lg:block w-60 shrink-0"><%- include('../../components/sidebar') %></div>
 <%- include('../../components/template') %>
-    <div id="page-content" x-data="addonManager()" class="flex-1 overflow-y-auto pt-0 pb-12">
+    <div id="page-content" class="flex-1 overflow-y-auto pt-0 pb-12">
 
       <%- include('../../components/ui/breadcrumb', { items: [
         { label: t('admin') },
@@ -84,11 +83,11 @@
               </td>
               <td class="whitespace-nowrap px-3 py-4 text-sm">
                 <div class="flex gap-2">
-                  <button  @click="toggleAddon('<%= addon.slug %>', <%= !addon.enabled %>)" type="button"
+                  <button data-action="toggle" data-slug="<%= addon.slug %>" data-enable="<%= !addon.enabled %>" type="button"
                     class="al-btn-secondary px-3 py-2 text-sm font-medium shadow-lg transition">
                     <%= addon.enabled ? t('addonDisable') : t('addonEnable') %>
                   </button>
-                  <button  @click="confirmUninstall('<%= addon.slug %>', '<%= addon.name %>')" type="button"
+                  <button data-action="uninstall" data-slug="<%= addon.slug %>" data-name="<%= addon.name %>" type="button"
                     class="al-btn-danger" aria-label="<%= t('addonUninstallAria', { name: addon.name }) %>">
                     <%- icon('trash-2', { size: 16, class: 'shrink-0' }) %>
                   </button>
@@ -147,7 +146,7 @@ function addonManager() {
         body: JSON.stringify({ enabled: enable.toString() }),
       }).then(r => r.json()).then(data => {
         hideLoadingPopup();
-        if (data.success) { showToast(req.translations.addonUpdated || 'Addon updated', 'success'); this.updateRow(slug, enable); }
+        if (data.success) { showToast(req.translations.addonUpdated || 'Addon updated', 'success'); window.location.reload(); }
         else showToast(data.message || (req.translations.failed || 'Failed'), 'error');
       }).catch(() => { hideLoadingPopup(); showToast(req.translations.somethingWentWrong || 'Something went wrong.', 'error'); });
     },
@@ -172,12 +171,29 @@ function addonManager() {
       fetch('/api/v2/admin/addons/' + slug + '/uninstall', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ slug }) })
         .then(r => r.json()).then(data => {
           hideLoadingPopup();
-          if (data.success) { showToast(req.translations.addonUninstalled || 'Uninstalled', 'success'); const r = document.querySelector('[data-slug="' + slug + '"]'); if (r) r.remove(); }
+          if (data.success) { showToast(req.translations.addonUninstalled || 'Uninstalled', 'success'); window.location.reload(); }
           else showToast(data.message || (req.translations.failed || 'Failed'), 'error');
         }).catch(() => { hideLoadingPopup(); showToast(req.translations.somethingWentWrong || 'Something went wrong.', 'error'); });
     }
   };
 }
+
+(function() {
+  var mgr = addonManager();
+  mgr.init();
+
+  document.querySelectorAll('[data-action="toggle"]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      mgr.toggleAddon(this.dataset.slug, this.dataset.enable === 'true');
+    });
+  });
+
+  document.querySelectorAll('[data-action="uninstall"]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      mgr.confirmUninstall(this.dataset.slug, this.dataset.name);
+    });
+  });
+})();
 </script>
 
 <%- include('../../components/footer') %>

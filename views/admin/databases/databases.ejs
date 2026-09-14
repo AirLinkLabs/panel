@@ -26,17 +26,14 @@
                 <h3 class="text-sm font-semibold" style="color:var(--theme-text-strong)"><%= t('adminDbAutoHostTitle') %></h3>
                 <p class="mt-1 text-xs leading-relaxed" style="color:var(--theme-text-muted)"><%= t('adminDbAutoHostDesc') %></p>
               </div>
-              <button type="button" class="al-btn-primary shrink-0" id="autoHostBtn"
-                hx-post="/api/v2/admin/databases/auto-host"
-                hx-target="#admin-databases-list"
-                hx-swap="outerHTML"
-                hx-disabled-elt="this"
-                hx-indicator="#auto-host-card-status">
-                <%- icon('zap', { size: 15 }) %>
-                <span class="ml-1.5"><%= t('autoGenerate') %></span>
-              </button>
+              <form method="POST" action="/api/v2/admin/databases/auto-host" class="shrink-0">
+                <%- include('../../components/csrf') %>
+                <button type="submit" class="al-btn-primary">
+                  <%- icon('zap', { size: 15 }) %>
+                  <span class="ml-1.5"><%= t('autoGenerate') %></span>
+                </button>
+              </form>
             </div>
-            <p id="auto-host-card-status" class="htmx-indicator text-xs mt-2" style="color:var(--theme-text-muted)"><%= t('adminDbWorking') %></p>
           </div>
           <div class="al-card rounded-xl p-5">
             <div class="flex items-start justify-between gap-3">
@@ -44,16 +41,14 @@
                 <h3 class="text-sm font-semibold" style="color:var(--theme-text-strong)"><%= t('adminDbAutoBucketTitle') %></h3>
                 <p class="mt-1 text-xs leading-relaxed" style="color:var(--theme-text-muted)"><%= t('adminDbAutoBucketDesc') %></p>
               </div>
-              <button type="button" class="al-btn-primary shrink-0" id="autoBucketBtn"
-                hx-post="/api/v2/admin/databases/auto-bucket"
-                hx-swap="none"
-                hx-disabled-elt="this"
-                hx-indicator="#auto-bucket-card-status">
-                <%- icon('zap', { size: 15 }) %>
-                <span class="ml-1.5"><%= t('autoGenerate') %></span>
-              </button>
+              <form method="POST" action="/api/v2/admin/databases/auto-bucket" class="shrink-0">
+                <%- include('../../components/csrf') %>
+                <button type="submit" class="al-btn-primary">
+                  <%- icon('zap', { size: 15 }) %>
+                  <span class="ml-1.5"><%= t('autoGenerate') %></span>
+                </button>
+              </form>
             </div>
-            <p id="auto-bucket-card-status" class="htmx-indicator text-xs mt-2" style="color:var(--theme-text-muted)"><%= t('adminDbWorking') %></p>
           </div>
         </div>
 

@@ -141,7 +141,7 @@
     retryBtn.textContent = req.translations.retrying || 'Retrying…';
     fetch('/api/v2/servers/' + encodeURIComponent(serverUUID) + '/reinstall', { method: 'POST', credentials: 'same-origin', headers: { 'csrf-token': document.querySelector('meta[name="csrf-token"]')?.content || '' } })
       .then(function(r) {
-        if (!r.ok) { return r.json().then(function(d) { throw new Error(d.error || (req.translations.reinstallFailed || 'Reinstall failed')); }); }
+        if (!r.ok) { return r.json().then(function(d) { throw new Error((d.error?.message) || (req.translations.reinstallFailed || 'Reinstall failed')); }); }
         if (window.retryDaemonConnection) {
           // Re-arm the banner for the new install pass without a reload.
           finished = false;
@@ -231,9 +231,9 @@
 
   startPolling();
 
-  // Release the daemon event stream when navigating away (Turbo SPA keeps
-  // this context alive across page loads), matching the watcher cleanup in
-  // manage.ejs so the panel's event watcher can close its daemon socket.
+  // Release the daemon event stream when navigating away, matching the
+  // watcher cleanup in manage.ejs so the panel's event watcher can close
+  // its daemon socket.
   window.addEventListener('pagehide', function () {
     if (poller) { clearInterval(poller); poller = null; }
     if (window.alRealtime) {

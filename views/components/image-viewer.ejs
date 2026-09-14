@@ -57,8 +57,7 @@
                 modalReturnFocus = document.activeElement;
                 modal.classList.remove('opacity-0', 'pointer-events-none');
                 modal.setAttribute('aria-hidden', 'false');
-                if (window.Animate) Animate.openModal(modal, panel);
-                else { modal.classList.add('open'); panel.classList.add('open'); }
+                modal.classList.add('open'); panel.classList.add('open');
 
                 panel.focus();
                 document.addEventListener('keydown', handleKeyDown);
@@ -69,8 +68,7 @@
                     modal.classList.add('opacity-0', 'pointer-events-none');
                     modal.setAttribute('aria-hidden', 'true');
                 };
-                if (window.Animate) Animate.closeModal(modal, panel, done);
-                else { modal.classList.remove('open'); panel.classList.remove('open'); done(); }
+                modal.classList.remove('open'); panel.classList.remove('open'); done();
                 document.removeEventListener('keydown', handleKeyDown);
                 if (modalReturnFocus && typeof modalReturnFocus.focus === 'function') modalReturnFocus.focus();
                 modalReturnFocus = null;

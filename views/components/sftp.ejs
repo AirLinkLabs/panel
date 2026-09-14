@@ -1,5 +1,5 @@
 
-<button @click="openSftpModal()" type="button" aria-label="<%= t('openSftpAccess') %>"
+<button onclick="openSftpModal()" type="button" aria-label="<%= t('openSftpAccess') %>"
   class="border block rounded-xl hover:opacity-90 px-3 py-2 text-center text-sm font-medium shadow-lg transition duration-300 focus-visible:ring-2 focus-visible:ring-[var(--theme-border-accent)] focus-visible:ring-offset-1 outline-none" style="background:var(--theme-btn-secondary-bg);border-color:var(--theme-btn-secondary-border);color:var(--theme-btn-secondary-text);">
   <%- icon('lock', { class: 'size-4 inline-flex mr-1 mb-0.5' }) %>
   <%= t('sftp') %>
@@ -9,7 +9,7 @@
 <div id="sftpModal" class="al-sheet-overlay fixed inset-0 z-50 hidden items-center justify-center" role="dialog" aria-modal="true" aria-labelledby="sftpModalTitle">
 
   
-  <div @click="closeSftpModal()" class="absolute inset-0 bg-transparent" aria-hidden="true"></div>
+  <div onclick="closeSftpModal()" class="absolute inset-0 bg-transparent" aria-hidden="true"></div>
 
   
   <div class="al-sftp-panel al-sheet-panel relative rounded-2xl shadow-xl w-full max-w-md mx-4" style="background:var(--theme-bg-card); border-color:var(--theme-border);">
@@ -25,7 +25,7 @@
           <p class="text-xs mt-0.5" style="color:var(--theme-text-muted);"><%= t('connectUsingSftpClient') %></p>
         </div>
         </div>
-      <button type="button" @click="closeSftpModal()" aria-label="<%= t('closeModal') %>" class="al-btn-ghost p-2 rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center shrink-0" style="color:var(--theme-text-muted);">
+      <button type="button" onclick="closeSftpModal()" aria-label="<%= t('closeModal') %>" class="al-btn-ghost p-2 rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center shrink-0" style="color:var(--theme-text-muted);">
         <%- icon('x', { class: 'h-5 w-5', strokeWidth: 1.5 }) %>
       </button>
     </div>
@@ -46,8 +46,8 @@
         </div>
       </div>
       <div class="flex items-center gap-2">
-        <button type="button" @click="generateSftpCredentials()" class="px-3 py-1.5 rounded-lg text-xs font-medium transition focus-visible:ring-2 focus-visible:ring-[var(--theme-border-accent)] focus-visible:ring-offset-1 outline-none border inline-flex items-center gap-1.5" style="background:var(--theme-bg-secondary);color:var(--theme-text-strong);border-color:var(--theme-border);"><%- icon('key-round', { class: 'size-3', strokeWidth: 1.5 }) %><%= t('generateCredentials') %></button>
-        <button type="button" @click="closeSftpModal()" class="px-3 py-1.5 rounded-lg text-xs font-medium transition focus-visible:ring-2 focus-visible:ring-[var(--theme-border-accent)] focus-visible:ring-offset-1 outline-none hover:opacity-80 inline-flex items-center gap-1.5" style="color:var(--theme-text-muted);"><%- icon('x', { class: 'size-3', strokeWidth: 1.5 }) %><%= t('close') %></button>
+        <button type="button" onclick="generateSftpCredentials()" class="px-3 py-1.5 rounded-lg text-xs font-medium transition focus-visible:ring-2 focus-visible:ring-[var(--theme-border-accent)] focus-visible:ring-offset-1 outline-none border inline-flex items-center gap-1.5" style="background:var(--theme-bg-secondary);color:var(--theme-text-strong);border-color:var(--theme-border);"><%- icon('key-round', { class: 'size-3', strokeWidth: 1.5 }) %><%= t('generateCredentials') %></button>
+        <button type="button" onclick="closeSftpModal()" class="px-3 py-1.5 rounded-lg text-xs font-medium transition focus-visible:ring-2 focus-visible:ring-[var(--theme-border-accent)] focus-visible:ring-offset-1 outline-none hover:opacity-80 inline-flex items-center gap-1.5" style="color:var(--theme-text-muted);"><%- icon('x', { class: 'size-3', strokeWidth: 1.5 }) %><%= t('close') %></button>
       </div>
     </div>
 
@@ -59,7 +59,7 @@
         <div class="flex items-center gap-3 py-2">
           <span class="text-xs font-medium w-16 shrink-0" style="color:var(--theme-text-muted);"><%= t('host') %></span>
           <span id="sftpValHost" class="text-xs flex-1 truncate font-mono" style="color:var(--theme-text);"></span>
-          <button type="button" @click="sftpCopy('sftpValHost')" aria-label="<%= t('copyHost') %>" class="copy-btn shrink-0 flex items-center justify-center w-9 h-9 rounded-lg transition focus-visible:ring-2 focus-visible:ring-[var(--theme-border-accent)] focus-visible:ring-offset-1 outline-none" style="background:var(--theme-bg-secondary);color:var(--theme-text-muted);">
+          <button type="button" onclick="sftpCopy('sftpValHost')" aria-label="<%= t('copyHost') %>" class="copy-btn shrink-0 flex items-center justify-center w-9 h-9 rounded-lg transition focus-visible:ring-2 focus-visible:ring-[var(--theme-border-accent)] focus-visible:ring-offset-1 outline-none" style="background:var(--theme-bg-secondary);color:var(--theme-text-muted);">
             <%- icon('copy', { class: 'size-3', strokeWidth: 2 }) %>
           </button>
         </div>
@@ -69,7 +69,7 @@
         <div class="flex items-center gap-3 py-2">
           <span class="text-xs font-medium w-16 shrink-0" style="color:var(--theme-text-muted);"><%= t('port') %></span>
           <span id="sftpValPort" class="text-xs flex-1 font-mono" style="color:var(--theme-text);"></span>
-          <button type="button" @click="sftpCopy('sftpValPort')" aria-label="<%= t('copyPort') %>" class="copy-btn shrink-0 flex items-center justify-center w-9 h-9 rounded-lg transition focus-visible:ring-2 focus-visible:ring-[var(--theme-border-accent)] focus-visible:ring-offset-1 outline-none" style="background:var(--theme-bg-secondary);color:var(--theme-text-muted);">
+          <button type="button" onclick="sftpCopy('sftpValPort')" aria-label="<%= t('copyPort') %>" class="copy-btn shrink-0 flex items-center justify-center w-9 h-9 rounded-lg transition focus-visible:ring-2 focus-visible:ring-[var(--theme-border-accent)] focus-visible:ring-offset-1 outline-none" style="background:var(--theme-bg-secondary);color:var(--theme-text-muted);">
             <%- icon('copy', { class: 'size-3', strokeWidth: 2 }) %>
           </button>
         </div>
@@ -79,7 +79,7 @@
         <div class="flex items-center gap-3 py-2">
           <span class="text-xs font-medium w-16 shrink-0" style="color:var(--theme-text-muted);"><%= t('username') %></span>
           <span id="sftpValUser" class="text-xs flex-1 truncate font-mono" style="color:var(--theme-text);"></span>
-          <button type="button" @click="sftpCopy('sftpValUser')" aria-label="<%= t('copyUsername') %>" class="copy-btn shrink-0 flex items-center justify-center w-9 h-9 rounded-lg transition focus-visible:ring-2 focus-visible:ring-[var(--theme-border-accent)] focus-visible:ring-offset-1 outline-none" style="background:var(--theme-bg-secondary);color:var(--theme-text-muted);">
+          <button type="button" onclick="sftpCopy('sftpValUser')" aria-label="<%= t('copyUsername') %>" class="copy-btn shrink-0 flex items-center justify-center w-9 h-9 rounded-lg transition focus-visible:ring-2 focus-visible:ring-[var(--theme-border-accent)] focus-visible:ring-offset-1 outline-none" style="background:var(--theme-bg-secondary);color:var(--theme-text-muted);">
             <%- icon('copy', { class: 'size-3', strokeWidth: 2 }) %>
           </button>
         </div>
@@ -89,7 +89,7 @@
         <div class="flex items-center gap-3 py-2">
           <span class="text-xs font-medium w-16 shrink-0" style="color:var(--theme-text-muted);"><%= t('password') %></span>
           <span id="sftpValPass" class="text-xs flex-1 truncate font-mono blur-sm transition-all duration-200 cursor-default select-all sftp-password" style="color:var(--theme-text);" title="<%= t('hoverToReveal') %>"></span>
-          <button type="button" @click="sftpCopy('sftpValPass')" aria-label="<%= t('copyPassword') %>" class="copy-btn shrink-0 flex items-center justify-center w-9 h-9 rounded-lg transition focus-visible:ring-2 focus-visible:ring-[var(--theme-border-accent)] focus-visible:ring-offset-1 outline-none" style="background:var(--theme-bg-secondary);color:var(--theme-text-muted);">
+          <button type="button" onclick="sftpCopy('sftpValPass')" aria-label="<%= t('copyPassword') %>" class="copy-btn shrink-0 flex items-center justify-center w-9 h-9 rounded-lg transition focus-visible:ring-2 focus-visible:ring-[var(--theme-border-accent)] focus-visible:ring-offset-1 outline-none" style="background:var(--theme-bg-secondary);color:var(--theme-text-muted);">
             <%- icon('copy', { class: 'size-3', strokeWidth: 2 }) %>
           </button>
         </div>
@@ -105,8 +105,8 @@
 
       
       <div class="al-sheet-footer" style="border-color:var(--theme-border);">
-        <button type="button" @click="generateSftpCredentials()" id="sftpRegenBtn" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition focus-visible:ring-2 focus-visible:ring-[var(--theme-border-accent)] focus-visible:ring-offset-1 outline-none disabled:opacity-40 inline-flex items-center gap-1.5" style="background:var(--theme-warning);color:var(--theme-bg);"><%- icon('refresh-cw', { class: 'size-3', strokeWidth: 1.5 }) %><%= t('regenerate') %></button>
-        <button type="button" @click="revokeSftpCredentials()" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition focus-visible:ring-2 focus-visible:ring-[var(--theme-border-accent)] focus-visible:ring-offset-1 outline-none inline-flex items-center gap-1.5" style="background:var(--theme-danger);color:var(--theme-btn-danger-text);"><%- icon('trash-2', { class: 'size-3', strokeWidth: 1.5 }) %><%= t('revoke') %></button>
+        <button type="button" onclick="generateSftpCredentials()" id="sftpRegenBtn" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition focus-visible:ring-2 focus-visible:ring-[var(--theme-border-accent)] focus-visible:ring-offset-1 outline-none disabled:opacity-40 inline-flex items-center gap-1.5" style="background:var(--theme-warning);color:var(--theme-bg);"><%- icon('refresh-cw', { class: 'size-3', strokeWidth: 1.5 }) %><%= t('regenerate') %></button>
+        <button type="button" onclick="revokeSftpCredentials()" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition focus-visible:ring-2 focus-visible:ring-[var(--theme-border-accent)] focus-visible:ring-offset-1 outline-none inline-flex items-center gap-1.5" style="background:var(--theme-danger);color:var(--theme-btn-danger-text);"><%- icon('trash-2', { class: 'size-3', strokeWidth: 1.5 }) %><%= t('revoke') %></button>
       </div>
     </div>
 
@@ -149,8 +149,7 @@
     const modal = document.getElementById('sftpModal');
     const panel = modal.querySelector('.al-sftp-panel');
     lastFocusedElement = document.activeElement;
-    if (window.Animate) Animate.openModal(modal, panel);
-    else { modal.classList.remove('hidden'); modal.classList.add('flex'); }
+    modal.classList.remove('hidden'); modal.classList.add('flex');
     loadSftpCredentials();
     // Focus first focusable element
     setTimeout(function() {
@@ -181,8 +180,7 @@
       modal.classList.add('hidden'); modal.classList.remove('flex');
       restoreFocus();
     };
-    if (window.Animate && panel) Animate.closeModal(modal, panel, done);
-    else done();
+    done();
   };
 
   function restoreFocus() {
@@ -273,7 +271,7 @@
         }
         if (!resp.ok) {
           return resp.json().catch(function () { return {}; }).then(function (d) {
-            throw new Error(d.error || 'Request failed (' + resp.status + ')');
+            throw new Error((d.error?.message) || 'Request failed (' + resp.status + ')');
           });
         }
         return resp.json().then(fillCredentials);
@@ -299,7 +297,7 @@
       .then(function (resp) {
         if (!resp.ok) {
           return resp.json().catch(function () { return {}; }).then(function (d) {
-            throw new Error(d.error || 'Request failed (' + resp.status + ')');
+            throw new Error((d.error?.message) || 'Request failed (' + resp.status + ')');
           });
         }
         return resp.json();
@@ -325,7 +323,7 @@
       .then(function (resp) {
         if (!resp.ok) {
           return resp.json().catch(function () { return {}; }).then(function (d) {
-            throw new Error(d.error || 'Request failed (' + resp.status + ')');
+            throw new Error((d.error?.message) || 'Request failed (' + resp.status + ')');
           });
         }
         sftpPlainPassword = null;

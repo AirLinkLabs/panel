@@ -5,7 +5,7 @@
     <div class="hidden lg:block w-60 shrink-0"><%- include('../../components/sidebar') %></div>
 <%- include('../../components/template') %>
 
-    <div id="page-content" class="flex-1 overflow-y-auto pt-0 pb-12" x-data="adminSettings()">
+    <div id="page-content" class="flex-1 overflow-y-auto pt-0 pb-12">
       <%- include('../../components/ui/breadcrumb', { items: [
         { label: t('admin') },
         { label: t('settings') }
@@ -47,11 +47,11 @@
               <div>
                 <label class="block text-sm font-medium mb-2" style="color:var(--theme-text-strong)"><%= t('logoLabel') %></label>
                 <div class="flex items-center gap-2">
-                  <button type="button" @click="openUploadModal({ title: '<%= t('uploadLogo') %>', accept: 'image/*', onFile: function(f) { document.getElementById('logo-input')._selectedFile = f; document.getElementById('logo-label-name').textContent = f.name; document.getElementById('logo-clear').classList.remove('hidden'); }})" class="al-btn-secondary text-xs px-3 py-2 inline-flex items-center gap-1.5">
+                  <button type="button" onclick="openUploadModal({ title: '<%= t('uploadLogo') %>', accept: 'image/*', onFile: function(f) { document.getElementById('logo-input')._selectedFile = f; document.getElementById('logo-label-name').textContent = f.name; document.getElementById('logo-clear').classList.remove('hidden'); }})" class="al-btn-secondary text-xs px-3 py-2 inline-flex items-center gap-1.5">
                     <%- icon('upload', { class: 'size-3.5', strokeWidth: 1.5 }) %><%= t('chooseFile') %>
                   </button>
                   <span id="logo-label-name" class="text-xs truncate max-w-[120px]" style="color:var(--theme-text-muted);"><%= t('noFileChosen') %></span>
-                  <button type="button" id="logo-clear" class="hidden w-6 h-6 rounded flex items-center justify-center hover:opacity-75" style="color:var(--theme-text-muted);" @click="document.getElementById('logo-input')._selectedFile=null;document.getElementById('logo-label-name').textContent='<%= t('noFileChosen') %>';this.classList.add('hidden')">
+                  <button type="button" id="logo-clear" class="hidden w-6 h-6 rounded flex items-center justify-center hover:opacity-75" style="color:var(--theme-text-muted);" onclick="document.getElementById('logo-input')._selectedFile=null;document.getElementById('logo-label-name').textContent='<%= t('noFileChosen') %>';this.classList.add('hidden')">
                     <%- icon('x', { class: 'size-3', strokeWidth: 2 }) %>
                   </button>
                 </div>
@@ -63,11 +63,11 @@
               <div>
                 <label class="block text-sm font-medium mb-2" style="color:var(--theme-text-strong)"><%= t('faviconLabel') %></label>
                 <div class="flex items-center gap-2">
-                  <button type="button" @click="openUploadModal({ title: '<%= t('uploadFavicon') %>', accept: '.ico,.png,.jpg,.jpeg', onFile: function(f) { document.getElementById('favicon-input')._selectedFile = f; document.getElementById('favicon-label-name').textContent = f.name; document.getElementById('favicon-clear').classList.remove('hidden'); }})" class="al-btn-secondary text-xs px-3 py-2 inline-flex items-center gap-1.5">
+                  <button type="button" onclick="openUploadModal({ title: '<%= t('uploadFavicon') %>', accept: '.ico,.png,.jpg,.jpeg', onFile: function(f) { document.getElementById('favicon-input')._selectedFile = f; document.getElementById('favicon-label-name').textContent = f.name; document.getElementById('favicon-clear').classList.remove('hidden'); }})" class="al-btn-secondary text-xs px-3 py-2 inline-flex items-center gap-1.5">
                     <%- icon('upload', { class: 'size-3.5', strokeWidth: 1.5 }) %><%= t('chooseFile') %>
                   </button>
                   <span id="favicon-label-name" class="text-xs truncate max-w-[120px]" style="color:var(--theme-text-muted);"><%= t('noFileChosen') %></span>
-                  <button type="button" id="favicon-clear" class="hidden w-6 h-6 rounded flex items-center justify-center hover:opacity-75" style="color:var(--theme-text-muted);" @click="document.getElementById('favicon-input')._selectedFile=null;document.getElementById('favicon-label-name').textContent='<%= t('noFileChosen') %>';this.classList.add('hidden')">
+                  <button type="button" id="favicon-clear" class="hidden w-6 h-6 rounded flex items-center justify-center hover:opacity-75" style="color:var(--theme-text-muted);" onclick="document.getElementById('favicon-input')._selectedFile=null;document.getElementById('favicon-label-name').textContent='<%= t('noFileChosen') %>';this.classList.add('hidden')">
                     <%- icon('x', { class: 'size-3', strokeWidth: 2 }) %>
                   </button>
                 </div>
@@ -124,11 +124,11 @@
               <p class="text-xs mb-3" style="color:var(--theme-text-muted)"><%= t('themeFileHint') %></p>
               <label class="block text-xs font-medium mb-1.5" style="color:var(--theme-text-muted)"><%= t('uploadThemeFile') %></label>
               <div class="flex items-center gap-2">
-                <button type="button" @click="openUploadModal({ title: '<%= t('uploadCustomTheme') %>', accept: '.zip', onFile: function(f) { document.getElementById('theme-file-input')._selectedFile = f; document.getElementById('theme-label-name').textContent = f.name; document.getElementById('theme-clear').classList.remove('hidden'); }})" class="al-btn-secondary text-xs px-3 py-2 inline-flex items-center gap-1.5">
+                <button type="button" onclick="openUploadModal({ title: '<%= t('uploadCustomTheme') %>', accept: '.zip', onFile: function(f) { document.getElementById('theme-file-input')._selectedFile = f; document.getElementById('theme-label-name').textContent = f.name; document.getElementById('theme-clear').classList.remove('hidden'); }})" class="al-btn-secondary text-xs px-3 py-2 inline-flex items-center gap-1.5">
                   <%- icon('upload', { class: 'size-3.5', strokeWidth: 1.5 }) %><%= t('chooseFile') %>
                 </button>
                 <span id="theme-label-name" class="text-xs truncate max-w-[120px]" style="color:var(--theme-text-muted);"><%= t('noFileChosen') %></span>
-                <button type="button" id="theme-clear" class="hidden w-6 h-6 rounded flex items-center justify-center hover:opacity-75" style="color:var(--theme-text-muted);" @click="document.getElementById('theme-file-input')._selectedFile=null;document.getElementById('theme-label-name').textContent='<%= t('noFileChosen') %>';this.classList.add('hidden')">
+                <button type="button" id="theme-clear" class="hidden w-6 h-6 rounded flex items-center justify-center hover:opacity-75" style="color:var(--theme-text-muted);" onclick="document.getElementById('theme-file-input')._selectedFile=null;document.getElementById('theme-label-name').textContent='<%= t('noFileChosen') %>';this.classList.add('hidden')">
                   <%- icon('x', { class: 'size-3', strokeWidth: 2 }) %>
                 </button>
               </div>
@@ -148,11 +148,11 @@
                 <% } %>
                 <label class="block text-xs font-medium mb-1.5" style="color:var(--theme-text-muted)"><%= t('uploadFile') %></label>
                 <div class="flex items-center gap-2 mb-2">
-                  <button type="button" @click="openUploadModal({ title: '<%= t('login') %>', accept: 'image/*', onFile: function(f) { document.getElementById('login-wallpaper-file')._selectedFile = f; document.getElementById('login-wp-label-name').textContent = f.name; document.getElementById('login-wp-clear').classList.remove('hidden'); }})" class="al-btn-secondary text-xs px-3 py-2 inline-flex items-center gap-1.5">
+                  <button type="button" onclick="openUploadModal({ title: '<%= t('login') %>', accept: 'image/*', onFile: function(f) { document.getElementById('login-wallpaper-file')._selectedFile = f; document.getElementById('login-wp-label-name').textContent = f.name; document.getElementById('login-wp-clear').classList.remove('hidden'); }})" class="al-btn-secondary text-xs px-3 py-2 inline-flex items-center gap-1.5">
                     <%- icon('upload', { class: 'size-3.5', strokeWidth: 1.5 }) %><%= t('chooseFile') %>
                   </button>
                   <span id="login-wp-label-name" class="text-xs truncate max-w-[120px]" style="color:var(--theme-text-muted);"><%= t('noFileChosen') %></span>
-                  <button type="button" id="login-wp-clear" class="hidden w-6 h-6 rounded flex items-center justify-center hover:opacity-75" style="color:var(--theme-text-muted);" @click="document.getElementById('login-wallpaper-file')._selectedFile=null;document.getElementById('login-wp-label-name').textContent='<%= t('noFileChosen') %>';this.classList.add('hidden')">
+                  <button type="button" id="login-wp-clear" class="hidden w-6 h-6 rounded flex items-center justify-center hover:opacity-75" style="color:var(--theme-text-muted);" onclick="document.getElementById('login-wallpaper-file')._selectedFile=null;document.getElementById('login-wp-label-name').textContent='<%= t('noFileChosen') %>';this.classList.add('hidden')">
                     <%- icon('x', { class: 'size-3', strokeWidth: 2 }) %>
                   </button>
                 </div>
@@ -169,11 +169,11 @@
                 <% } %>
                 <label class="block text-xs font-medium mb-1.5" style="color:var(--theme-text-muted)"><%= t('uploadFile') %></label>
                 <div class="flex items-center gap-2 mb-2">
-                  <button type="button" @click="openUploadModal({ title: '<%= t('register') %>', accept: 'image/*', onFile: function(f) { document.getElementById('register-wallpaper-file')._selectedFile = f; document.getElementById('register-wp-label-name').textContent = f.name; document.getElementById('register-wp-clear').classList.remove('hidden'); }})" class="al-btn-secondary text-xs px-3 py-2 inline-flex items-center gap-1.5">
+                  <button type="button" onclick="openUploadModal({ title: '<%= t('register') %>', accept: 'image/*', onFile: function(f) { document.getElementById('register-wallpaper-file')._selectedFile = f; document.getElementById('register-wp-label-name').textContent = f.name; document.getElementById('register-wp-clear').classList.remove('hidden'); }})" class="al-btn-secondary text-xs px-3 py-2 inline-flex items-center gap-1.5">
                     <%- icon('upload', { class: 'size-3.5', strokeWidth: 1.5 }) %><%= t('chooseFile') %>
                   </button>
                   <span id="register-wp-label-name" class="text-xs truncate max-w-[120px]" style="color:var(--theme-text-muted);"><%= t('noFileChosen') %></span>
-                  <button type="button" id="register-wp-clear" class="hidden w-6 h-6 rounded flex items-center justify-center hover:opacity-75" style="color:var(--theme-text-muted);" @click="document.getElementById('register-wallpaper-file')._selectedFile=null;document.getElementById('register-wp-label-name').textContent='<%= t('noFileChosen') %>';this.classList.add('hidden')">
+                  <button type="button" id="register-wp-clear" class="hidden w-6 h-6 rounded flex items-center justify-center hover:opacity-75" style="color:var(--theme-text-muted);" onclick="document.getElementById('register-wallpaper-file')._selectedFile=null;document.getElementById('register-wp-label-name').textContent='<%= t('noFileChosen') %>';this.classList.add('hidden')">
                     <%- icon('x', { class: 'size-3', strokeWidth: 2 }) %>
                   </button>
                 </div>
@@ -196,11 +196,11 @@
               <% } %>
               <label class="block text-xs font-medium mb-1.5" style="color:var(--theme-text-muted)"><%= t('uploadFile') %></label>
               <div class="flex items-center gap-2 mb-2">
-                <button type="button" @click="openUploadModal({ title: '<%= t('panelWallpaper') %>', accept: 'image/*', onFile: function(f) { document.getElementById('panel-wallpaper-file')._selectedFile = f; document.getElementById('panel-wp-label-name').textContent = f.name; document.getElementById('panel-wp-clear').classList.remove('hidden'); }})" class="al-btn-secondary text-xs px-3 py-2 inline-flex items-center gap-1.5">
+                <button type="button" onclick="openUploadModal({ title: '<%= t('panelWallpaper') %>', accept: 'image/*', onFile: function(f) { document.getElementById('panel-wallpaper-file')._selectedFile = f; document.getElementById('panel-wp-label-name').textContent = f.name; document.getElementById('panel-wp-clear').classList.remove('hidden'); }})" class="al-btn-secondary text-xs px-3 py-2 inline-flex items-center gap-1.5">
                   <%- icon('upload', { class: 'size-3.5', strokeWidth: 1.5 }) %><%= t('chooseFile') %>
                 </button>
                 <span id="panel-wp-label-name" class="text-xs truncate max-w-[120px]" style="color:var(--theme-text-muted);"><%= t('noFileChosen') %></span>
-                <button type="button" id="panel-wp-clear" class="hidden w-6 h-6 rounded flex items-center justify-center hover:opacity-75" style="color:var(--theme-text-muted);" @click="document.getElementById('panel-wallpaper-file')._selectedFile=null;document.getElementById('panel-wp-label-name').textContent='<%= t('noFileChosen') %>';this.classList.add('hidden')">
+                <button type="button" id="panel-wp-clear" class="hidden w-6 h-6 rounded flex items-center justify-center hover:opacity-75" style="color:var(--theme-text-muted);" onclick="document.getElementById('panel-wallpaper-file')._selectedFile=null;document.getElementById('panel-wp-label-name').textContent='<%= t('noFileChosen') %>';this.classList.add('hidden')">
                   <%- icon('x', { class: 'size-3', strokeWidth: 2 }) %>
                 </button>
               </div>
@@ -364,11 +364,11 @@
             <h2 class="al-card-header">VirusTotal</h2>
             <div class="p-4">
               <label class="block text-sm font-medium mb-2" style="color:var(--theme-text-strong)"><%= t('virusTotalApiKey') %></label>
-              <div class="relative max-w-sm" x-data="{ show: false }">
-                <input :type="show ? 'text' : 'password'" id="vtKeyInput" value="<%= settings.virusTotalApiKey || '' %>" placeholder="<%= t('pasteYourKey') %>" autocomplete="off"
+              <div class="relative max-w-sm">
+                <input type="password" id="vtKeyInput" value="<%= settings.virusTotalApiKey || '' %>" placeholder="<%= t('pasteYourKey') %>" autocomplete="off"
                   class="al-input pr-16 font-mono">
-                <button type="button" @click="show = !show"
-                  class="absolute right-3 top-1/2 -translate-y-1/2 text-xs hover:text-[var(--theme-text)] transition" style="color:var(--theme-text-muted)" x-text="show ? '<%= t('hide') %>' : '<%= t('show') %>'"><%= t('show') %></button>
+                <button type="button" onclick="var inp=document.getElementById('vtKeyInput');var btn=this;if(inp.type==='password'){inp.type='text';btn.textContent='<%= t('hide') %>';}else{inp.type='password';btn.textContent='<%= t('show') %>';}"
+                  class="absolute right-3 top-1/2 -translate-y-1/2 text-xs hover:text-[var(--theme-text)] transition" style="color:var(--theme-text-muted)"><%= t('show') %></button>
               </div>
               <% if (settings.virusTotalApiKey) { %><p class="mt-1.5 text-xs" style="color:var(--theme-success)"><%= t('keyIsSet') %></p><% } %>
               <p class="mt-1.5 text-xs" style="color:var(--theme-text-muted)"><%= t('usedToScanUploadedFiles') %> <a href="https://www.virustotal.com" target="_blank" class="underline hover:text-[var(--theme-text)] transition">virustotal.com</a>.</p>
@@ -498,10 +498,10 @@
               </div>
               <div>
                 <label class="block text-sm font-medium mb-2" style="color:var(--theme-text-strong)"><%= t('smtpPassword') %></label>
-                <div class="relative" x-data="{ show: false }">
-                  <input :type="show ? 'text' : 'password'" id="smtpPassword" value="<%= settings.smtpPassword || '' %>" placeholder="••••••••" autocomplete="off" class="al-input pr-16">
-                  <button type="button" @click="show = !show"
-                    class="absolute right-3 top-1/2 -translate-y-1/2 text-xs hover:text-[var(--theme-text)] transition" style="color:var(--theme-text-muted)" x-text="show ? '<%= t('hide') %>' : '<%= t('show') %>'"><%= t('show') %></button>
+                <div class="relative">
+                  <input type="password" id="smtpPassword" value="<%= settings.smtpPassword || '' %>" placeholder="••••••••" autocomplete="off" class="al-input pr-16">
+                  <button type="button" onclick="var inp=document.getElementById('smtpPassword');var btn=this;if(inp.type==='password'){inp.type='text';btn.textContent='<%= t('hide') %>';}else{inp.type='password';btn.textContent='<%= t('show') %>';}"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-xs hover:text-[var(--theme-text)] transition" style="color:var(--theme-text-muted)"><%= t('show') %></button>
                 </div>
               </div>
               <div>
@@ -573,10 +573,10 @@
               </div>
               <div>
                 <label class="block text-sm font-medium mb-2" style="color:var(--theme-text-strong)"><%= t('secretKey') %></label>
-                <div class="relative" x-data="{ show: false }">
-                  <input :type="show ? 'text' : 'password'" id="s3SecretKey" value="<%= settings.s3SecretKey || '' %>" placeholder="••••••••" autocomplete="off" class="al-input pr-16">
-                  <button type="button" @click="show = !show"
-                    class="absolute right-3 top-1/2 -translate-y-1/2 text-xs hover:text-[var(--theme-text)] transition" style="color:var(--theme-text-muted)" x-text="show ? '<%= t('hide') %>' : '<%= t('show') %>'"><%= t('show') %></button>
+                <div class="relative">
+                  <input type="password" id="s3SecretKey" value="<%= settings.s3SecretKey || '' %>" placeholder="••••••••" autocomplete="off" class="al-input pr-16">
+                  <button type="button" onclick="var inp=document.getElementById('s3SecretKey');var btn=this;if(inp.type==='password'){inp.type='text';btn.textContent='<%= t('hide') %>';}else{inp.type='password';btn.textContent='<%= t('show') %>';}"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-xs hover:text-[var(--theme-text)] transition" style="color:var(--theme-text-muted)"><%= t('show') %></button>
                 </div>
               </div>
               <div class="flex items-center justify-between sm:items-end sm:col-span-2">
@@ -809,6 +809,15 @@
 </main>
 
 
-<script nonce="<%- nonce %>" src="<%= assetUrl('/scripts/admin-settings.js') %>"></script>
+<script nonce="<%- nonce %>" src="<%= assetUrl('/javascript/admin/admin-settings.js') %>"></script>
+<script nonce="<%- nonce %>">
+(function() {
+  var settings = adminSettings();
+  if (settings && typeof settings.init === 'function') {
+    document.addEventListener('DOMContentLoaded', function() { settings.init(); });
+  }
+  window.saveActiveTab = function() { settings.saveActiveTab(); };
+})();
+</script>
 
 <%- include('../../components/footer') %>

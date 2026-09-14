@@ -285,7 +285,6 @@
     document.addEventListener("click", function (e) {
       if (!container.contains(e.target)) close();
     });
-    document.addEventListener("al:navigated", close);
 
     const mo = new MutationObserver(function () {
       if (select.options.length !== dropdown.children.length) syncFromSelect();
@@ -353,12 +352,6 @@
   } else {
     attachAll();
   }
-  document.addEventListener("al:navigated", function () {
-    setTimeout(function () {
-      attachAll();
-    }, SPA_REATTACH_MS);
-  });
-
   if (window.MutationObserver) {
     let autoScheduled = false;
     new MutationObserver(function () {

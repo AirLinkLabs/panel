@@ -9,7 +9,7 @@
       <%- include('../components/sidebar') %>
     </div>
 <%- include('../components/template') %>
-    <turbo-frame id="page-content" class="flex-1 overflow-y-auto pt-0 pb-12">
+    <div class="flex-1 overflow-y-auto pt-0 pb-12">
       <%- include('../components/ui/breadcrumb', { items: [
         { label: t('navAccount') }
       ] }) %>
@@ -42,7 +42,7 @@
             <%- icon('circle-alert', { class: 'w-3.5 h-3.5' }) %>
             <%= t('credits') %>
           </a>
-          <%- include('../components/ui/save-button', { onclick: "saving = true; Promise.all(['username','email','description','language','preferredNode'].map(f => window._accountSave(f))).then(results => { saving = false; if(results.some(d => d !== null)) showToast('All changes saved.', 'success'); })" }) %>
+          <%- include('../components/ui/save-button', { id: 'headerSaveBtn' }) %>
         </div>
       </div>
 
@@ -61,38 +61,35 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4">
 
             <!-- Username -->
-            <div x-data="{ saving: false, lastSaved: null }">
+            <div>
               <label class="flex items-center gap-1.5 text-sm font-medium mb-3" style="color:var(--theme-text-strong)">
                 <%- icon('user', { class: 'w-3.5 h-3.5' }) %> <%= t('username') %>
               </label>
               <div class="flex gap-1.5">
                 <input id="username" type="text" name="username" placeholder="<%= user.username %>"
-                  class="al-input flex-1"
-                  x-ref="username"
-                  @input.debounce.600ms="saving = true; window._accountSave('username').then(d => { saving = false; lastSaved = d ? new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : null; })">
-                <span class="text-[11px] hidden" style="color:var(--theme-text-muted);" x-ref="usernameFeedback"></span>
+                  class="al-input flex-1">
+                <span id="usernameFeedback" class="text-[11px] hidden" style="color:var(--theme-text-muted);"></span>
               </div>
               <div class="flex items-center gap-2 mt-1 h-4">
-                <span x-show="saving" x-transition class="text-[11px]" style="color:var(--theme-text-muted)"><%= t('saving') %></span>
-                <span x-show="lastSaved && !saving" x-transition x-text="'Saved ' + lastSaved" class="text-[11px]" style="color:var(--theme-success)"></span>
+                <span id="usernameSaving" class="text-[11px] hidden" style="color:var(--theme-text-muted)"><%= t('saving') %></span>
+                <span id="usernameSaved" class="text-[11px] hidden" style="color:var(--theme-success)"></span>
               </div>
             </div>
 
             <!-- Email -->
-            <div x-data="{ saving: false, lastSaved: null }">
+            <div>
               <label class="flex items-center gap-1.5 text-sm font-medium mb-3" style="color:var(--theme-text-strong)">
                 <%- icon('mail', { class: 'w-3.5 h-3.5' }) %> <%= t('email') %>
               </label>
-              <input id="email" type="email" name="email" placeholder="<%= user.email %>" class="al-input"
-                @input.debounce.600ms="saving = true; window._accountSave('email').then(d => { saving = false; lastSaved = d ? new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : null; })">
+              <input id="email" type="email" name="email" placeholder="<%= user.email %>" class="al-input">
               <div class="flex items-center gap-2 mt-1 h-4">
-                <span x-show="saving" x-transition class="text-[11px]" style="color:var(--theme-text-muted)"><%= t('saving') %></span>
-                <span x-show="lastSaved && !saving" x-transition x-text="'Saved ' + lastSaved" class="text-[11px]" style="color:var(--theme-success)"></span>
+                <span id="emailSaving" class="text-[11px] hidden" style="color:var(--theme-text-muted)"><%= t('saving') %></span>
+                <span id="emailSaved" class="text-[11px] hidden" style="color:var(--theme-success)"></span>
               </div>
             </div>
 
             <!-- Current password -->
-            <div class="al-field" data-al-field x-data="{ saving: false, lastSaved: null }">
+            <div class="al-field" data-al-field>
               <label for="currentPassword" class="flex items-center gap-1.5 text-sm font-medium mb-3" style="color:var(--theme-text-strong)">
                 <%- icon('lock', { class: 'w-3.5 h-3.5' }) %> <%= t('currentPassword') %>
               </label>
@@ -109,7 +106,7 @@
             </div>
 
             <!-- New password -->
-            <div class="al-field" data-al-field x-data="{ saving: false, lastSaved: null }">
+            <div class="al-field" data-al-field>
               <label for="newPassword" class="flex items-center gap-1.5 text-sm font-medium mb-3" style="color:var(--theme-text-strong)">
                 <%- icon('lock', { class: 'w-3.5 h-3.5' }) %> <%= t('newPassword') %>
               </label>
@@ -123,25 +120,23 @@
             </div>
 
             <!-- Description (full width) -->
-            <div class="md:col-span-2" x-data="{ saving: false, lastSaved: null }">
+            <div class="md:col-span-2">
               <label class="flex items-center gap-1.5 text-sm font-medium mb-3" style="color:var(--theme-text-strong)">
                 <%- icon('file-text', { class: 'w-3.5 h-3.5' }) %> <%= t('description') %>
               </label>
-              <textarea id="description" name="description" rows="2" class="al-input resize-none"
-                @input.debounce.600ms="saving = true; window._accountSave('description').then(d => { saving = false; lastSaved = d ? new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : null; })"><%= user.description %></textarea>
+              <textarea id="description" name="description" rows="2" class="al-input resize-none"><%= user.description %></textarea>
               <div class="flex items-center gap-2 mt-1 h-4">
-                <span x-show="saving" x-transition class="text-[11px]" style="color:var(--theme-text-muted)"><%= t('saving') %></span>
-                <span x-show="lastSaved && !saving" x-transition x-text="'Saved ' + lastSaved" class="text-[11px]" style="color:var(--theme-success)"></span>
+                <span id="descriptionSaving" class="text-[11px] hidden" style="color:var(--theme-text-muted)"><%= t('saving') %></span>
+                <span id="descriptionSaved" class="text-[11px] hidden" style="color:var(--theme-success)"></span>
               </div>
             </div>
 
             <!-- Language -->
-            <div x-data="{ saving: false, lastSaved: null }">
+            <div>
               <label for="language" class="flex items-center gap-1.5 text-sm font-medium mb-3" style="color:var(--theme-text-strong)">
                 <%- icon('globe', { class: 'w-3.5 h-3.5' }) %> <%= t('languagePreference') %>
               </label>
-              <select id="language" name="language" class="cs-native"
-                @change="saving = true; window._accountSave('language').then(d => { saving = false; lastSaved = d ? new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : null; })">
+              <select id="language" name="language" class="cs-native">
                 <% const languageNames = { en: 'English', fr: 'Français', de: 'Deutsch', es: 'Español', pt: 'Português', it: 'Italiano', ru: 'Русский', zh: '中文', ja: '日本語', ta: 'தமிழ்' }; %>
                 <% (SUPPORTED_LANGUAGES || ['en']).forEach(function(lang) { %>
                 <option value="<%= lang %>" <%= req.lang === lang ? 'selected' : '' %>><%= languageNames[lang] || lang %></option>
@@ -149,8 +144,8 @@
               </select>
               <div class="custom-select" data-for="language"></div>
               <div class="flex items-center gap-2 mt-1 h-4">
-                <span x-show="saving" x-transition class="text-[11px]" style="color:var(--theme-text-muted)"><%= t('saving') %></span>
-                <span x-show="lastSaved && !saving" x-transition x-text="'Saved ' + lastSaved" class="text-[11px]" style="color:var(--theme-success)"></span>
+                <span id="languageSaving" class="text-[11px] hidden" style="color:var(--theme-text-muted)"><%= t('saving') %></span>
+                <span id="languageSaved" class="text-[11px] hidden" style="color:var(--theme-success)"></span>
               </div>
             </div>
 
@@ -185,29 +180,27 @@
           </div>
 
           <!-- Universal save button — triggers saves on all dirty fields -->
-          <div class="mt-6 pt-5" style="border-top:1px solid var(--theme-border)" x-data="{ saving: false }">
-            <button id="saveAccountBtn" type="button" class="al-btn-primary px-6 py-2.5 text-sm font-medium"
-              @click="saving = true; Promise.all(['username','email','description','language','preferredNode'].map(f => window._accountSave(f))).then(results => { saving = false; if(results.some(d => d !== null)) showToast('All changes saved.', 'success'); })">
-              <span x-show="!saving"><%= t('saveChanges') %></span>
-              <span x-show="saving"><%= t('saving') %></span>
+          <div class="mt-6 pt-5" style="border-top:1px solid var(--theme-border)">
+            <button id="saveAccountBtn" type="button" class="al-btn-primary px-6 py-2.5 text-sm font-medium">
+              <span id="saveBtnText"><%= t('saveChanges') %></span>
+              <span id="saveBtnSaving" class="hidden"><%= t('saving') %></span>
             </button>
           </div>
         </div>
 
         <!-- Preferred node -->
-        <div class="al-card p-4" x-data="{ saving: false, lastSaved: null }">
+        <div class="al-card p-4">
           <p class="text-sm font-medium mb-1" style="color:var(--theme-text-strong)"><%= t('preferredNode') %></p>
           <p class="text-xs mb-4" style="color:var(--theme-text-muted)"><%= t('preferredNodeDesc') %></p>
-          <select id="preferredNode" class="al-input"
-            @change="saving = true; window._accountSave('preferredNode').then(d => { saving = false; lastSaved = d ? new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : null; })">
+          <select id="preferredNode" class="al-input">
             <option value=""><%= req.translations.autoSelectNode || 'Auto (least loaded)' %></option>
             <% if (nodes && nodes.length) { nodes.forEach(node => { %>
             <option value="<%= node.id %>"<%= user?.preferredNodeId === node.id ? ' selected' : '' %>><%= node.name %> — <%= node.address %></option>
             <% }); } %>
           </select>
           <div class="flex items-center gap-2 mt-2 h-4">
-            <span x-show="saving" x-transition class="text-[11px]" style="color:var(--theme-text-muted)"><%= t('saving') %></span>
-            <span x-show="lastSaved && !saving" x-transition x-text="'Saved ' + lastSaved" class="text-[11px]" style="color:var(--theme-success)"></span>
+            <span id="preferredNodeSaving" class="text-[11px] hidden" style="color:var(--theme-text-muted)"><%= t('saving') %></span>
+            <span id="preferredNodeSaved" class="text-[11px] hidden" style="color:var(--theme-success)"></span>
           </div>
         </div>
         </div>
@@ -341,7 +334,7 @@
         </div>
 
       </div>
-</turbo-frame>
+</div>
   </div>
 </main>
 
@@ -418,7 +411,7 @@
   const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
   // ── Auto-save helper for each field ──────────────────────────────
-  // Called by Alpine x-data components on each field
+  // Called by vanilla JS handlers on each field
   window._accountSave = async function(field) {
     let url, data;
     switch (field) {
@@ -441,11 +434,20 @@
         if (!data.language) return null;
         url = '/api/v2/account/set-language';
         break;
-      case 'preferredNode':
+      case 'preferredNode': {
         const nodeId = document.getElementById('preferredNode')?.value;
         data = { preferredNodeId: nodeId || null };
         url = '/api/v2/account/set-preferred-node';
         break;
+      }
+      case 'password': {
+        const cpw = document.getElementById('currentPassword')?.value;
+        const npw = document.getElementById('newPassword')?.value;
+        if (!npw || !cpw || document.getElementById('newPassword')?.disabled) return null;
+        data = { currentPassword: cpw, newPassword: npw };
+        url = '/api/v2/account/change-password';
+        break;
+      }
       default: return null;
     }
     try {
@@ -464,6 +466,15 @@
         const sb = document.getElementById('sidebar-username');
         if (sb) sb.textContent = data.newUsername;
       }
+      // Clear password fields after successful change
+      if (field === 'password') {
+        const cpwEl = document.getElementById('currentPassword');
+        const npwEl = document.getElementById('newPassword');
+        const pwFb = document.getElementById('current-password-feedback');
+        if (cpwEl) cpwEl.value = '';
+        if (npwEl) { npwEl.value = ''; npwEl.disabled = true; }
+        if (pwFb) pwFb.textContent = '';
+      }
       return result;
     } catch (err) {
       showToast('<%= req.translations.failedToSaveField || "Failed to save" %> ' + field, 'error');
@@ -473,7 +484,7 @@
 
   // ── Username availability check ──────────────────────────────────
   const usernameInput = document.getElementById('username');
-  const usernameFb = document.querySelector('[x-ref="usernameFeedback"]');
+  const usernameFb = document.getElementById('usernameFeedback');
   let usernameTimer;
   usernameInput?.addEventListener('input', () => {
     clearTimeout(usernameTimer);
@@ -512,6 +523,63 @@
       } catch (err) { console.error('Password validation failed:', err); if (pwFeedback) pwFeedback.textContent = 'Could not validate'; newPwInput.disabled = true; }
     }, 500);
   });
+
+  // ── Auto-save: debounced field handlers ─────────────────────────
+  function showFieldSaving(id) {
+    var s = document.getElementById(id + 'Saving');
+    var d = document.getElementById(id + 'Saved');
+    if (s) s.classList.remove('hidden');
+    if (d) d.classList.add('hidden');
+  }
+  function showFieldSaved(id) {
+    var s = document.getElementById(id + 'Saving');
+    var d = document.getElementById(id + 'Saved');
+    if (s) s.classList.add('hidden');
+    if (d) {
+      d.textContent = 'Saved ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+      d.classList.remove('hidden');
+    }
+  }
+  function debounceField(field, inputId, eventType) {
+    var el = document.getElementById(inputId);
+    if (!el) return;
+    var timer;
+    el.addEventListener(eventType || 'input', function () {
+      clearTimeout(timer);
+      showFieldSaving(field);
+      timer = setTimeout(async function () {
+        var result = await window._accountSave(field);
+        if (result !== null) showFieldSaved(field);
+      }, 600);
+    });
+  }
+  debounceField('username', 'username', 'input');
+  debounceField('email', 'email', 'input');
+  debounceField('description', 'description', 'input');
+  ['language', 'preferredNode'].forEach(function (field) {
+    var el = document.getElementById(field);
+    if (!el) return;
+    el.addEventListener('change', function () {
+      showFieldSaving(field);
+      window._accountSave(field).then(function (d) {
+        if (d !== null) showFieldSaved(field);
+      });
+    });
+  });
+
+  // ── Save-all buttons (header + profile panel) ──────────────────
+  async function saveAllFields(btn) {
+    var origDisabled = btn.disabled;
+    btn.disabled = true;
+    try {
+      var results = await Promise.all(['username','email','password','description','language','preferredNode'].map(function (f) { return window._accountSave(f); }));
+      if (results.some(function (d) { return d !== null; })) showToast('All changes saved.', 'success');
+    } finally {
+      btn.disabled = origDisabled;
+    }
+  }
+  document.getElementById('saveAccountBtn')?.addEventListener('click', function () { saveAllFields(this); });
+  document.getElementById('headerSaveBtn')?.addEventListener('click', function () { saveAllFields(this); });
 
   // Avatar — open upload modal, then crop
   const avatarPreview = document.getElementById('avatar-preview');
@@ -556,7 +624,7 @@
       if (res.ok && data.success) {
         showToast('<%= req.translations.twoFactorDisabled || "Two-factor authentication disabled." %>', 'success');
         const twofaStatus = document.getElementById('twofa-status');
-        if (twofaStatus) al.patchEl(twofaStatus, '<p class="text-sm mb-3" style="color:var(--theme-text-muted)"><%= req.translations.addExtraSecurity || "Add an extra layer of security to your account." %></p><a href="/account/2fa/setup" class="al-btn-primary text-sm inline-flex"><%= req.translations.setup2FA || "Set up 2FA" %></a>');
+        window.location.reload();
       } else {
         showToast(data.error || '<%= req.translations.failedToDisable2fa || "Failed to disable 2FA." %>', 'error');
       }
@@ -610,7 +678,8 @@
         </div>
       </div>`;
     document.body.appendChild(overlay);
-    Animate.openModal(overlay, overlay.querySelector('.al-sheet-panel'));
+    var _p = overlay.querySelector('.al-sheet-panel');
+    overlay.classList.add('open'); if (_p) _p.classList.add('open');
 
     const stage = document.getElementById('crop-stage');
     const img   = document.getElementById('crop-img');
@@ -668,7 +737,7 @@
     const close = () => {
       document.removeEventListener('mousemove', onMove);
       document.removeEventListener('mouseup', onUp);
-      Animate.closeModal(overlay, overlay.querySelector('.al-sheet-panel'), () => overlay.remove());
+      var _p = overlay.querySelector('.al-sheet-panel'); overlay.classList.remove('open'); if (_p) _p.classList.remove('open'); overlay.remove();
     };
     document.getElementById('crop-cancel').addEventListener('click', close);
     document.getElementById('crop-cancel-btn').addEventListener('click', close);
@@ -779,7 +848,7 @@ function loader() {
       for (const [key, value] of payload.entries()) data[key] = value;
       const response = await fetch('/api/v2/account/images', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'CSRF-Token': csrfToken },
         body: JSON.stringify(data),
       });
       const result = await response.json();
@@ -811,7 +880,7 @@ function loader() {
     try {
       const response = await fetch('/api/v2/account/images', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'CSRF-Token': csrfToken },
         body: JSON.stringify(payload),
       });
       const result = await response.json();
@@ -836,7 +905,7 @@ function loader() {
     try {
       const response = await fetch('/api/v2/account/images/import-url', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'CSRF-Token': csrfToken },
         body: JSON.stringify({ url: url.trim() }),
       });
       const result = await response.json();
@@ -881,15 +950,13 @@ function loader() {
         if (!confirm(msg)) return;
         const row = btn.closest('[data-image-id]');
         try {
-          const response = await fetch('/api/v2/account/images/' + id, { method: 'DELETE' });
+          const response = await fetch('/api/v2/account/images/' + id, { method: 'DELETE', headers: { 'CSRF-Token': csrfToken } });
           const data = await response.json();
           if (data.error) {
             showToast(data.error, 'error');
           } else {
             showToast('<%= req.translations.imageDeleted || "Image deleted." %>', 'success');
-            if (row && window.al) al.removeRow(row).then(syncImageEmptyState);
-            else if (row) { row.remove(); syncImageEmptyState(); }
-            else syncImageEmptyState();
+            window.location.reload();
           }
         } catch (error) {
           console.error('Failed to delete image:', error);

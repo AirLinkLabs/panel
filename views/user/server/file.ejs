@@ -235,13 +235,8 @@
   if (root) {
     const { teardown } = await mount(root, JSON.parse(root.dataset.config));
     
-    // Call teardown before Turbo swaps the page
-    document.addEventListener('turbo:before-render', () => {
-      if (teardown) teardown();
-    }, { once: true });
-    
-    // Also call on pagehide for full browser navigation
-    window.addEventListener('pagehide', () => {
+    // Call teardown on full browser navigation
+    window.addEventListener('beforeunload', () => {
       if (teardown) teardown();
     }, { once: true });
   }

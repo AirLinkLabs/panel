@@ -173,13 +173,7 @@
       if (data.success) {
         showToast('<%= req.translations.worldDeleted || "World" %> ' + worldName + ' <%= req.translations.deleted || "deleted." %>', 'success');
 
-        const rows = document.querySelectorAll('tr');
-        for (const row of rows) {
-          if (row.textContent.includes(worldName)) {
-            al.removeRow(row);
-            break;
-          }
-        }
+        window.location.reload();
       } else {
         showToast(data.error || '<%= req.translations.failedToDeleteWorld || "Failed to delete world" %>', 'error');
         if (callback) callback();

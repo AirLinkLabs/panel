@@ -22,7 +22,7 @@
           </div>
           <% if (hosts.length > 0) { %>
           <div class="flex gap-2 shrink-0">
-            <button id="newDatabaseBtn" @click="openAddDatabaseModal()" type="button"
+            <button id="newDatabaseBtn" onclick="openAddDatabaseModal()" type="button"
                 class="al-btn-primary block rounded-xl px-3 py-2 text-center text-sm font-medium shadow-lg transition duration-300">
                 <%- icon('plus', { class: 'size-4 inline-flex mr-1 mb-0.5', strokeWidth: 1.5 }) %>
                 <%= t('newDatabase') %>
@@ -59,7 +59,7 @@
         <h2 class="text-sm font-semibold" style="color:var(--theme-text-strong)"><%= t('createDatabase') %></h2>
         <p class="text-xs mt-0.5" style="color:var(--theme-text-muted)"><%= t('dbProvisionHint') %></p>
       </div>
-      <button type="button" @click="closeAddDatabaseModal()" class="al-btn-ghost p-2 rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center shrink-0" aria-label="Close">
+      <button type="button" onclick="closeAddDatabaseModal()" class="al-btn-ghost p-2 rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center shrink-0" aria-label="Close">
         <%- icon('x', { class: 'h-5 w-5', strokeWidth: 1.5 }) %>
       </button>
     </div>
@@ -72,7 +72,7 @@
       </select>
     </div>
     <div class="flex gap-2 px-6 py-4 border-t justify-end" style="border-color:var(--theme-border)">
-      <button type="button" @click="closeAddDatabaseModal()" class="al-btn-secondary inline-flex items-center gap-1.5">
+      <button type="button" onclick="closeAddDatabaseModal()" class="al-btn-secondary inline-flex items-center gap-1.5">
         <%- icon('x', { class: 'size-4', strokeWidth: 1.5 }) %>
         <%= t('cancel') %>
       </button>
@@ -95,7 +95,7 @@ const modalPanel = document.getElementById('addDatabasePanel');
 
 function showAddModal() {
   modalEl.classList.remove('opacity-0', 'pointer-events-none');
-  Animate.openModal(modalEl, modalPanel);
+  modalEl.classList.add('open'); modalPanel.classList.add('open');
   document.getElementById('dbHostSelect').focus();
 }
 
@@ -103,7 +103,7 @@ function hideAddModal() {
   const done = function () {
     modalEl.classList.add('opacity-0', 'pointer-events-none');
   };
-  Animate.closeModal(modalEl, modalPanel, done);
+  modalEl.classList.remove('open'); modalPanel.classList.remove('open'); done();
 }
 
 window.openAddDatabaseModal = showAddModal;
@@ -127,7 +127,7 @@ document.getElementById('confirmAddDatabase').addEventListener('click', async ()
     if (response.ok && result.success && result.database) {
       showToast(t.databaseCreated || 'Database created.', 'success');
       hideAddModal();
-      htmx.ajax('GET', '/server/' + serverId + '/databases', { target: '#server-db-container', swap: 'innerHTML' });
+      window.location.reload();
     } else {
       showToast(result.error || t.failedCreateDatabase || 'Failed to create database.', 'error');
     }

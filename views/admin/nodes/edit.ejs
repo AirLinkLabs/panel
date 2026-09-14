@@ -6,7 +6,7 @@
     <div class="hidden lg:block w-60 shrink-0"><%- include('../../components/sidebar') %></div>
 <%- include('../../components/template') %>
     <!-- Content -->
-    <div id="page-content" class="flex-1 overflow-y-auto pt-0 pb-12" x-data="nodeEditor()">
+    <div id="page-content" class="flex-1 overflow-y-auto pt-0 pb-12">
       <%- include('../../components/ui/breadcrumb', { items: [
         { label: t('admin') },
         { label: t('navNodes'), href: '/admin/nodes' },
@@ -163,8 +163,8 @@
                 <!-- Port tags will be inserted here -->
               </div>
               <div class="flex gap-2">
-                <input id="newPortInput" type="text" placeholder="25565 or 25565-25570" class="al-input flex-1" @keypress.enter.prevent="addPortFromInput()">
-                <button id="addPortBtn" type="button" class="al-btn-primary" @click="addPortFromInput()">
+                <input id="newPortInput" type="text" placeholder="25565 or 25565-25570" class="al-input flex-1">
+                <button id="addPortBtn" type="button" class="al-btn-primary">
                   <%- icon('plus', { class: 'size-4', strokeWidth: 1.5 }) %>
                   <%= t('addPort') %>
                 </button>
@@ -432,7 +432,7 @@ function nodeEditor() {
         if (response.ok) {
           showToast(req.translations.nodeUpdated || 'Node updated. Looking good.', 'success');
           setTimeout(() => {
-            Turbo.visit('/admin/nodes?err=none');
+            window.location.href = '/admin/nodes?err=none';
           }, 1000);
         } else {
           throw new Error('Failed to update node');
@@ -443,6 +443,14 @@ function nodeEditor() {
     }
   };
 }
+
+(function() {
+  var editor = nodeEditor();
+  editor.init();
+  window.updateNode = function() { editor.updateNode(); };
+  document.getElementById('addPortBtn').addEventListener('click', function() { editor.addPortFromInput(); });
+  document.getElementById('newPortInput').addEventListener('keypress', function(e) { if (e.key === 'Enter') { e.preventDefault(); editor.addPortFromInput(); } });
+})();
 </script>
 
 <%- include('../../components/footer') %>

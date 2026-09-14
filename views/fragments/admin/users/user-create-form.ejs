@@ -1,8 +1,6 @@
 <!--
   Fragment: admin-users-create-form
-  Route: POST /admin/users/create-user (HX-Request: true)
-  Target: #admin-users-create-form
-  Swap: outerHTML
+  Route: GET /admin/users/new
 -->
 <div id="admin-users-create-form" class="space-y-5">
   <% if (typeof errors !== 'undefined' && errors) { %>
@@ -11,12 +9,9 @@
     </div>
   <% } %>
 
-  <form id="createUserForm" class="space-y-5"
-        hx-post="/api/v2/admin/users"
-        hx-target="#admin-users-create-form"
-        hx-swap="outerHTML"
-        hx-disabled-elt="find button[type='submit']"
-        hx-indicator="#create-user-status">
+  <form id="createUserForm" class="space-y-5" method="POST" action="/api/v2/admin/users">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
     <div class="al-card">
       <h2 class="al-card-header"><%= t('userInformation') %></h2>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -153,7 +148,6 @@
         <%= t('createUserBtn') %>
       </button>
       <a href="/admin/users" class="al-btn-secondary"><%= t('cancel') %></a>
-      <p id="create-user-status" class="htmx-indicator text-xs" style="color:var(--theme-text-muted);"><%= t('saving') %></p>
     </div>
   </form>
 </div>

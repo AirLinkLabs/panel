@@ -280,7 +280,10 @@ function createServerPage() {
         if (validationErrors.length > 0) {
           btn.disabled = false;
           btn.textContent = origText;
-          self.error = validationErrors.join('\n');
+          var errBanner = document.getElementById('errorBanner');
+          var errText = document.getElementById('errorText');
+          errText.textContent = validationErrors.join('\n');
+          errBanner.classList.remove('hidden');
           return;
         }
         var ok = await showConfirm('<%= req.translations.createServerConfirm || "Create server?" %>', '"' + name + '" <%= req.translations.willBeCreated || "will be created and queued for installation. This may take a moment." %>');
@@ -301,17 +304,23 @@ function createServerPage() {
               setTimeout(function () { toast.classList.add('show'); }, TOAST_SHOW_DELAY);
               setTimeout(function () { toast.classList.remove('show'); setTimeout(function () { toast.remove(); }, TOAST_REMOVE_DELAY); }, TOAST_HIDE_DELAY);
             }
-            setTimeout(function () { Turbo.visit('/server/' + d.serverUUID); }, REDIRECT_DELAY);
+            setTimeout(function () { window.location.href = '/server/' + d.serverUUID; }, REDIRECT_DELAY);
           } else {
             btn.disabled = false;
             btn.textContent = origText;
-            self.error = d.error || '<%= req.translations.errorOccurred || "Something went wrong." %>';
+            var errBanner = document.getElementById('errorBanner');
+            var errText = document.getElementById('errorText');
+            errText.textContent = (d.error?.message) || '<%= req.translations.errorOccurred || "Something went wrong." %>';
+            errBanner.classList.remove('hidden');
           }
         } catch (err) {
           console.error('Failed to create server:', err);
           btn.disabled = false;
           btn.textContent = origText;
-          self.error = '<%= req.translations.networkErrorRetry || "Network error. Try again." %>';
+          var errBanner = document.getElementById('errorBanner');
+          var errText = document.getElementById('errorText');
+          errText.textContent = '<%= req.translations.networkErrorRetry || "Network error. Try again." %>';
+          errBanner.classList.remove('hidden');
         }
       });
     }
@@ -319,7 +328,7 @@ function createServerPage() {
 }
 </script>
 
-<div x-data="createServerPage()">
+<div>
 <main class="h-screen m-auto">
   <div class="flex h-screen">
     <div class="hidden lg:block w-60 h-full"><%- include('../components/sidebar') %></div>
@@ -481,8 +490,8 @@ function createServerPage() {
           </div>
 
           <!-- Error -->
-          <div x-show="error" x-transition class="hidden rounded-xl px-4 py-3" style="background:var(--theme-danger-bg);border:1px solid color-mix(in srgb, var(--theme-danger) 25%, transparent);">
-            <p class="text-sm" style="color:var(--theme-danger)" x-text="error"></p>
+          <div id="errorBanner" class="hidden rounded-xl px-4 py-3" style="background:var(--theme-danger-bg);border:1px solid color-mix(in srgb, var(--theme-danger) 25%, transparent);">
+            <p class="text-sm" style="color:var(--theme-danger)" id="errorText"></p>
           </div>
 
           <!-- Submit -->
@@ -499,7 +508,7 @@ function createServerPage() {
     </div>
   </div>
 </main>
-</div><!-- /x-data -->
+</div>
 
 <div id="portsContent" style="display:none;">
   <p class="text-xs mb-3" style="color:var(--theme-text-muted)"><%= t('externalPortsHint') %></p>
@@ -512,7 +521,6 @@ function createServerPage() {
   </div>
 </div>
 
-<%- include('../components/loading-popup') %>
 
 <script nonce="<%- nonce %>">window.__nodeHeadroom = <%- JSON.stringify(nodeHeadroom) %>;</script>
 

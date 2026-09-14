@@ -1,9 +1,6 @@
 <%- include('../../components/header', { title: t('adminOverviewTitle') }) %>
 
 <style>
-  @keyframes al-view-in { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
-  #page-content { animation: al-view-in 0.35s ease both; }
-  @media (prefers-reduced-motion: reduce) { #page-content { animation: none; } }
   #page-content.admin-overview-bg {
     position: relative;
     isolation: isolate;
@@ -32,7 +29,7 @@
       <%- include('../../components/sidebar') %>
     </div>
 <%- include('../../components/template') %>
-    <div id="page-content" class="admin-overview-bg flex-1 overflow-y-auto pt-0 pb-12"<% if (vcodeBg) { %> style="--vcode-bg: url('<%= vcodeBg %>');"<% } %> x-data="adminOverview()">
+    <div id="page-content" class="admin-overview-bg flex-1 overflow-y-auto pt-0 pb-12"<% if (vcodeBg) { %> style="--vcode-bg: url('<%= vcodeBg %>');"<% } %>>
       <%- include('../../components/ui/breadcrumb', { items: [
         { label: t('admin') },
         { label: t('breadcrumbOverview') }
@@ -65,11 +62,11 @@
               </div>
             </div>
             <div class="flex gap-1.5">
-              <button type="button" id="checkUpdateBtn" class="al-btn-secondary" @click="checkUpdate()">
+              <button type="button" id="checkUpdateBtn" class="al-btn-secondary" onclick="adminOverviewState.checkUpdate()">
                 <%- icon('refresh-cw', { size: 14, class: 'shrink-0' }) %>
                 <%= t('checkForUpdates') %>
               </button>
-              <button type="button" id="performUpdateBtn" class="hidden al-btn-secondary" @click="performUpdate()">
+              <button type="button" id="performUpdateBtn" class="hidden al-btn-secondary" onclick="adminOverviewState.performUpdate()">
                 <%- icon('download', { size: 14, class: 'shrink-0' }) %>
                 <%= t('update') %>
               </button>
@@ -148,128 +145,127 @@
 ></div>
 
 <script nonce="<%- nonce %>">
-function adminOverview() {
-  return {
-    UPDATE_RELOAD_DELAY_MS: 5000,
-    UPDATE_CHECK_DELAY_MS: 220,
-    API_LATENCY_POLL_INTERVAL_MS: 30000,
-    LATENCY_GOOD_THRESHOLD_MS: 100,
-    LATENCY_WARNING_THRESHOLD_MS: 300,
-    LATENCY_MAX_MS: 500,
+var adminOverviewState = (function() {
+  var UPDATE_RELOAD_DELAY_MS = 5000;
+  var UPDATE_CHECK_DELAY_MS = 220;
+  var API_LATENCY_POLL_INTERVAL_MS = 30000;
+  var LATENCY_GOOD_THRESHOLD_MS = 100;
+  var LATENCY_WARNING_THRESHOLD_MS = 300;
+  var LATENCY_MAX_MS = 500;
+  var _runningLatestVersion = '';
 
-    init() {
-      var pageData = document.getElementById('page-data').dataset;
-      var currentVersion = pageData.airlinkVersion;
-      var runningLatestVersion = pageData.runningLatestVersion;
-
-      document.querySelectorAll('.current-version').forEach(el => el.textContent = currentVersion);
-      var versionInline = document.getElementById('current-version-inline');
-      if (versionInline) versionInline.textContent = currentVersion;
-
-      this._runningLatestVersion = runningLatestVersion;
-
-      this.measureApiLatency();
-      setInterval(() => this.measureApiLatency(), this.API_LATENCY_POLL_INTERVAL_MS);
-    },
-
-    fadeIn(el) {
-      el.style.transition = 'none';
-      el.style.opacity = '0';
-      el.style.transform = 'translateY(4px)';
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          el.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
-          el.style.opacity = '1';
-          el.style.transform = 'translateY(0)';
-          setTimeout(() => {
-            el.style.transition = '';
-            el.style.opacity = '';
-            el.style.transform = '';
-          }, this.UPDATE_CHECK_DELAY_MS);
-        });
+  function fadeIn(el) {
+    el.style.transition = 'none';
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(4px)';
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        el.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+        setTimeout(function() {
+          el.style.transition = '';
+          el.style.opacity = '';
+          el.style.transform = '';
+        }, UPDATE_CHECK_DELAY_MS);
       });
-    },
+    });
+  }
 
-    async checkUpdate() {
-      var self = this;
-      var statusDiv = document.getElementById('updateStatus');
-      statusDiv.innerHTML = '<span class="text-neutral-500">' + (req.translations.checking || 'Checking...') + '</span>';
-      statusDiv.classList.remove('hidden');
+  async function checkUpdate() {
+    var statusDiv = document.getElementById('updateStatus');
+    statusDiv.innerHTML = '<span class="text-neutral-500">' + (req.translations.checking || 'Checking...') + '</span>';
+    statusDiv.classList.remove('hidden');
 
-      try {
-        var response = await fetch('/api/v2/admin/overview/check-update');
-        var data = await response.json();
-        var updateBtn = document.getElementById('performUpdateBtn');
-        var updateInfo = document.getElementById('updateInfo');
+    try {
+      var response = await fetch('/api/v2/admin/overview/check-update');
+      var data = await response.json();
+      var updateBtn = document.getElementById('performUpdateBtn');
+      var updateInfo = document.getElementById('updateInfo');
 
-        if (data.hasUpdate) {
-          statusDiv.innerHTML = '<span class="text-amber-600 dark:text-amber-400">' + (req.translations.updateAvailable || 'Update available') + ' — v' + data.latestVersion + '</span>';
-          self.fadeIn(statusDiv);
-          updateBtn.classList.remove('hidden');
-          updateBtn.classList.add('inline-flex');
-          self.fadeIn(updateBtn);
-          if (data.updateInfo) {
-            updateInfo.innerHTML = '<p class="text-xs text-neutral-500">' + data.updateInfo + '</p>';
-            updateInfo.classList.remove('hidden');
-            self.fadeIn(updateInfo);
-          }
-        } else {
-          statusDiv.innerHTML = '<span class="text-emerald-600 dark:text-emerald-400">' + (self._runningLatestVersion || 'Running latest version') + '</span>';
-          self.fadeIn(statusDiv);
-          updateBtn.classList.add('hidden');
-          updateInfo.classList.add('hidden');
+      if (data.hasUpdate) {
+        statusDiv.innerHTML = '<span class="text-amber-600 dark:text-amber-400">' + (req.translations.updateAvailable || 'Update available') + ' — v' + data.latestVersion + '</span>';
+        fadeIn(statusDiv);
+        updateBtn.classList.remove('hidden');
+        updateBtn.classList.add('inline-flex');
+        fadeIn(updateBtn);
+        if (data.updateInfo) {
+          updateInfo.innerHTML = '<p class="text-xs text-neutral-500">' + data.updateInfo + '</p>';
+          updateInfo.classList.remove('hidden');
+          fadeIn(updateInfo);
         }
-      } catch (error) {
-        statusDiv.innerHTML = '<span class="text-red-500">' + (req.translations.failedToCheckUpdates || 'Failed to check for updates.') + '</span>';
-        self.fadeIn(statusDiv);
+      } else {
+        statusDiv.innerHTML = '<span class="text-emerald-600 dark:text-emerald-400">' + (_runningLatestVersion || 'Running latest version') + '</span>';
+        fadeIn(statusDiv);
+        updateBtn.classList.add('hidden');
+        updateInfo.classList.add('hidden');
       }
-    },
-
-    performUpdate() {
-      var self = this;
-      window.modal.confirm({
-        title: req.translations.installUpdate || 'Install Update',
-        body: req.translations.panelWillUpdate || 'The panel will perform the update and restart the server.',
-        confirmLabel: req.translations.install || 'Install',
-        danger: false,
-        onConfirm: async () => {
-          var statusDiv = document.getElementById('updateStatus');
-          statusDiv.innerHTML = '<span class="text-neutral-500">' + (req.translations.installing || 'Installing...') + '</span>';
-          self.fadeIn(statusDiv);
-          try {
-            var response = await fetch('/api/v2/admin/overview/perform-update', { method: 'POST', headers: { 'csrf-token': document.querySelector('meta[name="csrf-token"]')?.content || '' } });
-            var data = await response.json();
-            showToast(data.message || (req.translations.updateCompleteRestarting || 'Update complete. Restarting.'), 'success');
-            statusDiv.innerHTML = '<span class="text-emerald-600 dark:text-emerald-400">' + (req.translations.updateSuccessfulRestarting || 'Update successful. Restarting...') + '</span>';
-            self.fadeIn(statusDiv);
-            setTimeout(() => Turbo.visit(window.location.href), self.UPDATE_RELOAD_DELAY_MS);
-          } catch (error) {
-            statusDiv.innerHTML = '<span class="text-red-500">' + (req.translations.updateFailed || 'Update failed.') + '</span>';
-            self.fadeIn(statusDiv);
-            showToast(req.translations.updateFailedCheckLogs || 'Update failed. Check the logs.', 'error');
-          }
-        }
-      });
-    },
-
-    async measureApiLatency() {
-      try {
-        var start = performance.now();
-        var response = await fetch('/api/v2/system/health');
-        var latency = Math.round(performance.now() - start);
-        if (response.ok) {
-          document.getElementById('apiLatency').textContent = latency + ' ms';
-          var bar = document.getElementById('latencyBar');
-          bar.style.width = Math.min((latency / this.LATENCY_MAX_MS) * 100, 100) + '%';
-          bar.classList.remove('bg-emerald-500', 'bg-amber-500', 'bg-red-500', 'bg-neutral-400', 'dark:bg-neutral-500');
-          if (latency < this.LATENCY_GOOD_THRESHOLD_MS) bar.classList.add('bg-emerald-500');
-          else if (latency < this.LATENCY_WARNING_THRESHOLD_MS) bar.classList.add('bg-amber-500');
-          else bar.classList.add('bg-red-500');
-        }
-      } catch (error) {
-        document.getElementById('apiLatency').textContent = 'Error';
-      }
+    } catch (error) {
+      statusDiv.innerHTML = '<span class="text-red-500">' + (req.translations.failedToCheckUpdates || 'Failed to check for updates.') + '</span>';
+      fadeIn(statusDiv);
     }
-  };
-}
+  }
+
+  function performUpdate() {
+    window.modal.confirm({
+      title: req.translations.installUpdate || 'Install Update',
+      body: req.translations.panelWillUpdate || 'The panel will perform the update and restart the server.',
+      confirmLabel: req.translations.install || 'Install',
+      danger: false,
+      onConfirm: async function() {
+        var statusDiv = document.getElementById('updateStatus');
+        statusDiv.innerHTML = '<span class="text-neutral-500">' + (req.translations.installing || 'Installing...') + '</span>';
+        fadeIn(statusDiv);
+        try {
+          var response = await fetch('/api/v2/admin/overview/perform-update', { method: 'POST', headers: { 'csrf-token': document.querySelector('meta[name="csrf-token"]')?.content || '' } });
+          var data = await response.json();
+          showToast(data.message || (req.translations.updateCompleteRestarting || 'Update complete. Restarting.'), 'success');
+          statusDiv.innerHTML = '<span class="text-emerald-600 dark:text-emerald-400">' + (req.translations.updateSuccessfulRestarting || 'Update successful. Restarting...') + '</span>';
+          fadeIn(statusDiv);
+          setTimeout(function() { window.location.reload(); }, UPDATE_RELOAD_DELAY_MS);
+        } catch (error) {
+          statusDiv.innerHTML = '<span class="text-red-500">' + (req.translations.updateFailed || 'Update failed.') + '</span>';
+          fadeIn(statusDiv);
+          showToast(req.translations.updateFailedCheckLogs || 'Update failed. Check the logs.', 'error');
+        }
+      }
+    });
+  }
+
+  async function measureApiLatency() {
+    try {
+      var start = performance.now();
+      var response = await fetch('/api/v2/system/health');
+      var latency = Math.round(performance.now() - start);
+      if (response.ok) {
+        document.getElementById('apiLatency').textContent = latency + ' ms';
+        var bar = document.getElementById('latencyBar');
+        bar.style.width = Math.min((latency / LATENCY_MAX_MS) * 100, 100) + '%';
+        bar.classList.remove('bg-emerald-500', 'bg-amber-500', 'bg-red-500', 'bg-neutral-400', 'dark:bg-neutral-500');
+        if (latency < LATENCY_GOOD_THRESHOLD_MS) bar.classList.add('bg-emerald-500');
+        else if (latency < LATENCY_WARNING_THRESHOLD_MS) bar.classList.add('bg-amber-500');
+        else bar.classList.add('bg-red-500');
+      }
+    } catch (error) {
+      document.getElementById('apiLatency').textContent = 'Error';
+    }
+  }
+
+  function init() {
+    var pageData = document.getElementById('page-data').dataset;
+    var currentVersion = pageData.airlinkVersion;
+    _runningLatestVersion = pageData.runningLatestVersion;
+
+    document.querySelectorAll('.current-version').forEach(function(el) { el.textContent = currentVersion; });
+    var versionInline = document.getElementById('current-version-inline');
+    if (versionInline) versionInline.textContent = currentVersion;
+
+    measureApiLatency();
+    setInterval(measureApiLatency, API_LATENCY_POLL_INTERVAL_MS);
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
+
+  return { checkUpdate: checkUpdate, performUpdate: performUpdate };
+})();
 </script>

@@ -1,6 +1,6 @@
 <!-- Sidebar -->
 <div id="pc-sidebar" class="sidebar hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-56 lg:flex-col left-0"
-  data-turbo-permanent style="display:none;">
+  style="display:none;">
   <div id="pc-sidebar2" class="flex flex-col h-full">
 
     <!-- Static top: logo -->
@@ -258,50 +258,14 @@
             width: calc(100% - 0.75rem);
           }
 
-          /* Server/main sidebar view switching */
-          /* Disabled: sidebar animations removed for cleaner page navigation */
-          /*
-    @keyframes sidebar-view-fade {
-      from { opacity: 0; }
-      to   { opacity: 1; }
-    }
-    #sidebar-server-view.showing, #sidebar-main-view.showing {
-      animation: sidebar-view-fade 140ms ease-out both;
-    }
-    */
-          /* Normal sidebar items — no animation */
+          /* Normal sidebar items */
           #sidebar-main-view .sidebar-view-item {
             opacity: 1;
           }
 
-          /* Server buttons — no animation */
+          /* Server buttons */
           #sidebar-server-view .server-anim-in {
             opacity: 1;
-          }
-
-          /*
-    @keyframes sidebar-swipe-left {
-      from { opacity: 0; transform: translateX(-16px); }
-      to   { opacity: 1; transform: translateX(0); }
-    }
-    @keyframes sidebar-swipe-right {
-      from { opacity: 0; transform: translateX(16px); }
-      to   { opacity: 1; transform: translateX(0); }
-    }
-    */
-          @media (prefers-reduced-motion: reduce) {
-
-            #sidebar-server-view.showing,
-            #sidebar-main-view.showing,
-            #sidebar-server-view.showing .server-anim-in,
-            #sidebar-main-view.showing .sidebar-view-item {
-              animation: none;
-            }
-
-            #sidebar-server-view .server-anim-in,
-            #sidebar-main-view .sidebar-view-item {
-              opacity: 1;
-            }
           }
         </style>
 
@@ -535,7 +499,7 @@
       showSidebarView(window.location.pathname.startsWith('/server/') ? 'server' : 'main');
     }
 
-    document.addEventListener('turbo:load', function () {
+    document.addEventListener('DOMContentLoaded', function () {
       if (!document.getElementById('pc-sidebar')) return;
       markSpecialLinks(window.location.pathname);
       markActiveNav(window.location.pathname);

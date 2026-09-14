@@ -1,4 +1,4 @@
-<div id="colcont" class="transition-all duration-200">
+<div id="colcont">
   <!-- Search popup -->
   <div id="searchOverlay" class="al-sheet-overlay fixed inset-0 z-50 hidden items-start justify-center p-4"
     role="dialog" aria-modal="true" aria-label="<%= req.translations.navSearch || 'Search' %>"
@@ -29,9 +29,3 @@
   </div>
 </div>
 <script nonce="<%- nonce %>" defer src="<%= assetUrl('/javascript/shared/search.js') %>?v=5"></script>
-<style>
-@keyframes search-pop-in  { from { opacity:0; transform:scale(0.92); } to { opacity:1; transform:scale(1); } }
-@keyframes search-pop-out { from { opacity:1; transform:scale(1); } to { opacity:0; transform:scale(0.92); } }
-.search-pop-in  { animation: search-pop-in 0.18s cubic-bezier(0.16,1,0.3,1) both; }
-.search-pop-out { animation: search-pop-out 0.12s ease-in both; }
-</style>

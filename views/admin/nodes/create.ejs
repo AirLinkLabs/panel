@@ -4,7 +4,7 @@
   <div class="flex min-h-screen">
     <div class="hidden lg:block w-60 shrink-0"><%- include('../../components/sidebar') %></div>
 <%- include('../../components/template') %>
-    <div id="page-content" class="flex-1 overflow-y-auto pt-0 pb-12" x-data="nodeCreate()">
+    <div id="page-content" class="flex-1 overflow-y-auto pt-0 pb-12">
       <%- include('../../components/ui/breadcrumb', { items: [
         { label: t('admin') },
         { label: t('navNodes'), href: '/admin/nodes' },
@@ -174,8 +174,8 @@
                     <!-- Port tags will be inserted here -->
                   </div>
                   <div class="flex gap-2">
-                    <input id="newPortInput" type="text" placeholder="25565 or 25565-25570" class="al-input flex-1" @keypress.enter.prevent="addPortFromInput()">
-                    <button id="addPortBtn" type="button" class="al-btn-primary" @click="addPortFromInput()">
+                    <input id="newPortInput" type="text" placeholder="25565 or 25565-25570" class="al-input flex-1">
+                    <button id="addPortBtn" type="button" class="al-btn-primary">
                       <%- icon('plus', { class: 'size-4', strokeWidth: 1.5 }) %>
                       <%= t('addPort') %>
                     </button>
@@ -204,13 +204,13 @@
             </p>
             <div class="relative">
               <div id="daemonCliCommand" class="rounded-xl border p-4 pr-12 text-[13px] font-mono whitespace-nowrap overflow-x-auto cursor-text select-all" style="background:var(--theme-bg-input); border-color:var(--theme-border); color:var(--theme-text-strong);" tabindex="0" aria-label="Daemon connect command"></div>
-              <button id="copyDaemonCli" type="button" class="absolute top-1/2 -translate-y-1/2 right-2 p-2 rounded-lg transition-colors hover:scale-105" style="color:var(--theme-text-muted);" aria-label="Copy command" @click="copyCliCommand()"><%- icon('copy', { class: 'size-4', strokeWidth: 1.5 }) %></button>
+              <button id="copyDaemonCli" type="button" class="absolute top-1/2 -translate-y-1/2 right-2 p-2 rounded-lg transition-colors hover:scale-105" style="color:var(--theme-text-muted);" aria-label="Copy command"><%- icon('copy', { class: 'size-4', strokeWidth: 1.5 }) %></button>
             </div>
             <p id="copyDaemonCliHint" class="mt-2 text-xs" style="color:var(--theme-text-muted);"></p>
           </div>
 
           <div class="flex flex-col sm:flex-row gap-3 mt-6">
-            <button id="verifyDaemonBtn" type="button" class="al-btn-primary flex-1 justify-center" @click="verifyDaemon()">
+            <button id="verifyDaemonBtn" type="button" class="al-btn-primary flex-1 justify-center">
               <%- icon('check', { class: 'size-4', strokeWidth: 1.5 }) %> <%= t('iveDoneThisVerify') %>
             </button>
             <a href="/admin/nodes" class="al-btn-secondary flex-1 justify-center"><%= t('backToNodes') %></a>
@@ -222,7 +222,6 @@
   </div>
 </main>
 
-<%- include('../../components/loading-popup') %>
 
 <style>
 #nodeForm .al-card-header { border-radius: 12px 12px 0 0; overflow: hidden; margin-bottom: 16px; }
@@ -486,10 +485,10 @@ function nodeCreate() {
           result.style.color = 'var(--theme-success)';
           result.textContent = (req.translations.daemonIsLive || 'Daemon is live') + (d.version ? ' (' + d.version + ')' : '') + '. ' + (req.translations.keyChecksOut || 'Key checks out \u2014 servers can now run on this node.');
           showToast(req.translations.daemonVerified || 'Daemon verified!', 'success');
-          setTimeout(() => { Turbo.visit('/admin/nodes?verified=' + node.id); }, this.VERIFY_DELAY_MS);
+          setTimeout(() => { window.location.href = '/admin/nodes?verified=' + node.id; }, this.VERIFY_DELAY_MS);
         } else {
           result.style.color = 'var(--theme-danger)';
-          result.textContent = d.error || (req.translations.couldNotReachDaemon || 'Could not reach the daemon. Check the address, port, and key.');
+          result.textContent = (d.error?.message) || (req.translations.couldNotReachDaemon || 'Could not reach the daemon. Check the address, port, and key.');
         }
       } catch {
         result.classList.remove('hidden');
@@ -514,6 +513,16 @@ function nodeCreate() {
     }
   };
 }
+
+(function() {
+  var creator = nodeCreate();
+  creator.init();
+  window.createNode = function() { creator.createNode(); };
+  window.copyCliCommand = function() { creator.copyCliCommand(); };
+  window.verifyDaemon = function() { creator.verifyDaemon(); };
+  document.getElementById('addPortBtn').addEventListener('click', function() { creator.addPortFromInput(); });
+  document.getElementById('newPortInput').addEventListener('keypress', function(e) { if (e.key === 'Enter') { e.preventDefault(); creator.addPortFromInput(); } });
+})();
 </script>
 
 <%- include('../../components/footer') %>

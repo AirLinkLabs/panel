@@ -10,16 +10,10 @@ const serverCreateNames = {
     return a + ' ' + b;
   }
 };
-function serverCreatePage() {
-  return {
-    allowStartupEdit: false,
-    submitting: false,
-    generateName() { document.getElementById('serverName').value = serverCreateNames.generate(); }
-  };
-}
+function generateName() { document.getElementById('serverName').value = serverCreateNames.generate(); }
 </script>
 
-<div x-data="serverCreatePage()">
+
   <main class="min-h-screen">
     <div class="flex min-h-screen">
       <div class="hidden lg:block w-60 shrink-0">
@@ -45,7 +39,7 @@ function serverCreatePage() {
             </div>
 
             <div class="al-page-body space-y-5">
-              <form id="createServerForm" @submit.prevent class="space-y-5">
+              <form id="createServerForm" class="space-y-5">
                 <div class="al-card">
                   <h2 class="al-card-header"><%= t('general') %></h2>
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -56,7 +50,7 @@ function serverCreatePage() {
                       <div class="flex items-center gap-2">
                         <input id="serverName" name="name" class="al-input flex-1"
                           placeholder="<%= user.username %>'s server">
-                        <button type="button" @click="generateName()"
+                        <button type="button" onclick="generateName()"
                           class="w-9 h-9 shrink-0 flex items-center justify-center rounded-xl transition hover:bg-[var(--theme-bg-hover)]"
                           style="color:var(--theme-text-muted);background:var(--theme-bg-input);border:1px solid var(--theme-border-input)">
                           <%- icon('dices', { size: 15 }) %>
@@ -229,11 +223,11 @@ function serverCreatePage() {
                           </div>
                         </div>
                         <label class="relative inline-flex items-center cursor-pointer">
-                          <input type="checkbox" name="allowStartupEdit" id="allowStartupEdit" class="sr-only peer" value="true" x-model="allowStartupEdit">
+                          <input type="checkbox" name="allowStartupEdit" id="allowStartupEdit" class="sr-only peer" value="true">
                           <div class="al-toggle-track">
                             <div class="al-toggle-dot"></div>
                           </div>
-                          <span class="ms-3 al-page-desc text-sm" x-text="allowStartupEdit ? '<%= t('enabled') %>' : '<%= t('disabled') %>'"><%= t('disabled') %></span>
+                          <span id="allowStartupEditLabel" class="ms-3 al-page-desc text-sm"><%= t('disabled') %></span>
                         </label>
                       </div>
                     </div>
@@ -259,10 +253,8 @@ function serverCreatePage() {
         </div>
     </div>
   </main>
-</div><!-- /x-data -->
 
   <%- include('../../components/portsAllocator') %>
-    <%- include('../../components/loading-popup') %>
 
       <script nonce="<%- nonce %>">
         const serverImageSelect = document.getElementById('serverImage');
@@ -464,7 +456,7 @@ function serverCreatePage() {
             })
             .then(data => {
               loader.updateProgress(100, req.translations.serverCreatedSuccessfully || 'Server created successfully!');
-              setTimeout(() => { loader.close(); showToast(req.translations.serverDeployed || 'Server deployed. Go make something cool.', 'success'); setTimeout(() => { Turbo.visit('/admin/servers'); }, 1000); }, 500);
+              setTimeout(() => { loader.close(); showToast(req.translations.serverDeployed || 'Server deployed. Go make something cool.', 'success'); setTimeout(() => { window.location.href = '/admin/servers'; }, 1000); }, 500);
             })
             .catch(error => { loader.close(); console.error('Error:', error); showToast((req.translations.failedToCreateServer || 'Failed to create server: ') + error.message, 'error'); });
         });
@@ -475,6 +467,9 @@ function serverCreatePage() {
 
         serverImageSelect.addEventListener('change', () => { updateDockerImages(); updateVariables(); ensureMinimumPortRows(); syncPortsButton(); });
         serverNodeSelect.addEventListener('change', () => { updatePortsForSelectedNode(); });
+        document.getElementById('allowStartupEdit').addEventListener('change', function() {
+          document.getElementById('allowStartupEditLabel').textContent = this.checked ? (req.translations.enabled || 'Enabled') : (req.translations.disabled || 'Disabled');
+        });
       </script>
       <style>
         #createServerForm .al-card {

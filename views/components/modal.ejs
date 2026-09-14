@@ -79,8 +79,8 @@
     overlay.setAttribute('aria-hidden', 'false');
     document.documentElement.setAttribute('data-modal-open', '');
     lockScroll();
-    if (window.Animate) Animate.openModal(overlay, panel);
-    else { overlay.classList.add('open'); panel.classList.add('open'); }
+    overlay.classList.remove('hidden');
+    overlay.classList.add('open'); panel.classList.add('open');
   }
 
   function hidePanel(done) {
@@ -95,8 +95,8 @@
       lastFocused = null;
       if (done) done();
     };
-    if (window.Animate) Animate.closeModal(overlay, panel, finish);
-    else { overlay.classList.remove('open'); panel.classList.remove('open'); finish(); }
+    overlay.classList.remove('open'); panel.classList.remove('open');
+    overlay.classList.add('hidden'); finish();
   }
 
   function open(opts) {

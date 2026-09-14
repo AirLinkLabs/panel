@@ -7,7 +7,7 @@
     </div>
 <%- include('../../components/template') %>
 
-    <div id="page-content" class="flex-1 overflow-y-auto pt-0 pb-12" x-data="serverManager()">
+    <div id="page-content" class="flex-1 overflow-y-auto pt-0 pb-12">
 
       <%- include('../../components/ui/breadcrumb', { items: [
         { label: t('admin') },
@@ -37,12 +37,12 @@
               <div class="al-card flex items-center gap-2 p-2.5">
                 <span class="selection-count text-[13px] font-medium mr-1" style="color:var(--theme-text);"><%= t('selected') %></span>
                 <div class="h-3.5 w-px mx-1" style="background:var(--theme-border);"></div>
-                <button type="button" @click="bulkRadarScan()"
+                <button type="button" onclick="bulkRadarScan()"
                   class="al-btn-secondary text-[11px]">
                   <%- icon('radar', { size: 12, class: 'shrink-0' }) %>
                   <%= t('radarScan') %>
                 </button>
-                <button type="button" @click="bulkDelete()"
+                <button type="button" onclick="bulkDelete()"
                   class="al-btn-danger text-[11px] ml-auto">
                   <%- icon('trash-2', { size: 12, class: 'shrink-0' }) %>
                   <%= t('delete') %>
@@ -58,12 +58,12 @@
           <div class="al-card flex items-center gap-2 p-2.5 shadow-xl">
             <span class="selection-count text-[13px] font-medium mr-1" style="color:var(--theme-text);"><%= t('selected') %></span>
             <div class="h-3.5 w-px mx-1" style="background:var(--theme-border);"></div>
-            <button type="button" @click="bulkRadarScan()"
+            <button type="button" onclick="bulkRadarScan()"
               class="al-btn-secondary text-[11px]">
               <%- icon('radar', { size: 12, class: 'shrink-0' }) %>
               <%= t('radarScan') %>
             </button>
-            <button type="button" @click="bulkDelete()"
+            <button type="button" onclick="bulkDelete()"
               class="al-btn-danger text-[11px] ml-auto">
               <%- icon('trash-2', { size: 12, class: 'shrink-0' }) %>
               <%= t('delete') %>
@@ -153,7 +153,7 @@
                       class="al-btn-ghost p-2 min-w-[44px] min-h-[44px] flex items-center justify-center">
                       <%- icon('pencil', { size: 16, class: 'shrink-0' }) %>
                     </a>
-                    <button type="button" @click="event.stopPropagation(); deleteServer('<%= server.id %>', '<%= server.name %>')" title="<%= t('delete') %>" aria-label="<%= t('deleteServer') %>"
+                    <button type="button" onclick="event.stopPropagation(); deleteServer('<%= server.id %>', '<%= server.name %>')" title="<%= t('delete') %>" aria-label="<%= t('deleteServer') %>"
                       class="al-btn-ghost p-2 min-w-[44px] min-h-[44px] flex items-center justify-center" style="color:var(--theme-danger);">
                       <%- icon('trash-2', { size: 16, class: 'shrink-0' }) %>
                     </button>
@@ -171,7 +171,6 @@
   </div>
 </main>
 
-<%- include('../../components/loading-popup') %>
 
 <!-- Radar scan modal -->
 <div id="radarScanModal" class="al-sheet-overlay fixed inset-0 z-50 hidden">
@@ -184,7 +183,7 @@
           <h3 class="text-sm font-semibold" style="color:var(--theme-text-strong);" id="radarScanModalTitle"><%= t('radarScan') %></h3>
           <p class="text-xs mt-0.5" style="color:var(--theme-text-muted);" id="radarScanModalSubtitle"><%= t('radarScanDesc') %></p>
         </div>
-        <button type="button" @click="closeRadarScanModal()" class="al-btn-ghost p-2 rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center shrink-0" aria-label="<%= t('close') %>">
+        <button type="button" onclick="closeRadarScanModal()" class="al-btn-ghost p-2 rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center shrink-0" aria-label="<%= t('close') %>">
           <%- icon('x', { class: 'h-5 w-5', strokeWidth: 1.5 }) %>
         </button>
       </div>
@@ -196,12 +195,12 @@
         <div id="scanModeToggle" class="hidden mb-5">
           <p class="text-xs font-medium mb-2" style="color:var(--theme-text-muted);"><%= t('scanMethod') %></p>
           <div class="flex flex-col sm:flex-row gap-2">
-            <button type="button" id="modeBuiltin" @click="setScanMode('builtin')"
+            <button type="button" id="modeBuiltin" onclick="setScanMode('builtin')"
               class="flex-1 flex items-center gap-2 px-3 py-3 sm:py-2.5 rounded-lg border-2 text-xs font-medium transition-all min-h-[44px]" style="border-color:var(--theme-border-accent); background:var(--theme-text-strong); color:var(--theme-accent-text);">
               <%- icon('radar', { size: 14, class: 'shrink-0' }) %>
               <%= t('builtinPatterns') %>
             </button>
-            <button type="button" id="modeVT" @click="setScanMode('vt')"
+            <button type="button" id="modeVT" onclick="setScanMode('vt')"
               class="flex-1 flex items-center gap-2 px-3 py-3 sm:py-2.5 rounded-lg border-2 text-xs font-medium transition-all min-h-[44px]" style="border-color:var(--theme-border); background:var(--theme-bg-secondary); color:var(--theme-text-muted);">
               <%- icon('shield', { size: 14, class: 'shrink-0' }) %>
               <%= t('vtFileScan') %>
@@ -220,7 +219,7 @@
               <div class="custom-select" data-for="scriptSelect"></div>
             </div>
             <div class="sm:pt-5">
-              <button type="button" id="runScanButton" @click="runRadarScan()"
+              <button type="button" id="runScanButton" onclick="runRadarScan()"
                 class="al-btn-primary w-full sm:w-auto min-h-[44px]">
                 <%- icon('radar', { size: 16, class: 'shrink-0' }) %>
                 <%= t('runScan') %>
@@ -237,7 +236,7 @@
             <p><%= t('vtScanExcludesDesc') %></p>
             <p style="color:var(--theme-warning);"><%= t('vtScanFreeTierDesc') %></p>
           </div>
-          <button type="button" id="runVtScanButton" @click="runVtFileScan()"
+          <button type="button" id="runVtScanButton" onclick="runVtFileScan()"
             class="al-btn-primary w-full sm:w-auto min-h-[44px]">
             <%- icon('shield', { size: 16, class: 'shrink-0' }) %>
             <%= t('uploadToVt') %>
@@ -255,11 +254,11 @@
 
       <!-- Footer -->
       <div class="flex gap-2 px-6 py-4 border-t justify-end" style="border-color:var(--theme-border);">
-        <button type="button" id="radarRescanBtn" class="hidden text-xs hover:underline min-h-[44px] flex items-center justify-center sm:justify-start" style="color:var(--theme-text-muted);" @click="resetRadarToPickerPhase()">
+        <button type="button" id="radarRescanBtn" class="hidden text-xs hover:underline min-h-[44px] flex items-center justify-center sm:justify-start" style="color:var(--theme-text-muted);" onclick="resetRadarToPickerPhase()">
           <%- icon('arrow-left', { class: 'size-3.5 inline mr-1' }) %> <%= t('runAnotherScan') %>
         </button>
         <div class="sm:ml-auto">
-          <button type="button" @click="closeRadarScanModal()"
+          <button type="button" onclick="closeRadarScanModal()"
             class="al-btn-secondary w-full sm:w-auto min-h-[44px]">
             <%- icon('x', { class: 'size-4', strokeWidth: 1.5 }) %>
             <%= t('close') %>
@@ -272,8 +271,8 @@
 </div>
 
 <script nonce="<%- nonce %>">
-function serverManager() {
-  return {
+(function() {
+  const sm = {
     vtEnabled: false,
     scanMode: 'builtin',
     currentServerIds: [],
@@ -383,12 +382,7 @@ function serverManager() {
     },
 
     removeServerRows(ids) {
-      const tbody = document.querySelector('#serverTable tbody');
-      const rows = ids.map((id) => document.querySelector('#serverTable .server-row[data-id="' + id + '"]')).filter(Boolean);
-      rows.reduce((p, row) => p.then(() => al.removeRow(row)), Promise.resolve()).then(() => {
-        this.updateToolbar();
-        if (tbody && !tbody.querySelector('.server-row')) al.showEmpty(tbody, req.translations.noServersYet || 'No servers yet.', 7);
-      });
+      window.location.reload();
     },
 
     bulkDelete() {
@@ -403,7 +397,7 @@ function serverManager() {
           ids.forEach((id) => { chain = chain.then(() => fetch('/api/v2/admin/servers/' + id, { method: 'DELETE' }).then((r) => { if (!r.ok) failed = true; })); });
           chain.then(() => {
             if (failed) { showToast(req.translations.someServersFailedToDelete || 'Some servers failed to delete.', 'error'); return; }
-            showToast(req.translations.serversDeleted || 'Servers deleted.', 'success'); this.removeServerRows(ids);
+            showToast(req.translations.serversDeleted || 'Servers deleted.', 'success'); window.location.reload();
           }).catch((err) => { console.error('Bulk delete error:', err); showToast(req.translations.failedToDeleteServers || 'Failed to delete servers.', 'error'); });
         }
       });
@@ -414,7 +408,7 @@ function serverManager() {
         title: req.translations.deleteServer || 'Delete Server', body: (req.translations.deleteServerConfirmName || 'Delete "') + name + (req.translations.deleteServerConfirmSuffix || '"? All data will be permanently removed.'), danger: true, confirmLabel: req.translations.delete || 'Delete',
         onConfirm: async () => {
           const d = await Api.admin.servers.delete(id);
-          if (d !== null) { showToast(req.translations.serverDeleted || 'Server deleted.', 'success'); this.removeServerRows([String(id)]); }
+          if (d !== null) { showToast(req.translations.serverDeleted || 'Server deleted.', 'success'); window.location.reload(); }
         }
       });
     },
@@ -439,13 +433,13 @@ function serverManager() {
       document.getElementById('radarPickerPhase').classList.remove('hidden');
       this.setScanMode('builtin');
       const m = document.getElementById('radarScanModal'); m.classList.remove('hidden'); m.classList.add('flex');
-      Animate.openModal(m, document.getElementById('radarScanPanel'));
+            m.classList.add('open'); document.getElementById('radarScanPanel').classList.add('open');
       this.fetchRadarScripts();
     },
 
     closeRadarScanModal() {
       const m = document.getElementById('radarScanModal'), p = document.getElementById('radarScanPanel');
-      Animate.closeModal(m, p, () => { m.classList.add('hidden'); m.classList.remove('flex'); });
+      m.classList.remove('open'); p.classList.remove('open'); m.classList.add('hidden'); m.classList.remove('flex');
       this.currentServerIds = []; this.radarServerNames = {};
     },
 
@@ -528,7 +522,7 @@ function serverManager() {
             document.getElementById('radarResultsPhase').classList.remove('hidden');
             document.getElementById('radarRescanBtn').classList.remove('hidden');
             var m = document.getElementById('radarScanModal'); m.classList.remove('hidden'); m.classList.add('flex');
-            Animate.openModal(m, document.getElementById('radarScanPanel'));
+      m.classList.add('open'); document.getElementById('radarScanPanel').classList.add('open');
             this.renderVtFileScanResults(data);
           }, 800);
         }).catch((err) => {
@@ -638,7 +632,18 @@ function serverManager() {
       });
     },
   };
-}
+
+  sm.init();
+
+  window.bulkRadarScan = function() { sm.bulkRadarScan(); };
+  window.bulkDelete = function() { sm.bulkDelete(); };
+  window.deleteServer = function(id, name) { sm.deleteServer(id, name); };
+  window.closeRadarScanModal = function() { sm.closeRadarScanModal(); };
+  window.setScanMode = function(mode) { sm.setScanMode(mode); };
+  window.runRadarScan = function() { sm.runRadarScan(); };
+  window.runVtFileScan = function() { sm.runVtFileScan(); };
+  window.resetRadarToPickerPhase = function() { sm.resetRadarToPickerPhase(); };
+})();
 </script>
 <script nonce="<%- nonce %>">
   window._sm = { checkVirusTotal: function(hash, matchId) { if (window._smInstance) window._smInstance.checkVirusTotal(hash, matchId); } };

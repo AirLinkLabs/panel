@@ -146,7 +146,6 @@
       </div>
 </main>
 
-<%- include('../../components/loading-popup') %>
 
 <!-- Create Backup Modal -->
 <div id="createBackupModal" class="al-sheet-overlay fixed inset-0 z-50 flex items-center justify-center opacity-0 pointer-events-none">
@@ -196,7 +195,7 @@ function openCreateBackupModal() {
   const panel = document.getElementById('createBackupModalPanel');
 
   modal.classList.remove('opacity-0', 'pointer-events-none');
-  Animate.openModal(modal, panel);
+  modal.classList.add('open'); panel.classList.add('open');
 
   input.focus();
 }
@@ -209,7 +208,7 @@ function closeCreateBackupModal() {
     // Clear input
     document.getElementById('backupName').value = '';
   };
-  Animate.closeModal(modal, panel, done);
+  modal.classList.remove('open'); panel.classList.remove('open'); done();
 }
 
 function handleBackupNameKeyPress(event) {
@@ -253,7 +252,7 @@ async function confirmCreateBackup() {
       // Complete the progress toast with the server's result message.
       loading.complete(true, data.message || '<%= req.translations.backupCreated || "Backup created." %>');
       // Reload page to show new backup
-      addBackupRow(data.backup);
+      window.location.reload();
     } else {
       loading.close();
       showToast(data.error || '<%= req.translations.failedToCreateBackup || "Failed to create backup" %>', 'error');
@@ -396,7 +395,7 @@ async function toggleBackupLock(backupId, backupName, currentlyLocked) {
 
     if (data.success) {
       showToast(currentlyLocked ? '<%= req.translations.backupUnlocked || "Backup unlocked." %>' : '<%= req.translations.backupLocked || "Backup locked." %>', 'success');
-      updateBackupLockUI(backupId, backupName, !currentlyLocked);
+      window.location.reload();
     } else {
       showToast(data.error || '<%= req.translations.failedToUpdateBackupLock || "Failed to update backup lock" %>', 'error');
     }
@@ -466,15 +465,7 @@ function deleteBackup(backupId, backupName) {  showConfirmation(
 
         if (data.success) {
            showToast('<%= req.translations.backupDeleted || "Backup deleted." %>', 'success');
-          const row = document.querySelector(`tr[data-backup-id="${backupId}"]`);
-          if (row) {
-            al.removeRow(row).then(() => {
-              const tbody = document.getElementById('backups-table-body');
-              if (tbody && tbody.children.length === 0) {
-                al.showEmpty(tbody, '<%= req.translations.noBackupsYetDesc || "No backups yet. Backups protect your server\'s world and files." %>', 4);
-              }
-            });
-          }
+          window.location.reload();
         } else {
           showToast(data.error || '<%= req.translations.failedToDeleteBackup || "Failed to delete backup" %>', 'error');
         }

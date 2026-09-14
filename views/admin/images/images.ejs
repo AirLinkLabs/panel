@@ -8,7 +8,7 @@
   <div class="flex min-h-screen">
     <div class="hidden lg:block w-60 shrink-0"><%- include('../../components/sidebar') %></div>
 <%- include('../../components/template') %>
-    <div id="page-content" x-data="imageManager()" class="flex-1 overflow-y-auto pt-0 pb-12">
+    <div id="page-content" class="flex-1 overflow-y-auto pt-0 pb-12">
 
       <%- include('../../components/ui/breadcrumb', { items: [
         { label: t('admin') },
@@ -21,8 +21,8 @@
           <p class="al-page-desc"><%= t('adminImagesText') %></p>
         </div>
         <div class="flex gap-2 shrink-0">
-          <button @click="openUploadImageModal()" type="button" class="al-btn-secondary"><%- icon('upload', { class: 'size-4', strokeWidth: 1.5 }) %><%= t('uploadJson') %></button>
-          <button @click="openCreate()" type="button" class="al-btn-secondary"><%- icon('plus', { class: 'size-4', strokeWidth: 1.5 }) %><%= t('newImage') %></button>
+          <button onclick="imageManagerState.openUploadImageModal()" type="button" class="al-btn-secondary"><%- icon('upload', { class: 'size-4', strokeWidth: 1.5 }) %><%= t('uploadJson') %></button>
+          <button onclick="imageManagerState.openCreate()" type="button" class="al-btn-secondary"><%- icon('plus', { class: 'size-4', strokeWidth: 1.5 }) %><%= t('newImage') %></button>
           <a href="/admin/images#store" class="al-btn-secondary"><%= t('browseStore') %></a>
         </div>
       </div>
@@ -58,63 +58,72 @@
 </main>
 
 <!-- Reject modal -->
-<div id="rejectModal" x-data="imageReject()" x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="al-sheet-overlay fixed inset-0 z-50 flex items-center justify-center" style="display:none" @keydown.escape.window="if(open) close()" @image-reject-show.window="show($event.detail.id, $event.detail.name)">
+<div id="rejectModal" class="al-sheet-overlay fixed inset-0 z-50 flex items-center justify-center opacity-0 pointer-events-none">
   <div class="al-sheet-panel rounded-2xl max-w-md w-full will-change-transform shadow-xl" style="background:var(--theme-bg-card); border:1px solid var(--theme-border);">
     <div class="al-sheet-header" style="border-color:var(--theme-border)">
       <div>
         <h2 class="text-sm font-semibold" style="color:var(--theme-text-strong)"><%= t('rejectImage') %></h2>
-        <p class="text-xs mt-0.5" style="color:var(--theme-text-muted)" x-text="rejectName"></p>
+        <p class="text-xs mt-0.5" style="color:var(--theme-text-muted)" id="rejectName"></p>
       </div>
-      <button type="button" class="al-btn-ghost p-2 rounded-lg flex items-center justify-center shrink-0" @click="close()" aria-label="<%= t('ariaClose') %>">
+      <button type="button" class="al-btn-ghost p-2 rounded-lg flex items-center justify-center shrink-0" onclick="imageManagerState.closeRejectModal()" aria-label="<%= t('ariaClose') %>">
         <%- icon('x', { class: 'h-5 w-5', strokeWidth: 1.5 }) %>
       </button>
     </div>
     <div class="px-6 py-4">
       <label class="al-label" for="rejectReason"><%= t('reason') %> <span class="font-normal" style="color:var(--theme-text-muted)"><%= t('reasonHint') %></span></label>
-      <textarea x-model="reason" class="al-input w-full" rows="3" placeholder="e.g. Missing startup exit detection or required docker image."></textarea>
+      <textarea id="rejectReasonInput" class="al-input w-full" rows="3" placeholder="e.g. Missing startup exit detection or required docker image."></textarea>
     </div>
     <div class="al-sheet-footer justify-end" style="border-color:var(--theme-border)">
-      <button type="button" class="al-btn-secondary px-4 py-2 text-xs font-medium" @click="close()"><%= t('cancel') %></button>
-      <button type="button" @click="confirm()" class="al-btn-danger px-4 py-2 text-xs font-medium inline-flex items-center gap-2" :disabled="submitting">
-        <%- icon('x', { class: 'size-3.5', strokeWidth: 1.5 }) %><span x-text="submitting ? '<%= t('rejecting') %>' : '<%= t('reject') %>'"><%= t('reject') %></span>
+      <button type="button" class="al-btn-secondary px-4 py-2 text-xs font-medium" onclick="imageManagerState.closeRejectModal()"><%= t('cancel') %></button>
+      <button type="button" id="rejectConfirmBtn" class="al-btn-danger px-4 py-2 text-xs font-medium inline-flex items-center gap-2">
+        <%- icon('x', { class: 'size-3.5', strokeWidth: 1.5 }) %><span id="rejectConfirmLabel"><%= t('reject') %></span>
       </button>
     </div>
   </div>
 </div>
 
 <script nonce="<%- nonce %>">
-function imageReject() {
-  return {
-    open: false,
-    rejectId: null,
-    rejectName: '',
-    reason: '',
-    submitting: false,
-    show(id, name) {
-      this.rejectId = id;
-      this.rejectName = name;
-      this.reason = '';
-      this.open = true;
-    },
-    close() { this.open = false; this.rejectId = null; },
-    async confirm() {
-      if (this.submitting || !this.rejectId) return;
-      this.submitting = true;
-      try {
-        const res = await fetch('/api/v2/admin/images/' + this.rejectId + '/reject', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ reason: this.reason }),
-        });
-        const data = await res.json();
-        this.close();
-        if (data.error) { showToast(data.error, 'error'); }
-        else { showToast(data.message || req.translations.imageRejected || 'Image rejected.', 'success'); Turbo.visit(window.location.href); }
-      } catch (e) { this.close(); showToast(req.translations.somethingWentWrong || 'Something went wrong.', 'error'); }
-      finally { this.submitting = false; }
-    }
-  };
+var imageRejectState = { rejectId: null };
+
+function openRejectModal(id, name) {
+  imageRejectState.rejectId = id;
+  document.getElementById('rejectName').textContent = name;
+  document.getElementById('rejectReasonInput').value = '';
+  document.getElementById('rejectModal').classList.remove('opacity-0', 'pointer-events-none');
 }
+
+function closeRejectModal() {
+  document.getElementById('rejectModal').classList.add('opacity-0', 'pointer-events-none');
+  imageRejectState.rejectId = null;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && !document.getElementById('rejectModal').classList.contains('pointer-events-none')) {
+      closeRejectModal();
+    }
+  });
+  document.getElementById('rejectConfirmBtn').addEventListener('click', async function() {
+    if (imageRejectState.rejectId == null) return;
+    var id = imageRejectState.rejectId;
+    var reason = document.getElementById('rejectReasonInput').value;
+    var btn = this;
+    btn.disabled = true;
+    document.getElementById('rejectConfirmLabel').textContent = '<%= t('rejecting') %>';
+    try {
+      var res = await fetch('/api/v2/admin/images/' + id + '/reject', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reason: reason }),
+      });
+      var data = await res.json();
+      closeRejectModal();
+      if (data.error) { showToast(data.error, 'error'); }
+      else { showToast(data.message || req.translations.imageRejected || 'Image rejected.', 'success'); window.location.reload(); }
+    } catch (e) { closeRejectModal(); showToast(req.translations.somethingWentWrong || 'Something went wrong.', 'error'); }
+    finally { btn.disabled = false; document.getElementById('rejectConfirmLabel').textContent = '<%= t('reject') %>'; }
+  });
+});
 </script>
 
 <div id="page-data" style="display:none"
@@ -132,7 +141,7 @@ function imageReject() {
         <h2 class="text-sm font-semibold" style="color:var(--theme-text-strong)"><%= t('uploadImage') %></h2>
         <p class="text-xs mt-0.5" style="color:var(--theme-text-muted)"><%= t('uploadImageDesc') %></p>
       </div>
-      <button type="button" @click="closeUploadImageModal()" class="al-btn-ghost p-2 rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center shrink-0" aria-label="<%= t('ariaClose') %>">
+      <button type="button" onclick="imageManagerState.closeUploadImageModal()" class="al-btn-ghost p-2 rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center shrink-0" aria-label="<%= t('ariaClose') %>">
         <%- icon('x', { class: 'h-5 w-5', strokeWidth: 1.5 }) %>
       </button>
     </div>
@@ -156,7 +165,7 @@ function imageReject() {
             <p id="imageSelectedFileName" class="font-medium truncate" style="color:var(--theme-text-strong)"></p>
             <p id="imageSelectedFileSize" class="text-sm" style="color:var(--theme-text-muted)"></p>
           </div>
-          <button type="button" @click="removeSelectedImageFile()" class="ml-2" aria-label="<%= t('ariaRemoveSelectedFile') %>" style="color:var(--theme-text-muted)">
+          <button type="button" onclick="imageManagerState.removeSelectedImageFile()" class="ml-2" aria-label="<%= t('ariaRemoveSelectedFile') %>" style="color:var(--theme-text-muted)">
             <%- icon('x', { class: 'w-5 h-5' }) %>
           </button>
         </div>
@@ -169,7 +178,7 @@ function imageReject() {
       </div>
     </div>
     <div class="al-sheet-footer justify-end" style="border-color:var(--theme-border)">
-      <button type="button" @click="closeUploadImageModal()" class="al-btn-secondary px-4 py-2 text-xs font-medium inline-flex items-center gap-2">
+      <button type="button" onclick="imageManagerState.closeUploadImageModal()" class="al-btn-secondary px-4 py-2 text-xs font-medium inline-flex items-center gap-2">
         <%- icon('x', { class: 'size-3', strokeWidth: 1.5 }) %>
         <%= t('cancel') %>
       </button>
@@ -196,7 +205,7 @@ function imageReject() {
       <div class="col-span-2"><label class="al-label"><%= t('description') %></label><textarea class="al-input" name="description" rows="2" placeholder="<%= t('imageDescriptionPlaceholder') %>" style="resize:none;"></textarea></div>
     </div>
     <div class="flex gap-2 pt-1">
-      <button type="button" @click="closeCreate()" class="flex-1 py-2 rounded-xl border text-sm font-medium hover:bg-[var(--theme-bg-hover)] transition inline-flex items-center justify-center gap-1.5" style="border-color:var(--theme-border);color:var(--theme-text)"><%- icon('x', { class: 'size-4', strokeWidth: 1.5 }) %><%= t('cancel') %></button>
+      <button type="button" onclick="imageManagerState.closeCreate()" class="flex-1 py-2 rounded-xl border text-sm font-medium hover:bg-[var(--theme-bg-hover)] transition inline-flex items-center justify-center gap-1.5" style="border-color:var(--theme-border);color:var(--theme-text)"><%- icon('x', { class: 'size-4', strokeWidth: 1.5 }) %><%= t('cancel') %></button>
       <button type="submit" class="flex-1 py-2 rounded-xl border text-sm font-medium shadow-lg hover:bg-[var(--theme-bg-hover)] transition inline-flex items-center justify-center gap-1.5" style="border-color:var(--theme-border);background:var(--theme-bg-card);color:var(--theme-text-strong)"><%- icon('plus', { class: 'size-4', strokeWidth: 1.5 }) %><%= t('createAndEdit') %></button>
     </div>
   </form>
@@ -215,7 +224,7 @@ function imageManager() {
   function imageRowHtml(image) {
     return '<tr class="al-table-tr transition-colors cursor-pointer img-row" data-search="' +
       esc((image.name + " " + (image.author || "")).toLowerCase()) +
-      '" @click="handleRowClick(event, \'/admin/images/edit/' + image.id + '\')">' +
+      '" onclick="imageManagerState.handleRowClick(event, \'/admin/images/edit/' + image.id + '\')">' +
       '<td class="al-table-td whitespace-nowrap py-4 pl-6 pr-3 font-medium" style="color:var(--theme-text-strong)">' + esc(image.name) + '</td>' +
       '<td class="al-table-td whitespace-nowrap px-3 py-4 col-hide">' + esc(image.author || "—") + '</td>' +
       '<td class="al-table-td whitespace-nowrap px-3 py-4 col-hide">' + esc(new Date(image.createdAt).toLocaleDateString()) + '</td>' +
@@ -301,9 +310,8 @@ function imageManager() {
             const d = await r.json();
             if (r.ok && d.success) {
               showToast(d.message || (req.translations.imageImported || "Image imported."), "success");
-              this.renderImageTable();
-              this.closeUploadImageModal();
-            } else { showToast(d.error || (req.translations.importFailed || "Import failed."), "error"); }
+              window.location.reload();
+            } else { showToast((d.error?.message) || (req.translations.importFailed || "Import failed."), "error"); }
           } catch { showToast(req.translations.importFailed || "Import failed.", "error"); }
           finally { btn.disabled = false; btn.classList.remove("opacity-60"); }
         });
@@ -315,7 +323,7 @@ function imageManager() {
       });
     },
     handleRowClick(e, url) {
-      if (!e.target.closest("button,a")) Turbo.visit(url);
+      if (!e.target.closest("button,a")) window.location.href = url;
     },
     openCreate() {
       window.modal.show({
@@ -364,7 +372,7 @@ function imageManager() {
     async deleteImage() {
       if (!_deleteId) return;
       const res = await fetch("/api/v2/admin/images/" + _deleteId, { method: "DELETE" });
-      if (res.ok) { showToast(req.translations.imageDeleted || "Image deleted.", "success"); await this.renderImageTable(); }
+      if (res.ok) { showToast(req.translations.imageDeleted || "Image deleted.", "success"); window.location.reload(); }
       else { showToast(req.translations.failed || "Failed.", "error"); }
     },
     openUploadImageModal() {
@@ -372,7 +380,8 @@ function imageManager() {
       const modal = document.getElementById("uploadImageModal");
       if (!modal) return;
       modal.classList.remove("opacity-0", "pointer-events-none");
-      Animate.openModal(modal, document.getElementById("uploadImageModalPanel"));
+      modal.classList.add('open');
+      document.getElementById("uploadImageModalPanel").classList.add('open');
       this.removeSelectedImageFile();
       const fileInput = document.getElementById("imageFileInput");
       if (fileInput) fileInput.value = "";
@@ -380,9 +389,9 @@ function imageManager() {
     closeUploadImageModal() {
       const modal = document.getElementById("uploadImageModal");
       if (!modal) return;
-      Animate.closeModal(modal, document.getElementById("uploadImageModalPanel"), function () {
-        modal.classList.add("opacity-0", "pointer-events-none");
-      });
+      modal.classList.remove('open');
+      document.getElementById("uploadImageModalPanel").classList.remove('open');
+      modal.classList.add("opacity-0", "pointer-events-none");
     },
     removeSelectedImageFile() {
       window.selectedImageFile = null;
@@ -414,7 +423,7 @@ function imageManager() {
         xhr.open("POST", "/admin/images/upload", true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
-          if (xhr.status === 200) { showToast(req.translations.imageUploaded || "Image uploaded.", "success"); self.renderImageTable(); }
+          if (xhr.status === 200) { showToast(req.translations.imageUploaded || "Image uploaded.", "success"); window.location.reload(); }
           else { showToast(req.translations.uploadFailed || "Upload failed.", "error"); }
         };
         xhr.onerror = () => showToast(req.translations.uploadFailed || "Upload failed.", "error");
@@ -435,12 +444,15 @@ function imageManager() {
         if (result.success !== false) {
           showToast(req.translations.imageCreated || "Image created.", "success");
           this.closeCreate();
-          this.renderImageTable();
+          window.location.reload();
         } else { showToast(result.error || result.message || (req.translations.imageCreateFailed || "Failed to create image."), "error"); }
       }).catch(() => { showToast(req.translations.networkError || "Network error.", "error"); });
     }
   };
 }
+
+var imageManagerState = imageManager();
+document.addEventListener('DOMContentLoaded', function() { imageManagerState.init(); });
 </script>
 
 <%- include('../../components/footer') %>

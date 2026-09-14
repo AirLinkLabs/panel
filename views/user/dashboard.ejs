@@ -2,9 +2,6 @@
 
 <style>
   ::-webkit-scrollbar { display: none; }
-  @keyframes al-view-in { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
-  #page-content { animation: al-view-in 0.35s ease both; }
-  @media (prefers-reduced-motion: reduce) { #page-content { animation: none; } }
   .vt-active { background: var(--theme-bg-input); color: var(--theme-text-strong); box-shadow: 0 1px 3px var(--theme-border-subtle); }
   .fc-drag-over { border-color: var(--theme-warning) !important; background: var(--theme-warning-bg) !important; box-shadow: 0 0 0 2px var(--theme-warning-bg) !important; }
   .sc-dragging { opacity: 0.4; transform: scale(0.97); box-shadow: none !important; }
@@ -12,7 +9,7 @@
   .pop-transform { transform: scale(1); opacity: 1; }
 </style>
 
-<div x-data="dashboard()">
+<div>
 <main class="h-screen m-auto">
   <div class="flex h-screen">
     <div class="hidden lg:block w-60 h-full"><%- include('../components/sidebar') %></div>
@@ -437,20 +434,9 @@ function dashboard() {
               var d = await r.json();
               if (d.success) {
                 showToast('<%= req.translations.removedFromFolder || "Removed from folder." %>', 'success');
-                setServerFolder(uuid, null);
-                renderFolders();
-                renderServerViews();
-                if (window.al) {
-                  window.al.removeRow(row).then(function () {
-                    var f = null;
-                    allFolders.forEach(function (x) { if (String(x.id) === String(activeFolderId)) f = x; });
-                    renderFolderPopupContent(f ? folderMemberUUIDs(f) : memberUUIDs);
-                  });
-                } else {
-                  renderFolderPopupContent(memberUUIDs);
-                }
+                window.location.reload();
               }
-              else showToast(d.error || '<%= req.translations.somethingWentWrong || "Something went wrong." %>', 'error');
+              else showToast((d.error?.message) || '<%= req.translations.somethingWentWrong || "Something went wrong." %>', 'error');
             } catch (err) {
               console.error('Failed to remove from folder:', err);
               showToast('<%= req.translations.networkErrorTryAgain || "Network error. Try again." %>', 'error');
@@ -515,11 +501,9 @@ function dashboard() {
             var d = await r.json();
             if (d.success) {
               showToast('"' + dragName + '" <%= req.translations.addedToFolder || "added to folder." %>', 'success');
-              setServerFolder(dragUUID, folderId);
-              renderFolders();
-              renderServerViews();
+              window.location.reload();
             }
-            else showToast(d.error || '<%= req.translations.somethingWentWrong || "Something went wrong." %>', 'error');
+            else showToast((d.error?.message) || '<%= req.translations.somethingWentWrong || "Something went wrong." %>', 'error');
           } catch (err) {
             console.error('Failed to add server to folder:', err);
             showToast('<%= req.translations.networkErrorTryAgain || "Network error. Try again." %>', 'error');
@@ -529,7 +513,7 @@ function dashboard() {
 
       function openOverlay(overlay, panel) {
         overlay.setAttribute('data-open', '');
-        Animate.openModal(overlay, panel);
+        overlay.classList.add('open'); panel.classList.add('open');
       }
 
       function closeOverlay(overlay, panel, after) {
@@ -537,7 +521,7 @@ function dashboard() {
           overlay.removeAttribute('data-open');
           if (after) after();
         };
-        Animate.closeModal(overlay, panel, done);
+        overlay.classList.remove('open'); panel.classList.remove('open'); done();
       }
 
       var gridView = document.getElementById('gridView');
@@ -565,9 +549,9 @@ function dashboard() {
       }
 
       document.querySelectorAll('tr[data-href]').forEach(function (row) {
-        row.addEventListener('click', function () { Turbo.visit(row.dataset.href); });
+        row.addEventListener('click', function () { window.location.href = row.dataset.href; });
         row.addEventListener('keydown', function (e) {
-          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); Turbo.visit(row.dataset.href); }
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); window.location.href = row.dataset.href; }
         });
       });
 
@@ -598,11 +582,10 @@ function dashboard() {
           confirmNewFolder.disabled = false;
           if (d.success) {
             showToast('<%= req.translations.folderCreated || "Folder created." %>', 'success');
-            allFolders.push(d.folder);
             closeOverlay(newFolderOverlay, newFolderPanel);
-            renderFolders();
+            window.location.reload();
           }
-          else showToast(d.error || '<%= req.translations.somethingWentWrong || "Something went wrong." %>', 'error');
+          else showToast((d.error?.message) || '<%= req.translations.somethingWentWrong || "Something went wrong." %>', 'error');
         } catch (err) {
           console.error('Failed to create folder:', err);
           confirmNewFolder.disabled = false;
@@ -646,10 +629,8 @@ function dashboard() {
           closeOverlay(deleteFolderOverlay, deleteFolderPanel);
           if (d.success) {
             showToast('Folder deleted.', 'success');
-            allFolders = allFolders.filter(function (f) { return String(f.id) !== String(activeFolderId); });
-            renderFolders();
-            renderServerViews();
-          } else showToast(d.error || '<%= req.translations.couldntDeleteFolder || "Couldn\u0027t delete the folder." %>', 'error');
+            window.location.reload();
+          } else showToast((d.error?.message) || '<%= req.translations.couldntDeleteFolder || "Couldn\u0027t delete the folder." %>', 'error');
         } catch (err) {
           console.error('Failed to delete folder:', err);
           confirmDeleteFolder.disabled = false;
@@ -747,11 +728,8 @@ function dashboard() {
               var d = await r.json();
               if (d.success) {
                 showToast('<%= req.translations.addedToFolder || "Added to folder." %>', 'success');
-                setServerFolder(uuid, allFolders[0].id);
-                renderFolders();
-                renderServerViews();
-                document.querySelectorAll('.server-ctx-menu').forEach(function (m) { m.classList.add('hidden'); });
-              } else showToast(d.error || '<%= req.translations.somethingWentWrong || "Something went wrong." %>', 'error');
+                window.location.reload();
+              } else showToast((d.error?.message) || '<%= req.translations.somethingWentWrong || "Something went wrong." %>', 'error');
             } catch (err) {
               console.error('Failed to add to folder:', err);
               showToast('<%= req.translations.networkErrorTryAgain || "Network error. Try again." %>', 'error');
@@ -770,11 +748,8 @@ function dashboard() {
             var d = await r.json();
             if (d.success) {
               showToast('<%= req.translations.removedFromFolder || "Removed from folder." %>', 'success');
-              setServerFolder(btn.dataset.uuid, null);
-              renderFolders();
-              renderServerViews();
-              document.querySelectorAll('.server-ctx-menu').forEach(function (m) { m.classList.add('hidden'); });
-            } else showToast(d.error || '<%= req.translations.somethingWentWrong || "Something went wrong." %>', 'error');
+              window.location.reload();
+            } else showToast((d.error?.message) || '<%= req.translations.somethingWentWrong || "Something went wrong." %>', 'error');
           } catch (err) {
             console.error('Failed to remove from folder:', err);
             showToast('<%= req.translations.networkErrorTryAgain || "Network error. Try again." %>', 'error');
@@ -797,11 +772,8 @@ function dashboard() {
               var d = await r.json();
               if (d.success) {
                 showToast('<%= req.translations.addedToFolder || "Added to folder." %>', 'success');
-                setServerFolder(serverUUID, f.id);
-                renderFolders();
-                renderServerViews();
-                closeOverlay(folderPopupOverlay, folderPopupPanel);
-              } else showToast(d.error || '<%= req.translations.somethingWentWrong || "Something went wrong." %>', 'error');
+                window.location.reload();
+              } else showToast((d.error?.message) || '<%= req.translations.somethingWentWrong || "Something went wrong." %>', 'error');
             } catch (err) {
               console.error('Failed to add to folder:', err);
               showToast('<%= req.translations.networkErrorTryAgain || "Network error. Try again." %>', 'error');
@@ -896,8 +868,8 @@ function dashboard() {
       function wireRealtime() {
         if (realtimeWired) return;
         rt = window.alRealtime;
+        if (!rt) return;
         st = window.alState;
-        if (!rt || !st) return;
         realtimeWired = true;
         function unwatchAll() {
           realtimeDisposers.splice(0).forEach(function (dispose) { dispose(); });
@@ -908,9 +880,11 @@ function dashboard() {
         realtimeDisposers.push(rt.onStatusChange(function (status) {
           if (status === 'connected') onRealtimeConnect();
         }));
-        serverUUIDs.forEach(function (uuid) {
-          realtimeDisposers.push(st.observe('server:status:' + uuid, function (snap) { onRealtimeStatus(uuid, snap); }));
-        });
+        if (st && typeof st.observe === 'function') {
+          serverUUIDs.forEach(function (uuid) {
+            realtimeDisposers.push(st.observe('server:status:' + uuid, function (snap) { onRealtimeStatus(uuid, snap); }));
+          });
+        }
         window.addEventListener('pagehide', unwatchAll);
         if (rt.status && rt.status() === 'connected') onRealtimeConnect();
       }
@@ -945,7 +919,11 @@ function dashboard() {
     }
   };
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+  dashboard().init();
+});
 </script>
 
-</div><!-- /x-data -->
+</div>
 <%- include('../components/footer') %>

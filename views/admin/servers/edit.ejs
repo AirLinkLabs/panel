@@ -10,16 +10,10 @@ const serverEditNames = {
     return a + ' ' + b;
   }
 };
-function serverEditPage() {
-  return {
-    allowStartupEdit: <%= server.allowStartupEdit ? 'true' : 'false' %>,
-    suspended: <%= server.Suspended ? 'true' : 'false' %>,
-    generateName() { document.getElementById('serverName').value = serverEditNames.generate(); }
-  };
-}
+function generateName() { document.getElementById('serverName').value = serverEditNames.generate(); }
 </script>
 
-<div x-data="serverEditPage()">
+
 <main class="min-h-screen">
   <div class="flex min-h-screen">
     <div class="hidden lg:block w-60 shrink-0">
@@ -52,7 +46,7 @@ function serverEditPage() {
                 <label for="serverName" class="al-label"><%= t('name') %>:</label>
                 <div class="flex items-center gap-2">
                   <input id="serverName" name="name" value="<%= server.name %>" class="al-input flex-1">
-                  <button type="button" @click="generateName()" class="w-9 h-9 shrink-0 flex items-center justify-center rounded-xl transition hover:bg-[var(--theme-bg-hover)]" style="color:var(--theme-text-muted);background:var(--theme-bg-input);border:1px solid var(--theme-border-input)">
+                  <button type="button" onclick="generateName()" class="w-9 h-9 shrink-0 flex items-center justify-center rounded-xl transition hover:bg-[var(--theme-bg-hover)]" style="color:var(--theme-text-muted);background:var(--theme-bg-input);border:1px solid var(--theme-border-input)">
                     <%- icon('dices', { size: 15 }) %>
                   </button>
                 </div>
@@ -269,11 +263,11 @@ function serverEditPage() {
                       </div>
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
-                      <input type="checkbox" name="allowStartupEdit" id="allowStartupEdit" class="sr-only peer" value="true" x-model="allowStartupEdit">
+                      <input type="checkbox" name="allowStartupEdit" id="allowStartupEdit" class="sr-only peer" value="true" <%= server.allowStartupEdit ? 'checked' : '' %>>
                       <div class="al-toggle-track">
                         <div class="al-toggle-dot"></div>
                       </div>
-                      <span class="ms-3 al-page-desc text-sm" x-text="allowStartupEdit ? '<%= t('enabled') %>' : '<%= t('disabled') %>'"><%= server.allowStartupEdit ? t('enabled') : t('disabled') %></span>
+                      <span id="allowStartupEditLabel" class="ms-3 al-page-desc text-sm"><%= server.allowStartupEdit ? t('enabled') : t('disabled') %></span>
                     </label>
                   </div>
                 </div>
@@ -312,9 +306,9 @@ function serverEditPage() {
                       </div>
                     </div>
                     <label for="suspendServer" class="relative inline-flex items-center cursor-pointer">
-                      <input type="checkbox" name="Suspended" id="suspendServer" aria-label="Server suspension" class="sr-only peer" value="true" x-model="suspended">
+                      <input type="checkbox" name="Suspended" id="suspendServer" aria-label="Server suspension" class="sr-only peer" value="true" <%= server.Suspended ? 'checked' : '' %>>
                       <div class="al-toggle-track"><div class="al-toggle-dot"></div></div>
-                      <span id="suspendServerLabel" class="ms-3 text-sm font-medium" style="color:var(--theme-text)" x-text="suspended ? '<%= t('suspended') %>' : '<%= t('active') %>'"><%= server.Suspended ? t('suspended') : t('active') %></span>
+                      <span id="suspendServerLabel" class="ms-3 text-sm font-medium" style="color:var(--theme-text)"><%= server.Suspended ? t('suspended') : t('active') %></span>
                     </label>
                   </div>
                 </div>
@@ -373,10 +367,8 @@ function serverEditPage() {
     </div>
   </div>
 </main>
-</div><!-- /x-data -->
 
 <%- include('../../components/portsAllocator') %>
-<%- include('../../components/loading-popup') %>
 
 <!-- Transfer Modal -->
 <div id="transferModal" class="al-sheet-overlay fixed inset-0 z-50 hidden">
@@ -462,6 +454,8 @@ function serverEditPage() {
   const form = document.getElementById('editServerForm');
     const suspendServerToggle    = document.getElementById('suspendServer');
     const suspendServerLabel     = document.getElementById('suspendServerLabel');
+    const allowStartupEditToggle = document.getElementById('allowStartupEdit');
+    const allowStartupEditLabel  = document.getElementById('allowStartupEditLabel');
     const serverNodeSelect = document.getElementById('serverNode');
     const serverImageSelect = document.getElementById('serverImage');
     const serverPortsInput = document.getElementById('serverPorts');
@@ -555,6 +549,10 @@ function serverEditPage() {
     serverImageSelect.addEventListener('change', () => { ensureMinimumPortRows(); syncPortsButton(); });
     fetchNodesData();
 
+    allowStartupEditToggle.addEventListener('change', function() {
+      allowStartupEditLabel.textContent = this.checked ? (req.translations.enabled || 'Enabled') : (req.translations.disabled || 'Disabled');
+    });
+
     suspendServerToggle.addEventListener('change', function() {
       const checked = this.checked;
       const action = checked ? 'suspend' : 'unsuspend';
@@ -588,19 +586,7 @@ function serverEditPage() {
           throw new Error((await response.json()).error || 'Request failed');
         }
 
-        suspendServerLabel.textContent = action === 'suspend' ? (req.translations.suspended || 'Suspended') : (req.translations.active || 'Active');
-        const statusText = document.getElementById('serverStatusText');
-        if (statusText) {
-          statusText.textContent = action === 'suspend' ? (req.translations.suspended || 'Suspended') : (req.translations.active || 'Active');
-          statusText.style.color = action === 'suspend' ? 'var(--theme-danger)' : 'var(--theme-success)';
-        }
-        const statusCircle = document.getElementById('serverStatusCircle');
-        if (statusCircle) {
-          statusCircle.className = 'inline-flex items-center justify-center h-8 w-8 rounded-full';
-          statusCircle.style.background = action === 'suspend' ? 'var(--theme-danger-bg)' : 'var(--theme-success-bg)';
-          statusCircle.style.color = action === 'suspend' ? 'var(--theme-danger)' : 'var(--theme-success)';
-          statusCircle.innerHTML = window.alIcon ? (action === 'suspend' ? window.alIcon('x-circle', 'size-5 shrink-0') : window.alIcon('check-circle', 'size-5 shrink-0')) : '';
-        }
+        window.location.reload();
       } catch (err) {
         toggle.checked = action === 'unsuspend';
         suspendServerLabel.textContent = action === 'suspend' ? (req.translations.active || 'Active') : (req.translations.suspended || 'Suspended');
@@ -646,7 +632,7 @@ function serverEditPage() {
             loader.close();
             showToast(req.translations.serverUpdatedSuccessfully || 'Server updated successfully!', 'success');
             setTimeout(() => {
-              Turbo.visit('/admin/servers');
+              window.location.href = '/admin/servers';
             }, 1000);
           }, 500);
         } else {
@@ -822,19 +808,12 @@ function serverEditPage() {
     transferBtn.addEventListener('click', function() {
       transferModal.classList.remove('hidden');
       transferModal.classList.add('flex');
-      if (typeof Animate !== 'undefined') Animate.openModal(transferModal, transferModalPanel);
+      transferModal.classList.add('open'); transferModalPanel.classList.add('open');
     });
 
     window.closeTransferModal = function() {
-      if (typeof Animate !== 'undefined') {
-        Animate.closeModal(transferModal, transferModalPanel, () => {
-          transferModal.classList.add('hidden');
-          transferModal.classList.remove('flex');
-        });
-      } else {
-        transferModal.classList.add('hidden');
-        transferModal.classList.remove('flex');
-      }
+      transferModal.classList.remove('open'); transferModalPanel.classList.remove('open');
+      transferModal.classList.add('hidden'); transferModal.classList.remove('flex');
     };
 
     transferTargetNode.addEventListener('change', function() {

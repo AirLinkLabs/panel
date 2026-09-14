@@ -1,7 +1,7 @@
 <% /* save-button: Universal save button for form pages.
      Locals:
        formId   — form element ID to submit (type="submit" form="...")
-       onclick  — Alpine expression to evaluate on click (for non-form pages)
+       onclick  — JS expression to evaluate on click (for non-form pages)
        label    — optional button text override (default: t('saveChanges'))
        iconName — optional icon name override (default: 'save')
        id       — optional element ID
@@ -15,7 +15,7 @@
   type="submit"
   <% if (locals.id) { %>id="<%= id %>"<% } %>
   <% if (locals.formId) { %>form="<%= formId %>"<% } %>
-  <% if (locals.onclick) { %>@click="<%= onclick %>"<% } %>
+  <% if (locals.onclick) { %>onclick="<%= onclick %>"<% } %>
   class="al-btn-primary"
   data-save-btn
 >

@@ -101,10 +101,10 @@
 <div id="loadingEl" class="overflow-hidden rounded-xl mt-3 border" style="border-color:var(--theme-border)">
   <% for(var i=0;i<8;i++){%>
   <div class="flex items-center gap-4 px-6 py-4" style="border-bottom:1px solid var(--theme-border)">
-    <div class="h-3 rounded-md bg-[var(--theme-bg-secondary)] flex-1 max-w-[30%]" style="position:relative;overflow:hidden"><div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,var(--theme-skeleton-shine) 50%,transparent 100%);animation:al-shimmer 1.5s ease-in-out infinite"></div></div>
-    <div class="h-3 rounded-md bg-[var(--theme-bg-secondary)] w-16" style="position:relative;overflow:hidden"><div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,var(--theme-skeleton-shine) 50%,transparent 100%);animation:al-shimmer 1.5s ease-in-out infinite"></div></div>
-    <div class="h-3 rounded-md bg-[var(--theme-bg-secondary)] w-24 ml-auto" style="position:relative;overflow:hidden"><div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,var(--theme-skeleton-shine) 50%,transparent 100%);animation:al-shimmer 1.5s ease-in-out infinite"></div></div>
-    <div class="h-8 w-20 rounded-lg bg-[var(--theme-bg-secondary)]" style="position:relative;overflow:hidden"><div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,var(--theme-skeleton-shine) 50%,transparent 100%);animation:al-shimmer 1.5s ease-in-out infinite"></div></div>
+    <div class="h-3 rounded-md bg-[var(--theme-bg-secondary)] flex-1 max-w-[30%]" style="position:relative;overflow:hidden"><div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,var(--theme-skeleton-shine) 50%,transparent 100%);"></div></div>
+    <div class="h-3 rounded-md bg-[var(--theme-bg-secondary)] w-16" style="position:relative;overflow:hidden"><div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,var(--theme-skeleton-shine) 50%,transparent 100%)"></div></div>
+    <div class="h-3 rounded-md bg-[var(--theme-bg-secondary)] w-24 ml-auto" style="position:relative;overflow:hidden"><div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,var(--theme-skeleton-shine) 50%,transparent 100%)"></div></div>
+    <div class="h-8 w-20 rounded-lg bg-[var(--theme-bg-secondary)]" style="position:relative;overflow:hidden"><div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,var(--theme-skeleton-shine) 50%,transparent 100%)"></div></div>
   </div>
   <% } %>
 </div>
@@ -204,10 +204,6 @@
 </template>
 
 <style>
-  @keyframes al-shimmer {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
-  }
   .err-box { background: var(--theme-danger-bg); border: 1px solid var(--theme-danger-border, color-mix(in srgb, var(--theme-danger) 20%, transparent)); border-radius: 10px; padding: 10px 14px; }
   .err-txt { font-size: 11.5px; color: var(--theme-btn-danger-bg); }
   html.dark .err-txt { color: var(--theme-danger); }

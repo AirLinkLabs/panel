@@ -382,9 +382,7 @@
     };
 
     if (opts.autostart !== false) {
-      // One socket, kept across navigation. Turbo keeps window alive, so this
-      // instance survives page swaps; a full reload creates a fresh one that
-      // resyncs from the persisted cursor.
+      // One socket, kept across navigation.
       connectSocket();
     }
     return client;

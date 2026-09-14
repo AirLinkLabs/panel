@@ -1,12 +1,12 @@
-<%- include('../../components/header', { title: 'API Documentation' }) %>
+<%- include('../components/header', { title: 'API Documentation' }) %>
 
   <main class="h-screen m-auto">
     <div class="flex h-screen">
       <div class="w-60 h-full hidden lg:block">
-        <%- include('../../components/template') %>
+        <%- include('../components/template') %>
       </div>
       <div id="page-content" class="flex-1 overflow-y-auto pt-0 pb-12">
-        <%- include('../../components/ui/breadcrumb', { items: [
+        <%- include('../components/ui/breadcrumb', { items: [
           { label: 'Admin' },
           { label: 'API Keys', href: '/admin/apikeys' },
           { label: 'Documentation' }
@@ -219,4 +219,4 @@
 
   <script nonce="<%- nonce %>" src="<%= assetUrl('/javascript/admin/admin-apikeys-docs.js') %>?v=5"></script>
 
-  <%- include('../../components/footer') %>
+  <%- include('../components/footer') %>

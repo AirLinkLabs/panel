@@ -14,8 +14,7 @@
           <p class="al-page-desc"><%= t('mountsDesc') %></p>
         </div>
         <button type="button" class="al-btn-primary shrink-0"
-          x-data
-          @click="window.modal.show({ title: '<%= t('newMount') %>', bodyNode: document.getElementById('mountCreateForm'), panelClass: 'max-w-lg' })">
+          onclick="window.modal.show({ title: '<%= t('newMount') %>', bodyNode: document.getElementById('mountCreateForm'), panelClass: 'max-w-lg' })">
           <%- icon('plus', { class: 'size-4', strokeWidth: 1.5 }) %><%= t('newMount') %>
         </button>
       </div>
