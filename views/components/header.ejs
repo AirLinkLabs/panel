@@ -115,8 +115,9 @@ const wallpaperExcluded = req && req.path && (
 
 <!-- Theme initialization: external module replaces inline script -->
 <script nonce="<%- nonce %>" src="<%= assetUrl('/javascript/shared/theme-init.js') %>?v=1"></script>
-<script nonce="<%- nonce %>">window.__i18n = <%- JSON.stringify(window.__i18n || {}) %>;</script>
-<%- include("./bottom-nav") %>
+    <script nonce="<%- nonce %>">window.__i18n = <%- JSON.stringify(window.__i18n || {}) %>;</script>
+    <script nonce="<%- nonce %>" src="<%= assetUrl('/javascript/shared/escape.js') %>?v=1"></script>
+    <%- include("./bottom-nav") %>
 <%- include("./modal") %>
 <%- include("./toast") %>
 

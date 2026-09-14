@@ -458,21 +458,22 @@ function adminSettings() {
         Array.prototype.forEach.call(list.children, (child) => {
           if (child.tagName === "P") child.parentNode.removeChild(child);
         });
-      al.addRow(list, this.banRowHtml(ip));
+      var temp = document.createElement("div");
+      temp.innerHTML = this.banRowHtml(ip);
+      list.appendChild(temp.firstElementChild);
     },
 
     removeBanRow(btn) {
       var row = btn.closest(".flex.items-center.justify-between");
       if (!row) return;
       var list = document.getElementById("bannedIpList");
-      al.removeRow(row).then(() => {
-        if (list && !list.querySelector(".unban-btn")) {
-          var p = document.createElement("p");
-          p.className = "text-sm text-neutral-400";
-          p.textContent = "No banned IPs.";
-          list.appendChild(p);
-        }
-      });
+      row.remove();
+      if (list && !list.querySelector(".unban-btn")) {
+        var p = document.createElement("p");
+        p.className = "text-sm text-neutral-400";
+        p.textContent = "No banned IPs.";
+        list.appendChild(p);
+      }
     },
   };
 }

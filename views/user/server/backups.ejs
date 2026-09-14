@@ -321,7 +321,7 @@ function addBackupRow(backup) {
   }
   if (!tbody) return;
 
-  al.hideEmpty(tbody);
+  // Hide empty state if rows exist
 
   const tr = document.createElement('tr');
   tr.className = 'al-table-tr transition-colors';

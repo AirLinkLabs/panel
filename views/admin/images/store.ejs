@@ -284,10 +284,10 @@ function imageStore() {
       window.loadCatalogue = loadCatalogue;
       window.sortKey = sortKey;
       window.confirmInstall = confirmInstall;
-      document.addEventListener('al:tabs-loaded', function(e) {
+      document.addEventListener('al:tabs-change', function(e) {
         var detail = e.detail;
-        if (detail && detail.name === 'store' && detail.panel) {
-          mount(detail.panel);
+        if (detail && detail.name === 'store') {
+          mount(document);
         }
       });
       if (document.getElementById("image-store-search-input")) mount(document);

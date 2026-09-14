@@ -847,7 +847,9 @@ document.getElementById('confirmAddSchedule')?.addEventListener('click', async (
             </div>
           </td>
         </tr>`;
-      al.addRow(tbody, rowHtml);
+      var tmp = document.createElement('tbody');
+      tmp.innerHTML = rowHtml;
+      if (tmp.firstElementChild) tbody.appendChild(tmp.firstElementChild);
     }
   } else {
     btn.removeAttribute('aria-busy');
