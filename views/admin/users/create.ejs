@@ -277,7 +277,7 @@ function adminUserCreate() {
           setTimeout(() => {
             loader.close();
             showToast('<%= t('createUserAdded') %>', 'success');
-            setTimeout(() => { Alnav.load('/admin/users?err=none'); }, 1000);
+            setTimeout(() => { Turbo.visit('/admin/users?err=none'); }, 1000);
           }, 500);
         } else {
           const err = await res.json().catch(() => ({ message: 'Unknown error' }));

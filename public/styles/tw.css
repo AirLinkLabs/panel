@@ -75,7 +75,6 @@
   --pad-card: 0.75rem;
   --pad-card-header: 0.625rem 0.75rem;
 
-  --dur-fast: 120ms;
   --dur-quick: 150ms;
   --dur-default: 200ms;
   --dur-enter: 320ms;
@@ -233,12 +232,6 @@
     background: var(--theme-bg-card);
     border: 1px solid var(--theme-border);
     box-shadow: var(--theme-shadow-sm, var(--shadow-sheet));
-  }
-  .al-card-header {
-    @apply -mx-3 -mt-3 mb-0 px-3 py-2.5 text-[13px] font-medium border-b;
-    background: var(--theme-bg-secondary);
-    border-color: var(--theme-border);
-    color: var(--theme-text-muted);
   }
 
   /* Status badge — always shows label alongside color */

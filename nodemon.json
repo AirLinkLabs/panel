@@ -1,6 +1,5 @@
 {
-    "watch": ["src"],
-    "ext": "ts",
-    "exec": "tsx src/app.ts"
+  "watch": ["src"],
+  "ext": "ts",
+  "exec": "node --import tsx --env-file=.env src/app.ts"
 }
-  

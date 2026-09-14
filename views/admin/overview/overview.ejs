@@ -242,7 +242,7 @@ function adminOverview() {
             showToast(data.message || (req.translations.updateCompleteRestarting || 'Update complete. Restarting.'), 'success');
             statusDiv.innerHTML = '<span class="text-emerald-600 dark:text-emerald-400">' + (req.translations.updateSuccessfulRestarting || 'Update successful. Restarting...') + '</span>';
             self.fadeIn(statusDiv);
-            setTimeout(() => Alnav.reload(), self.UPDATE_RELOAD_DELAY_MS);
+            setTimeout(() => Turbo.visit(window.location.href), self.UPDATE_RELOAD_DELAY_MS);
           } catch (error) {
             statusDiv.innerHTML = '<span class="text-red-500">' + (req.translations.updateFailed || 'Update failed.') + '</span>';
             self.fadeIn(statusDiv);

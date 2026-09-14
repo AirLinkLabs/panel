@@ -1,5 +1,5 @@
 (function () {
-  const NAV_FLAG = "al_nav";
+  const NAV_FLAG = "__asm_nav";
   const EXACT_MATCH_SCORE = 9999;
   const ACTIVE_BORDER_RADIUS = "0.75rem";
   var PILL_TRANSITION = "none";
@@ -48,7 +48,6 @@
   // ── Top loading line ─────────────────────────────────────────────────────
   // Reference-counted so a completed request never hides another request's
   // feedback. The line is indeterminate; it never pretends to know progress.
-  // navigator.js calls ALPageActivity.start() / .stop() during SPA navs.
 
   let loaderEl = null;
   let loaderHideTimer = null;
@@ -280,8 +279,7 @@
   });
 
   // ── SPA navigation coordination ───────────────────────────────────────────
-  // navigator.js dispatches al:navigated after content swap. Re-run nav
-  // highlights against the new URL so sidebar + mobile bars stay correct.
+  // Re-run nav highlights against the new URL so sidebar + mobile bars stay correct.
 
   document.addEventListener("al:navigated", function () {
     initDesktopHighlight(false);

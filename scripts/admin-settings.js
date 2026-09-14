@@ -35,9 +35,7 @@ function adminSettings() {
         .addEventListener("click", async () => {
           const ip = document.getElementById("banIpInput").value.trim();
           if (!ip) return showToast("Enter an IP address", "error");
-          const d = await window.api("/api/v2/admin/settings/ban-ip", "POST", {
-            ip,
-          });
+          const d = await Api.admin.settings.banIp({ ip });
           if (d && d.success) {
             document.getElementById("banIpInput").value = "";
             showToast("IP banned. Bye bye.", "success");
@@ -50,11 +48,7 @@ function adminSettings() {
         .addEventListener("click", async (e) => {
           var btn = e.target.closest(".unban-btn");
           if (!btn) return;
-          const d = await window.api(
-            "/api/v2/admin/settings/unban-ip",
-            "POST",
-            { ip: btn.dataset.ip },
-          );
+          const d = await Api.admin.settings.unbanIp({ ip: btn.dataset.ip });
           if (d && d.success) {
             showToast("IP unbanned. Welcome back.", "success");
             this.removeBanRow(btn);

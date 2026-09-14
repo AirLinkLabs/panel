@@ -565,9 +565,9 @@ function dashboard() {
       }
 
       document.querySelectorAll('tr[data-href]').forEach(function (row) {
-        row.addEventListener('click', function () { Alnav.load(row.dataset.href); });
+        row.addEventListener('click', function () { Turbo.visit(row.dataset.href); });
         row.addEventListener('keydown', function (e) {
-          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); Alnav.load(row.dataset.href); }
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); Turbo.visit(row.dataset.href); }
         });
       });
 

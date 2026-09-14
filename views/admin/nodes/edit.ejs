@@ -432,7 +432,7 @@ function nodeEditor() {
         if (response.ok) {
           showToast(req.translations.nodeUpdated || 'Node updated. Looking good.', 'success');
           setTimeout(() => {
-            Alnav.load('/admin/nodes?err=none');
+            Turbo.visit('/admin/nodes?err=none');
           }, 1000);
         } else {
           throw new Error('Failed to update node');

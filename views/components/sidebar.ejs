@@ -1,6 +1,6 @@
 <!-- Sidebar -->
 <div id="pc-sidebar" class="sidebar hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-56 lg:flex-col left-0"
-  style="display:none;">
+  data-turbo-permanent style="display:none;">
   <div id="pc-sidebar2" class="flex flex-col h-full">
 
     <!-- Static top: logo -->
@@ -309,7 +309,7 @@
 
         <!-- Static bottom: logout -->
         <div class="shrink-0 border-t" style="border-color:var(--theme-nav-border);">
-          <a href="/logout" id="sidebar-logout-link" data-alnav-skip
+          <a href="/logout" id="sidebar-logout-link"
             class="sidebar-special-link group flex gap-x-2.5 pl-5 py-3 text-[13px] font-medium leading-5 transition-colors duration-200"
             style="color:var(--theme-danger);">
             <%- icon('log-out', { class: 'w-4 h-4 mt-0.5 shrink-0' , strokeWidth: 1.5 }) %>
@@ -324,10 +324,6 @@
 
 <script nonce="<%- nonce %>">
   (function () {
-    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const ws = new WebSocket(wsProtocol + '//' + window.location.host + '/online-check');
-    ws.addEventListener('error', function () { /* WebSocket errors are handled by reconnection logic */ });
-
     function themeVar(name, fallback) {
       const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
       return v || fallback;
@@ -538,5 +534,12 @@
       initSidebarCollapse();
       showSidebarView(window.location.pathname.startsWith('/server/') ? 'server' : 'main');
     }
+
+    document.addEventListener('turbo:load', function () {
+      if (!document.getElementById('pc-sidebar')) return;
+      markSpecialLinks(window.location.pathname);
+      markActiveNav(window.location.pathname);
+      showActiveNavInView();
+    });
   })();
 </script>

@@ -361,7 +361,7 @@ function apikeyPage() {
         if (res.ok) {
           showToast(req.translations.apiKeyCreated || 'API key created', 'success');
           this.showCreateModal = false;
-          Alnav.load('/admin/apikeys');
+          Turbo.visit('/admin/apikeys');
         } else {
           const data = await res.json().catch(() => ({}));
           showToast(data.error || (req.translations.apiKeyCreateFailed || 'Failed to create key.'), 'error');
@@ -385,7 +385,7 @@ function apikeyPage() {
         if (res.ok) {
           showToast(req.translations.apiKeyUpdated || 'API key updated', 'success');
           this.showEditModal = false;
-          Alnav.reload();
+          Turbo.visit(window.location.href);
         } else {
           const data = await res.json().catch(() => ({}));
           showToast(data.error || (req.translations.apiKeyUpdateFailed || 'Failed to update key.'), 'error');
@@ -417,7 +417,7 @@ function apikeyPage() {
         const res = await fetch(form.action, { method: 'POST', headers: { 'Accept': 'application/json' }, body: new URLSearchParams(new FormData(form)) });
         if (res.ok) {
           showToast(enabling ? (req.translations.apiKeyEnabled || 'API key enabled') : (req.translations.apiKeyDisabled || 'API key disabled'), 'success');
-          Alnav.reload();
+          Turbo.visit(window.location.href);
         }
       } catch (e) { showToast(req.translations.networkError || 'Network error.', 'error'); }
     },

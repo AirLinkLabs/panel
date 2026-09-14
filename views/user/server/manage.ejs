@@ -416,7 +416,7 @@
 <%- include('../../components/footer') %>
 
 <script nonce="<%- nonce %>">
-function retryDaemonConnection() { Alnav.reload(); }
+function retryDaemonConnection() { Turbo.visit(window.location.href); }
 (async function () {
   const root = document.getElementById('manage-root');
   if (!root) return;
@@ -424,7 +424,25 @@ function retryDaemonConnection() { Alnav.reload(); }
     const config = JSON.parse(root.dataset.config || '{}');
     const { mount } = await import('<%= assetUrl('/javascript/islands/server-console.js') %>');
     const controller = await mount(root, config);
-    window._manageCleanup = controller && controller.teardown;
+    // Store teardown for Turbo cleanup
+    const cleanup = () => {
+      if (controller && typeof controller.teardown === 'function') {
+        controller.teardown();
+      }
+    };
+
+    // Call teardown before Turbo swaps the page
+    document.addEventListener('turbo:before-render', cleanup, { once: true });
+
+    // Also call on pagehide for full browser navigation
+    window.addEventListener('pagehide', cleanup, { once: true });
+
+    // Clean up old listeners if we navigate away and back
+    // (prevent stacking old cleanup handlers)
+    if (window._manageCleanup) {
+      window._manageCleanup();
+    }
+    window._manageCleanup = cleanup;
   } catch (error) {
     console.error('Failed to initialize the server console.', error);
     const status = root.querySelector('#status');

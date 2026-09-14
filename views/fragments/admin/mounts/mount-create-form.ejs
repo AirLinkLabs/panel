@@ -56,7 +56,7 @@ function mountCreate() {
         if (res.ok) {
           showToast('Mount created.', 'success');
           window.modal.close();
-          setTimeout(() => { Alnav.reload(); }, 300);
+          setTimeout(() => { Turbo.visit(window.location.href); }, 300);
         } else {
           const data = await res.json().catch(() => ({ error: 'Failed to create mount.' }));
           this.error = data.error || data.message || 'Failed to create mount.';

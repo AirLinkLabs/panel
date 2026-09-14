@@ -52,6 +52,31 @@ const wallpaperExcluded = req && req.path && (
     <script nonce="<%- nonce %>" src="<%= assetUrl('/javascript/vendor/query-core.js') %>"></script>
     <script nonce="<%- nonce %>" defer src="<%= assetUrl('/vendor/reconnecting-websocket/dist/reconnecting-websocket-iife.min.js') %>"></script>
 
+    <!-- Turbo Drive -->
+    <script nonce="<%- nonce %>" defer src="<%= assetUrl('/vendor/@hotwired/turbo/dist/turbo.es2017-umd.js') %>"></script>
+    <script nonce="<%- nonce %>">
+      // Turbo Drive event hooks
+      document.addEventListener('turbo:load', function () {
+        // Reinitialize Alpine on new content
+        if (window.Alpine && typeof Alpine.initTree === 'function') {
+          Alpine.initTree(document.body);
+        }
+        // Dispatch al:navigated for page scripts
+        document.dispatchEvent(new CustomEvent('al:navigated', {
+          detail: { path: window.location.pathname }
+        }));
+        // Re-mark sidebar active state
+        if (window.markActiveNav) markActiveNav(window.location.pathname);
+      });
+
+      document.addEventListener('turbo:render', function () {
+        // Initialize Alpine on new content after Turbo renders
+        if (window.Alpine && typeof Alpine.initTree === 'function') {
+          Alpine.initTree(document.body);
+        }
+      });
+    </script>
+
     <!-- htmx -->
     <script nonce="<%- nonce %>" defer src="<%= assetUrl('/vendor/htmx.org/dist/htmx.min.js') %>?v=2.0.10"></script>
     <script nonce="<%- nonce %>" defer src="<%= assetUrl('/javascript/shared/htmx-bootstrap.js') %>?v=1"></script>
@@ -59,7 +84,6 @@ const wallpaperExcluded = req && req.path && (
     <!-- Alpine.js -->
     <script nonce="<%- nonce %>" defer src="<%= assetUrl('/vendor/alpinejs/dist/cdn.min.js') %>?v=3.16.3"></script>
     <script nonce="<%- nonce %>" defer src="<%= assetUrl('/javascript/shared/alpine-bootstrap.js') %>?v=2"></script>
-    <script nonce="<%- nonce %>" defer src="<%= assetUrl('/javascript/shared/navigator.js') %>?v=1"></script>
     <script nonce="<%- nonce %>" defer src="<%= assetUrl('/javascript/shared/auto-save.js') %>?v=1"></script>
 
     <!-- Shared UI components -->
@@ -77,6 +101,7 @@ const wallpaperExcluded = req && req.path && (
     <script nonce="<%- nonce %>" defer src="<%= assetUrl('/javascript/shared/al-state.js') %>?v=1"></script>
     <script nonce="<%- nonce %>" defer src="<%= assetUrl('/javascript/shared/islands.js') %>?v=1"></script>
     <script nonce="<%- nonce %>" defer src="<%= assetUrl('/javascript/shared/data-layer.js') %>?v=1"></script>
+    <script nonce="<%- nonce %>" defer src="<%= assetUrl('/javascript/api-client.js') %>?v=1"></script>
     <style>
       @keyframes al-page-loader-sweep {
         from { transform: translateX(-110%); }
@@ -159,4 +184,4 @@ const wallpaperExcluded = req && req.path && (
 <script nonce="<%- nonce %>" src="<%= assetUrl('/javascript/shared/toast-store.js') %>?v=1"></script>
 <%- include("./toast") %>
 <script nonce="<%- nonce %>" src="<%= assetUrl('/javascript/shared/escape.js') %>?v=1"></script>
-<script nonce="<%- nonce %>" src="<%= assetUrl('/javascript/shared/api.js') %>?v=1"></script>
+

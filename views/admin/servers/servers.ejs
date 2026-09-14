@@ -413,7 +413,7 @@ function serverManager() {
       window.modal.confirm({
         title: req.translations.deleteServer || 'Delete Server', body: (req.translations.deleteServerConfirmName || 'Delete "') + name + (req.translations.deleteServerConfirmSuffix || '"? All data will be permanently removed.'), danger: true, confirmLabel: req.translations.delete || 'Delete',
         onConfirm: async () => {
-          const d = await window.api('/api/v2/admin/servers/' + id, { method: 'DELETE' });
+          const d = await Api.admin.servers.delete(id);
           if (d !== null) { showToast(req.translations.serverDeleted || 'Server deleted.', 'success'); this.removeServerRows([String(id)]); }
         }
       });

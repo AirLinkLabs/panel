@@ -70,6 +70,7 @@
         toastContainer = document.createElement('div');
         toastContainer.id = 'toast-container';
         toastContainer.className = 'fixed top-4 right-4 z-50 flex flex-col gap-2 max-sm:left-4 max-sm:right-4';
+        toastContainer.setAttribute('data-turbo-permanent', '');
         toastContainer.setAttribute('aria-live', 'polite');
         toastContainer.setAttribute('aria-atomic', 'false');
         toastContainer.setAttribute('role', 'status');

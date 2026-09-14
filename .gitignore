@@ -58,3 +58,4 @@ backups/
 docs/tmp/
 /dist/*.map
 .windsurf/
+docs/

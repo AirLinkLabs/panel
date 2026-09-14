@@ -9,7 +9,7 @@
       <%- include('../components/sidebar') %>
     </div>
 <%- include('../components/template') %>
-    <div id="page-content" class="flex-1 overflow-y-auto pt-0 pb-12">
+    <turbo-frame id="page-content" class="flex-1 overflow-y-auto pt-0 pb-12">
       <%- include('../components/ui/breadcrumb', { items: [
         { label: t('navAccount') }
       ] }) %>
@@ -341,7 +341,7 @@
         </div>
 
       </div>
-</div>
+</turbo-frame>
   </div>
 </main>
 

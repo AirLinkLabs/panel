@@ -278,7 +278,7 @@ function adminUserEdit() {
           setTimeout(() => {
             loader.close();
             showToast(result.message || '<%= req.translations.userUpdatedSuccessfully || 'User updated successfully!' %>', 'success');
-            setTimeout(() => { Alnav.load('/admin/users'); }, 1000);
+            setTimeout(() => { Turbo.visit('/admin/users'); }, 1000);
           }, 500);
         }
       } catch (e) {
@@ -308,7 +308,7 @@ function adminUserEdit() {
               showToast(result.error, 'error');
             } else {
               showToast(result.message || '<%= req.translations.transferringOwnership || 'Transferring ownership...' %>', 'success');
-              setTimeout(() => { Alnav.load('/admin/users'); }, 1000);
+              setTimeout(() => { Turbo.visit('/admin/users'); }, 1000);
             }
           } catch (e) {
             loader.close();

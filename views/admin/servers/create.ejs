@@ -464,7 +464,7 @@ function serverCreatePage() {
             })
             .then(data => {
               loader.updateProgress(100, req.translations.serverCreatedSuccessfully || 'Server created successfully!');
-              setTimeout(() => { loader.close(); showToast(req.translations.serverDeployed || 'Server deployed. Go make something cool.', 'success'); setTimeout(() => { Alnav.load('/admin/servers'); }, 1000); }, 500);
+              setTimeout(() => { loader.close(); showToast(req.translations.serverDeployed || 'Server deployed. Go make something cool.', 'success'); setTimeout(() => { Turbo.visit('/admin/servers'); }, 1000); }, 500);
             })
             .catch(error => { loader.close(); console.error('Error:', error); showToast((req.translations.failedToCreateServer || 'Failed to create server: ') + error.message, 'error'); });
         });

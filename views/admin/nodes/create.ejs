@@ -486,7 +486,7 @@ function nodeCreate() {
           result.style.color = 'var(--theme-success)';
           result.textContent = (req.translations.daemonIsLive || 'Daemon is live') + (d.version ? ' (' + d.version + ')' : '') + '. ' + (req.translations.keyChecksOut || 'Key checks out \u2014 servers can now run on this node.');
           showToast(req.translations.daemonVerified || 'Daemon verified!', 'success');
-          setTimeout(() => { Alnav.load('/admin/nodes?verified=' + node.id); }, this.VERIFY_DELAY_MS);
+          setTimeout(() => { Turbo.visit('/admin/nodes?verified=' + node.id); }, this.VERIFY_DELAY_MS);
         } else {
           result.style.color = 'var(--theme-danger)';
           result.textContent = d.error || (req.translations.couldNotReachDaemon || 'Could not reach the daemon. Check the address, port, and key.');

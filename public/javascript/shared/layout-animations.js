@@ -4,8 +4,6 @@
   var EASE_MOVE =
     _rootStyle.getPropertyValue("--ease-standard").trim() ||
     "cubic-bezier(0.4, 0, 0.2, 1)";
-  const DEFAULT_DURATION = 260;
-  const DEFAULT_STAGGER = 40;
   const POSITION_THRESHOLD = 1;
   const SPA_REATTACH_MS = 60;
 
@@ -135,34 +133,4 @@
   document.addEventListener("al:navigated", function () {
     setTimeout(init, SPA_REATTACH_MS);
   });
-
-  window.airlinkAnimate = function (el, options) {
-    if (!el || el.nodeType !== 1) return;
-    const duration = (options && options.duration) || DEFAULT_DURATION;
-    const delay = (options && options.delay) || 0;
-    el.animate(
-      [
-        { opacity: 0, transform: "translateY(8px)" },
-        { opacity: 1, transform: "translateY(0)" },
-      ],
-      {
-        duration: duration,
-        delay: delay,
-        easing: EASE_MOVE,
-        fill: "backwards",
-      },
-    );
-  };
-
-  window.airlinkAnimateChildren = function (container, options) {
-    if (!container || container.nodeType !== 1) return;
-    const baseDelay = (options && options.baseDelay) || 0;
-    const stagger = (options && options.stagger) || DEFAULT_STAGGER;
-    Array.from(container.children).forEach(function (child, i) {
-      window.airlinkAnimate(child, {
-        duration: (options && options.duration) || DEFAULT_DURATION,
-        delay: baseDelay + i * stagger,
-      });
-    });
-  };
 })();

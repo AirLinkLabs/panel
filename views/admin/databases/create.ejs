@@ -106,7 +106,7 @@
               });
               if (res.ok) {
                 showToast(req.translations.dbHostAdded || 'Database host added.', 'success');
-                setTimeout(() => { Alnav.load('/admin/databases'); }, 500);
+                setTimeout(() => { Turbo.visit('/admin/databases'); }, 500);
               } else {
                 const data = await res.json().catch(() => ({ error: req.translations.dbHostCreateFailed || 'Failed to create host.' }));
                 this.error = data.error || data.message || (req.translations.dbHostCreateFailed || 'Failed to create host.');

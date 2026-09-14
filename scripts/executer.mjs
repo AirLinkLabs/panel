@@ -31,7 +31,7 @@ const commands = {
     desc: "Start in development mode (prisma + vite + nodemon)",
     run: () =>
       exec(
-        "prisma generate && prisma migrate dev && (trap 'kill 0' EXIT; vite build --watch & nodemon)",
+        "prisma generate && prisma db push && (trap 'kill 0' EXIT; vite build --watch & nodemon)",
       ),
   },
 

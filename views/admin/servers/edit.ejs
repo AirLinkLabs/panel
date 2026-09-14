@@ -646,7 +646,7 @@ function serverEditPage() {
             loader.close();
             showToast(req.translations.serverUpdatedSuccessfully || 'Server updated successfully!', 'success');
             setTimeout(() => {
-              Alnav.load('/admin/servers');
+              Turbo.visit('/admin/servers');
             }, 1000);
           }, 500);
         } else {

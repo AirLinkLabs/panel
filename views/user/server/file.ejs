@@ -232,7 +232,19 @@
 <script type="module" nonce="<%- nonce %>">
   import { mount } from '<%= assetUrl('/javascript/islands/file-editor.js') %>';
   const root = document.getElementById('file-editor-root');
-  if (root) mount(root, JSON.parse(root.dataset.config));
+  if (root) {
+    const { teardown } = await mount(root, JSON.parse(root.dataset.config));
+    
+    // Call teardown before Turbo swaps the page
+    document.addEventListener('turbo:before-render', () => {
+      if (teardown) teardown();
+    }, { once: true });
+    
+    // Also call on pagehide for full browser navigation
+    window.addEventListener('pagehide', () => {
+      if (teardown) teardown();
+    }, { once: true });
+  }
 </script>
 
 <%- include('../../components/footer') %>

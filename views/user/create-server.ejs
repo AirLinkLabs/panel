@@ -301,7 +301,7 @@ function createServerPage() {
               setTimeout(function () { toast.classList.add('show'); }, TOAST_SHOW_DELAY);
               setTimeout(function () { toast.classList.remove('show'); setTimeout(function () { toast.remove(); }, TOAST_REMOVE_DELAY); }, TOAST_HIDE_DELAY);
             }
-            setTimeout(function () { Alnav.load('/server/' + d.serverUUID); }, REDIRECT_DELAY);
+            setTimeout(function () { Turbo.visit('/server/' + d.serverUUID); }, REDIRECT_DELAY);
           } else {
             btn.disabled = false;
             btn.textContent = origText;

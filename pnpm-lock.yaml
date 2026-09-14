@@ -31,6 +31,9 @@ importers:
       '@formkit/auto-animate':
         specifier: ^0.9.0
         version: 0.9.0
+      '@hotwired/turbo':
+        specifier: ^8.0.23
+        version: 8.0.23
       '@prisma/adapter-pg':
         specifier: ^7.10.0
         version: 7.10.0
@@ -553,6 +556,10 @@ packages:
 
   '@hexagon/base64@1.1.28':
     resolution: {integrity: sha512-lhqDEAvWixy3bZ+UOYbPwUbBkwBq5C1LAJ/xPC8Oi+lL54oyakv/npbA0aU2hgCsx/1NUd4IBvV03+aUBWxerw==}
+
+  '@hotwired/turbo@8.0.23':
+    resolution: {integrity: sha512-GZ7cijxEZ6Ig71u7rD6LHaRv/wcE/hNsc+nEfiWOkLNqUgLOwo5MNGWOy5ZV9ZUDSiQx1no7YxjTNnT4O6//cQ==}
+    engines: {node: '>= 18'}
 
   '@humanfs/core@0.19.2':
     resolution: {integrity: sha512-UhXNm+CFMWcbChXywFwkmhqjs3PRCmcSa/hfBgLIb7oQ5HNb1wS0icWsGtSAUNgefHeI+eBrA8I1fxmbHsGdvA==}
@@ -3640,6 +3647,8 @@ snapshots:
   '@formkit/auto-animate@0.9.0': {}
 
   '@hexagon/base64@1.1.28': {}
+
+  '@hotwired/turbo@8.0.23': {}
 
   '@humanfs/core@0.19.2':
     dependencies:

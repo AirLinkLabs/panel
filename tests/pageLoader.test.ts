@@ -6,10 +6,6 @@ const loader = readFileSync(
   resolve(__dirname, "../public/javascript/shared/page-loader.js"),
   "utf8",
 );
-const navigator = readFileSync(
-  resolve(__dirname, "../public/javascript/shared/navigator.js"),
-  "utf8",
-);
 const htmx = readFileSync(
   resolve(__dirname, "../public/javascript/shared/htmx-bootstrap.js"),
   "utf8",
@@ -22,13 +18,7 @@ describe("shared page loading feedback", () => {
     expect(loader).not.toContain("al-activity-chip");
   });
 
-  it("keeps HTMX requests out of hard-navigation handling and gives them loader feedback", () => {
-    // navigator.js handles click/submit interception and skips hx-* links
-    expect(navigator).toContain("hx-get");
-    expect(navigator).toContain("hx-post");
-    expect(navigator).toContain("hx-put");
-    expect(navigator).toContain("hx-patch");
-    expect(navigator).toContain("hx-delete");
+  it("wires ALPageActivity for HTMX requests", () => {
     // htmx-bootstrap.js wires ALPageActivity for HTMX requests
     expect(htmx).toContain("htmx:beforeRequest");
     expect(htmx).toContain("window.ALPageActivity.start()");
