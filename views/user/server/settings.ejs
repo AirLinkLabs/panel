@@ -122,14 +122,14 @@
     if (deleteServerButton) {
       deleteServerButton.addEventListener('click', () => {
         window.modal.confirm({
-          title: '<%= req.translations.deleteServer || "Delete Server" %>',
-          body: '<%= req.translations.deleteServerConfirm || "This will permanently delete the server and all its data. Type" %> <strong>DELETE</strong> <%= req.translations.toConfirm || "to confirm." %>',
+          title: '<%= window.__i18n.deleteServer || "Delete Server" %>',
+          body: '<%= window.__i18n.deleteServerConfirm || "This will permanently delete the server and all its data. Type" %> <strong>DELETE</strong> <%= window.__i18n.toConfirm || "to confirm." %>',
           danger: true,
-          confirmLabel: '<%= req.translations.deleteServer || "Delete Server" %>',
-          prompt: { label: '<%= req.translations.typeDeleteToConfirm || "Type DELETE to confirm" %>', pattern: /^DELETE$/i, invalidMessage: '<%= req.translations.mustTypeDelete || "You must type DELETE to confirm." %>' },
+          confirmLabel: '<%= window.__i18n.deleteServer || "Delete Server" %>',
+          prompt: { label: '<%= window.__i18n.typeDeleteToConfirm || "Type DELETE to confirm" %>', pattern: /^DELETE$/i, invalidMessage: '<%= window.__i18n.mustTypeDelete || "You must type DELETE to confirm." %>' },
           onConfirm: () => {
-            const loader = showProgressToast ? showProgressToast('<%= req.translations.deletingServer || "Deleting Server\u2026" %>') : showLoadingToast('<%= req.translations.deletingServer || "Deleting Server..." %>');
-            loader.updateProgress(20, '<%= req.translations.contactingNode || "Contacting node..." %>');
+            const loader = showProgressToast('<%= window.__i18n.deletingServer || "Deleting Server\u2026" %>');
+            loader.setStage('<%= window.__i18n.contactingNode || "Contacting node..." %>');
             <% if (user && user.isAdmin) { %>
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
             fetch('/api/v2/admin/servers/<%= server.id %>', {
@@ -139,14 +139,14 @@
               .then(r => {
                 loader.close();
                 if (r.ok) window.location.href = '/';
-                else return r.json().then(d => showToast((d && d.error) || '<%= req.translations.couldntDeleteServer || "Couldn\u0027t delete the server." %>', 'error'));
+                else return r.json().then(d => showToast((d && d.error) || '<%= window.__i18n.couldntDeleteServer || "Couldn\u0027t delete the server." %>', 'error'));
               })
-              .catch(() => { loader.close(); showToast('<%= req.translations.somethingWentWrong || "Something went wrong." %>', 'error'); });
+              .catch(() => { loader.close(); showToast('<%= window.__i18n.somethingWentWrong || "Something went wrong." %>', 'error'); });
             <% } else { %>
             fetch('/api/v2/servers/<%= server.UUID %>', { method: 'DELETE' })
               .then(r => r.json())
-              .then(d => { loader.close(); if (d.success) window.location.href = '/'; else showToast((d.error?.message) || '<%= req.translations.couldntDeleteServer || "Couldn\u0027t delete the server." %>', 'error'); })
-              .catch(() => { loader.close(); showToast('<%= req.translations.somethingWentWrong || "Something went wrong." %>', 'error'); });
+              .then(d => { loader.close(); if (d.success) window.location.href = '/'; else showToast((d.error?.message) || '<%= window.__i18n.couldntDeleteServer || "Couldn\u0027t delete the server." %>', 'error'); })
+              .catch(() => { loader.close(); showToast('<%= window.__i18n.somethingWentWrong || "Something went wrong." %>', 'error'); });
             <% } %>
           }
         });
@@ -156,19 +156,19 @@
     const reinstallButton = document.getElementById('reinstallButton');
     reinstallButton.addEventListener('click', () => {
       window.modal.confirm({
-        title: '<%= req.translations.confirmReinstallation || "Confirm Reinstallation" %>',
-        body: '<%= req.translations.reinstallConfirm || "Re-run the install scripts. Your files, worlds and settings are kept. Continue?" %>',
-        confirmLabel: '<%= req.translations.reinstall || "Reinstall" %>',
+        title: '<%= window.__i18n.confirmReinstallation || "Confirm Reinstallation" %>',
+        body: '<%= window.__i18n.reinstallConfirm || "Re-run the install scripts. Your files, worlds and settings are kept. Continue?" %>',
+        confirmLabel: '<%= window.__i18n.reinstall || "Reinstall" %>',
         onConfirm: () => {
-          const loader = showProgressToast ? showProgressToast('<%= req.translations.reinstallingServer || "Reinstalling Server\u2026" %>') : showLoadingToast('<%= req.translations.reinstallingServer || "Reinstalling Server..." %>');
-          loader.updateProgress(10, '<%= req.translations.preparingReinstall || "Preparing for reinstallation..." %>');
+          const loader = showProgressToast('<%= window.__i18n.reinstallingServer || "Reinstalling Server\u2026" %>');
+          loader.setStage('<%= window.__i18n.preparingReinstall || "Preparing for reinstallation..." %>');
           fetch(`/api/v2/servers/<%= server.UUID %>/reinstall`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ preserveData: true }) })
             .then(r => r.json())
             .then(data => {
-              loader.updateProgress(100, '<%= req.translations.reinstallationInitiated || "Reinstallation initiated!" %>');
-              setTimeout(() => { loader.close(); if (data.success) showToast('<%= req.translations.serverReinstalling || "Server reinstalling. This may take a while." %>', 'success'); else showToast('<%= req.translations.failedToReinstall || "Failed to reinstall server: " %>' + (data.error || '<%= req.translations.unknownError || "Unknown error" %>'), 'error'); }, 1000);
+              loader.setStage('<%= window.__i18n.reinstallationInitiated || "Reinstallation initiated!" %>');
+              setTimeout(() => { loader.close(); if (data.success) showToast('<%= window.__i18n.serverReinstalling || "Server reinstalling. This may take a while." %>', 'success'); else showToast('<%= window.__i18n.failedToReinstall || "Failed to reinstall server: " %>' + (data.error || '<%= window.__i18n.unknownError || "Unknown error" %>'), 'error'); }, 1000);
             })
-            .catch(() => { loader.close(); showToast('<%= req.translations.somethingWentWrong || "Something went wrong." %>', 'error'); });
+            .catch(() => { loader.close(); showToast('<%= window.__i18n.somethingWentWrong || "Something went wrong." %>', 'error'); });
         }
       });
     });
@@ -177,20 +177,20 @@
     if (reinstallWipeButton) {
       reinstallWipeButton.addEventListener('click', () => {
         window.modal.confirm({
-          title: '<%= req.translations.reinstallDeleteAllData || "Reinstall & Delete All Data" %>',
-          body: '<%= req.translations.reinstallDeleteAllDataConfirm || "This wipes the server volume (worlds, configs, files) and reinstalls from scratch. Type" %> <strong>DELETE</strong> <%= req.translations.toConfirm || "to confirm." %>',
-          danger: true, confirmLabel: '<%= req.translations.continue || "Continue" %>',
-          prompt: { label: '<%= req.translations.typeDeleteToConfirm || "Type DELETE to confirm" %>', pattern: /^DELETE$/i, invalidMessage: '<%= req.translations.mustTypeDelete || "You must type DELETE to confirm." %>' },
+          title: '<%= window.__i18n.reinstallDeleteAllData || "Reinstall & Delete All Data" %>',
+          body: '<%= window.__i18n.reinstallDeleteAllDataConfirm || "This wipes the server volume (worlds, configs, files) and reinstalls from scratch. Type" %> <strong>DELETE</strong> <%= window.__i18n.toConfirm || "to confirm." %>',
+          danger: true, confirmLabel: '<%= window.__i18n.continue || "Continue" %>',
+          prompt: { label: '<%= window.__i18n.typeDeleteToConfirm || "Type DELETE to confirm" %>', pattern: /^DELETE$/i, invalidMessage: '<%= window.__i18n.mustTypeDelete || "You must type DELETE to confirm." %>' },
           onConfirm: () => {
-                const loader = showProgressToast ? showProgressToast('<%= req.translations.reinstallingServer || "Reinstalling Server\u2026" %>') : showLoadingToast('<%= req.translations.reinstallingServer || "Reinstalling Server..." %>');
-            loader.updateProgress(10, '<%= req.translations.preparingReinstall || "Preparing for reinstallation..." %>');
+                const loader = showProgressToast('<%= window.__i18n.reinstallingServer || "Reinstalling Server\u2026" %>');
+            loader.setStage('<%= window.__i18n.preparingReinstall || "Preparing for reinstallation..." %>');
             fetch(`/api/v2/servers/<%= server.UUID %>/reinstall`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ preserveData: false }) })
               .then(r => r.json())
               .then(data => {
-                loader.updateProgress(100, '<%= req.translations.reinstallationInitiated || "Reinstallation initiated!" %>');
-                setTimeout(() => { loader.close(); if (data.success) showToast('<%= req.translations.serverReinstallingAllDataDeleted || "Server reinstalling. All data was deleted." %>', 'success'); else showToast('<%= req.translations.failedToReinstall || "Failed to reinstall server: " %>' + (data.error || '<%= req.translations.unknownError || "Unknown error" %>'), 'error'); }, 1000);
+                loader.setStage('<%= window.__i18n.reinstallationInitiated || "Reinstallation initiated!" %>');
+                setTimeout(() => { loader.close(); if (data.success) showToast('<%= window.__i18n.serverReinstallingAllDataDeleted || "Server reinstalling. All data was deleted." %>', 'success'); else showToast('<%= window.__i18n.failedToReinstall || "Failed to reinstall server: " %>' + (data.error || '<%= window.__i18n.unknownError || "Unknown error" %>'), 'error'); }, 1000);
               })
-              .catch(() => { loader.close(); showToast('<%= req.translations.somethingWentWrong || "Something went wrong." %>', 'error'); });
+              .catch(() => { loader.close(); showToast('<%= window.__i18n.somethingWentWrong || "Something went wrong." %>', 'error'); });
           }
         });
       });

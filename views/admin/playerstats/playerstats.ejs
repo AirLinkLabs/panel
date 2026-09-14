@@ -157,7 +157,7 @@ function playerStats() {
           labels: [],
           datasets: [
             {
-              label: req.translations.totalPlayers || 'Total Players',
+              label: window.__i18n.totalPlayers || 'Total Players',
               data: [],
               backgroundColor: 'rgba(163, 163, 163, 0.2)',
               borderColor: 'rgba(163, 163, 163, 1)',
@@ -232,7 +232,7 @@ function playerStats() {
               },
               title: {
                 display: true,
-                text: req.translations.players || 'Players',
+                text: window.__i18n.players || 'Players',
                 color: CHART_TICK_COLOR,
                 font: {
                   size: 12,
@@ -255,7 +255,7 @@ function playerStats() {
 
         if (data.error) {
           console.error('Error fetching player data:', data.error);
-          showToast(data.error || req.translations.failedToLoadPlayerData || 'Failed to load player data.', 'error');
+          showToast(data.error || window.__i18n.failedToLoadPlayerData || 'Failed to load player data.', 'error');
           return;
         }
 
@@ -275,7 +275,7 @@ function playerStats() {
 
         if (data.servers.length === 0) {
           var row = document.createElement('tr');
-          row.innerHTML = `<td colspan="4" class="px-6 py-4 text-center text-neutral-400">${req.translations.noServersFound || 'No servers found'}</td>`;
+          row.innerHTML = `<td colspan="4" class="px-6 py-4 text-center text-neutral-400">${window.__i18n.noServersFound || 'No servers found'}</td>`;
           tableBody.appendChild(row);
         } else {
           data.servers.forEach((server) => {
@@ -286,7 +286,7 @@ function playerStats() {
             var statusClass = server.online
               ? 'text-emerald-700 dark:text-emerald-200 bg-emerald-100 dark:bg-emerald-500/20 border border-emerald-300 dark:border-emerald-500/30'
               : 'text-neutral-600 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-800/30 border border-neutral-300 dark:border-neutral-700/30';
-            var statusText = server.online ? (req.translations.online || 'Online') : (req.translations.offline || 'Offline');
+            var statusText = server.online ? (window.__i18n.online || 'Online') : (window.__i18n.offline || 'Offline');
 
             var nameCell = document.createElement('td');
             nameCell.className = 'px-6 py-4 whitespace-nowrap';
@@ -324,7 +324,7 @@ function playerStats() {
             var versionCell = document.createElement('td');
             versionCell.className =
               'px-6 py-4 whitespace-nowrap text-sm text-neutral-400';
-            versionCell.textContent = server.version || (req.translations.unknown || 'Unknown');
+            versionCell.textContent = server.version || (window.__i18n.unknown || 'Unknown');
 
             row.appendChild(nameCell);
             row.appendChild(statusCell);
@@ -358,7 +358,7 @@ function playerStats() {
         }
       } catch (error) {
         console.error('Error fetching player data:', error);
-        showToast(req.translations.failedToLoadPlayerData || 'Failed to load player data.', 'error');
+        showToast(window.__i18n.failedToLoadPlayerData || 'Failed to load player data.', 'error');
       }
     },
 
@@ -371,15 +371,15 @@ function playerStats() {
         var data = await response.json();
 
         if (data.success) {
-          showToast(req.translations.playerStatisticsCollected || 'Player statistics collected.', 'success');
+          showToast(window.__i18n.playerStatisticsCollected || 'Player statistics collected.', 'success');
           setTimeout(() => self.fetchPlayerData(), self.DATA_COLLECTION_DELAY_MS);
         } else {
           console.error('Error collecting player statistics:', data.error);
-          showToast(data.error || req.translations.failedToCollectStatistics || 'Failed to collect statistics.', 'error');
+          showToast(data.error || window.__i18n.failedToCollectStatistics || 'Failed to collect statistics.', 'error');
         }
       } catch (error) {
         console.error('Error triggering data collection:', error);
-        showToast(req.translations.failedToCollectStatistics || 'Failed to collect statistics.', 'error');
+        showToast(window.__i18n.failedToCollectStatistics || 'Failed to collect statistics.', 'error');
       }
     },
 

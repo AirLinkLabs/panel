@@ -248,7 +248,7 @@ function nodeEditor() {
       const portText = document.createElement('span');
       portText.className = isUsed ? 'text-amber-600 dark:text-amber-400 flex items-center' : 'text-neutral-800 dark:text-neutral-300';
       if (isUsed) {
-      portText.innerHTML = port + ' <span class="ml-2 text-xs bg-amber-600/20 text-amber-600 dark:text-amber-400 px-1.5 py-0.5 rounded">' + (req.translations.inUse || 'In use') + '</span>';
+      portText.innerHTML = port + ' <span class="ml-2 text-xs bg-amber-600/20 text-amber-600 dark:text-amber-400 px-1.5 py-0.5 rounded">' + (window.__i18n.inUse || 'In use') + '</span>';
       } else {
         portText.textContent = port;
       }
@@ -259,7 +259,7 @@ function nodeEditor() {
 
       if (isUsed) {
         deleteBtn.disabled = true;
-        deleteBtn.title = req.translations.cannotRemovePortInUse || 'Cannot remove port that is in use by a server';
+        deleteBtn.title = window.__i18n.cannotRemovePortInUse || 'Cannot remove port that is in use by a server';
         deleteBtn.className += ' opacity-50 cursor-not-allowed';
       } else {
         deleteBtn.onclick = (e) => {
@@ -296,7 +296,7 @@ function nodeEditor() {
       if (input.includes('-')) {
         const [start, end] = input.split('-').map(p => parseInt(p.trim()));
         if (isNaN(start) || isNaN(end) || start >= end || start < this.PORT_MIN || end > this.PORT_MAX) {
-          showToast((req.translations.invalidPortRange || 'Invalid port range. Format should be start-end (e.g., 25565-25570) with ports between ') + this.PORT_MIN + (req.translations.and || ' and ') + this.PORT_MAX + '.', 'error');
+          showToast((window.__i18n.invalidPortRange || 'Invalid port range. Format should be start-end (e.g., 25565-25570) with ports between ') + this.PORT_MIN + (window.__i18n.and || ' and ') + this.PORT_MAX + '.', 'error');
           return;
         }
         for (let port = start; port <= end; port++) {
@@ -305,7 +305,7 @@ function nodeEditor() {
       } else {
         const port = parseInt(input.trim());
         if (isNaN(port) || port < this.PORT_MIN || port > this.PORT_MAX) {
-          showToast((req.translations.invalidPort || 'Invalid port. Port must be between ') + this.PORT_MIN + (req.translations.and || ' and ') + this.PORT_MAX + '.', 'error');
+          showToast((window.__i18n.invalidPort || 'Invalid port. Port must be between ') + this.PORT_MIN + (window.__i18n.and || ' and ') + this.PORT_MAX + '.', 'error');
           return;
         }
         if (!this.allocatedPorts.includes(port)) this.allocatedPorts.push(port);
@@ -325,7 +325,7 @@ function nodeEditor() {
     removePort(port) {
       const usedPorts = this.usedPortsSet;
       if (usedPorts.has(port)) {
-        showToast(req.translations.cannotRemovePortInUse || 'Cannot remove port that is in use by a server', 'error');
+        showToast(window.__i18n.cannotRemovePortInUse || 'Cannot remove port that is in use by a server', 'error');
         return;
       }
 
@@ -335,7 +335,7 @@ function nodeEditor() {
       if (this.allocatedPorts.length === 0) {
         const emptyMessage = document.createElement('div');
         emptyMessage.className = 'col-span-4 text-sm text-neutral-500 italic';
-        emptyMessage.textContent = req.translations.noPortsAllocated || 'No ports allocated yet. Add ports that will be available for servers.';
+        emptyMessage.textContent = window.__i18n.noPortsAllocated || 'No ports allocated yet. Add ports that will be available for servers.';
         portsList.appendChild(emptyMessage);
         return;
       }
@@ -362,7 +362,7 @@ function nodeEditor() {
       if (this.allocatedPorts.length === 0) {
         const emptyMessage = document.createElement('div');
         emptyMessage.className = 'col-span-4 text-sm text-neutral-500 italic';
-        emptyMessage.textContent = req.translations.noPortsAllocated || 'No ports allocated yet. Add ports that will be available for servers.';
+        emptyMessage.textContent = window.__i18n.noPortsAllocated || 'No ports allocated yet. Add ports that will be available for servers.';
         portsList.appendChild(emptyMessage);
         return;
       }
@@ -379,7 +379,7 @@ function nodeEditor() {
       if (hidden) {
         const v = parseFloat(hidden.value);
         if (hidden.value.trim() === '' || isNaN(v)) {
-          showToast(req.translations.valueIsRequired || 'Value is required.', 'error');
+          showToast(window.__i18n.valueIsRequired || 'Value is required.', 'error');
           return '';
         }
         return isFinite(v) ? String(Math.round(v / 1024 * 100) / 100) : '';
@@ -401,7 +401,7 @@ function nodeEditor() {
           });
         } catch (err) {
           console.error('Failed to save maintenance mode:', err);
-          showToast(req.translations.failedToSaveMaintenanceMode || 'Failed to save maintenance mode.', 'error');
+          showToast(window.__i18n.failedToSaveMaintenanceMode || 'Failed to save maintenance mode.', 'error');
         }
       }
 
@@ -419,8 +419,8 @@ function nodeEditor() {
         locationId: document.getElementById('nodeLocation').value
       };
 
-      if (!nodeData.ram) { showToast(req.translations.ramRequired || 'RAM is required.', 'error'); return; }
-      if (!nodeData.disk) { showToast(req.translations.diskRequired || 'Disk is required.', 'error'); return; }
+      if (!nodeData.ram) { showToast(window.__i18n.ramRequired || 'RAM is required.', 'error'); return; }
+      if (!nodeData.disk) { showToast(window.__i18n.diskRequired || 'Disk is required.', 'error'); return; }
 
       try {
         const response = await fetch('/api/v2/admin/nodes/' + pd.nodeId, {
@@ -430,7 +430,7 @@ function nodeEditor() {
         });
 
         if (response.ok) {
-          showToast(req.translations.nodeUpdated || 'Node updated. Looking good.', 'success');
+          showToast(window.__i18n.nodeUpdated || 'Node updated. Looking good.', 'success');
           setTimeout(() => {
             window.location.href = '/admin/nodes?err=none';
           }, 1000);
@@ -438,7 +438,7 @@ function nodeEditor() {
           throw new Error('Failed to update node');
         }
       } catch (error) {
-        showToast((req.translations.errorUpdatingNode || 'Error updating node: ') + error, 'error');
+        showToast((window.__i18n.errorUpdatingNode || 'Error updating node: ') + error, 'error');
       }
     }
   };

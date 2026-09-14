@@ -146,16 +146,16 @@
 
   function confirmDeleteWorld(worldName) {
     window.modal.confirm({
-      title: '<%= req.translations.deleteWorld || "Delete World" %>',
-      body: ('<%= req.translations.deleteWorldConfirm || "Delete" %> "' + worldName + '"? <%= req.translations.deleteWorldWarning || "All world data will be permanently lost and cannot be recovered." %>'),
+      title: '<%= window.__i18n.deleteWorld || "Delete World" %>',
+      body: ('<%= window.__i18n.deleteWorldConfirm || "Delete" %> "' + worldName + '"? <%= window.__i18n.deleteWorldWarning || "All world data will be permanently lost and cannot be recovered." %>'),
       danger: true,
-      confirmLabel: '<%= req.translations.deleteWorld || "Delete World" %>',
+      confirmLabel: '<%= window.__i18n.deleteWorld || "Delete World" %>',
       onConfirm: () => deleteWorld(worldName, () => {})
     });
   }
 
   function deleteWorld(worldName, callback) {
-    showToast('<%= req.translations.deletingWorld || "Deleting world" %> ' + worldName + '...', 'info');
+    showToast('<%= window.__i18n.deletingWorld || "Deleting world" %> ' + worldName + '...', 'info');
 
     fetch('/api/v2/servers/<%= server.UUID %>/files?path=' + encodeURIComponent(worldName), {
       method: 'DELETE',
@@ -164,24 +164,24 @@
     .then(response => {
       if (!response.ok) {
         return response.json().then(data => {
-          throw new Error(data.error || '<%= req.translations.failedToDeleteWorld || "Failed to delete world" %>');
+          throw new Error(data.error || '<%= window.__i18n.failedToDeleteWorld || "Failed to delete world" %>');
         });
       }
       return response.json();
     })
     .then(data => {
       if (data.success) {
-        showToast('<%= req.translations.worldDeleted || "World" %> ' + worldName + ' <%= req.translations.deleted || "deleted." %>', 'success');
+        showToast('<%= window.__i18n.worldDeleted || "World" %> ' + worldName + ' <%= window.__i18n.deleted || "deleted." %>', 'success');
 
         window.location.reload();
       } else {
-        showToast(data.error || '<%= req.translations.failedToDeleteWorld || "Failed to delete world" %>', 'error');
+        showToast(data.error || '<%= window.__i18n.failedToDeleteWorld || "Failed to delete world" %>', 'error');
         if (callback) callback();
       }
     })
     .catch(error => {
       console.error('Error deleting world:', error);
-      showToast(error.message || '<%= req.translations.failedToDeleteWorld || "Failed to delete world" %>', 'error');
+      showToast(error.message || '<%= window.__i18n.failedToDeleteWorld || "Failed to delete world" %>', 'error');
       if (callback) callback();
     });
   }

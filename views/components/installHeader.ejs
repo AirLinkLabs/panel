@@ -90,7 +90,7 @@
   function markDone() {
     if (finished) return;
     finished = true;
-    stateText.textContent = req.translations.installationComplete || 'Installation complete';
+    stateText.textContent = window.__i18n.installationComplete || 'Installation complete';
     setIcon('done');
     if (poller) clearInterval(poller);
     if (window.retryDaemonConnection) {
@@ -115,10 +115,10 @@
   function markFailed(reason) {
     if (finished) return;
     finished = true;
-    stateText.textContent = req.translations.installationFailed || 'Installation failed';
+    stateText.textContent = window.__i18n.installationFailed || 'Installation failed';
     setIcon('fail');
     if (reason) {
-      stateText.textContent = (req.translations.installationFailed || 'Installation failed') + ': ' + reason;
+      stateText.textContent = (window.__i18n.installationFailed || 'Installation failed') + ': ' + reason;
       stateText.classList.remove('truncate');
       stateText.classList.add('whitespace-normal', 'break-words');
     }
@@ -126,31 +126,31 @@
   }
 
   // Graduated heartbeat: reassure, then nudge once an install runs long.
-  const lastMessage = req.translations.waitingForDaemon || 'Waiting for daemon…';
+  const lastMessage = window.__i18n.waitingForDaemon || 'Waiting for daemon…';
   function heartbeat() {
     const elapsed = Math.floor((Date.now() - startTime) / 1000);
     let text;
-    if (elapsed > 120)      text = req.translations.takingLonger || 'Taking longer than expected — large images can take a while.';
-    else if (elapsed > 30)  text = req.translations.stillInstalling || 'Still installing — most servers are ready in under two minutes.';
+    if (elapsed > 120)      text = window.__i18n.takingLonger || 'Taking longer than expected — large images can take a while.';
+    else if (elapsed > 30)  text = window.__i18n.stillInstalling || 'Still installing — most servers are ready in under two minutes.';
     else                    text = lastMessage;
     stateText.textContent = text;
   }
 
   retryBtn.addEventListener('click', function() {
     retryBtn.disabled = true;
-    retryBtn.textContent = req.translations.retrying || 'Retrying…';
+    retryBtn.textContent = window.__i18n.retrying || 'Retrying…';
     fetch('/api/v2/servers/' + encodeURIComponent(serverUUID) + '/reinstall', { method: 'POST', credentials: 'same-origin', headers: { 'csrf-token': document.querySelector('meta[name="csrf-token"]')?.content || '' } })
       .then(function(r) {
-        if (!r.ok) { return r.json().then(function(d) { throw new Error((d.error?.message) || (req.translations.reinstallFailed || 'Reinstall failed')); }); }
+        if (!r.ok) { return r.json().then(function(d) { throw new Error((d.error?.message) || (window.__i18n.reinstallFailed || 'Reinstall failed')); }); }
         if (window.retryDaemonConnection) {
           // Re-arm the banner for the new install pass without a reload.
           finished = false;
-          stateText.textContent = req.translations.waitingForDaemon || 'Waiting for daemon…';
+          stateText.textContent = window.__i18n.waitingForDaemon || 'Waiting for daemon…';
           stateText.classList.add('truncate');
           stateText.classList.remove('whitespace-normal', 'break-words');
           retryBtn.classList.add('hidden');
           retryBtn.disabled = false;
-          retryBtn.textContent = req.translations.retryInstall || 'Retry install';
+          retryBtn.textContent = window.__i18n.retryInstall || 'Retry install';
           if (banner) banner.classList.remove('hidden');
           resetIcon();
           if (poller) clearInterval(poller);
@@ -158,13 +158,13 @@
         } else {
           // State transition (reinstall re-arms the install banner). Reload
           // re-renders the install-gated page with the fresh state.
-          if (window.showToast) showToast(req.translations.reinstallingServer || 'Reinstalling server…', 'info');
+          if (window.showToast) showToast(window.__i18n.reinstallingServer || 'Reinstalling server…', 'info');
           window.location.reload();
         }
       })
       .catch(function(err) {
         retryBtn.disabled = false;
-        retryBtn.textContent = req.translations.retryInstall || 'Retry install';
+        retryBtn.textContent = window.__i18n.retryInstall || 'Retry install';
         if (window.modal && window.modal.alert) window.modal.alert(String(err.message || err));
       });
   });
@@ -246,7 +246,7 @@
   // whatever page the user lands on until the server is installed or the
   // install fails. Group dedupe stops every server page from stacking one.
   if (window.showProgressToast) {
-    window.showProgressToast(req.translations.installingServer || 'Installing server…', {
+    window.showProgressToast(window.__i18n.installingServer || 'Installing server…', {
       indeterminate: true,
       group: 'install:' + serverUUID,
       job: { url: '/api/v2/servers/' + serverUUID + '/status', intervalMs: POLL_INTERVAL },

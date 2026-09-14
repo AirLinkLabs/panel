@@ -434,13 +434,13 @@ function retryDaemonConnection() { window.location.reload(); }
   } catch (error) {
     console.error('Failed to initialize the server console.', error);
     const status = root.querySelector('#status');
-    if (status) status.textContent = '<%= req.translations.consoleUnavailable || "Console unavailable" %>';
+    if (status) status.textContent = '<%= window.__i18n.consoleUnavailable || "Console unavailable" %>';
     const message = root.querySelector('#status-msg');
     if (message) {
-      message.textContent = '<%= req.translations.refreshPageToRetry || "Refresh the page to retry. If this continues, check the browser console." %>';
+      message.textContent = '<%= window.__i18n.refreshPageToRetry || "Refresh the page to retry. If this continues, check the browser console." %>';
       message.classList.remove('opacity-0', 'translate-y-1', 'pointer-events-none');
     }
-    if (window.showToast) window.showToast('<%= req.translations.consoleCouldNotLoad || "Console could not load. Refresh the page to retry." %>', 'error');
+    if (window.showToast) window.showToast('<%= window.__i18n.consoleCouldNotLoad || "Console could not load. Refresh the page to retry." %>', 'error');
   }
 })();
 </script>

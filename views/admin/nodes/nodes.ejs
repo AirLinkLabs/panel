@@ -172,13 +172,13 @@ function handleRowClick(event, url) {
 }
 
 function showConfirmModal(title, message, onConfirm) {
-  window.modal.confirm({ title, body: message, danger: true, confirmLabel: req.translations.yeahDeleteIt || 'Yeah, delete it', onConfirm });
+  window.modal.confirm({ title, body: message, danger: true, confirmLabel: window.__i18n.yeahDeleteIt || 'Yeah, delete it', onConfirm });
 }
 
 function configure(nodeId) {
   fetch(`/admin/node/${nodeId}/configure`)
     .then(function(response) {
-      if (!response.ok)           throw new Error(req.translations.failedToFetchConfigCommand || 'Failed to fetch configure command');
+      if (!response.ok)           throw new Error(window.__i18n.failedToFetchConfigCommand || 'Failed to fetch configure command');
       return response.json();
     })
     .then(function(data) {
@@ -188,15 +188,15 @@ function configure(nodeId) {
         '<div class="flex justify-center items-center mb-6">' +
           alIcon('badge-check', 'text-emerald-500', { width: 64, height: 64 }) +
         '</div>' +
-        '<p class="mb-4 text-neutral-600 dark:text-neutral-300 text-center">' + (req.translations.runCommandOnDaemon || 'Run this command on the daemon machine to connect it to this panel:') + '</p>' +
+        '<p class="mb-4 text-neutral-600 dark:text-neutral-300 text-center">' + (window.__i18n.runCommandOnDaemon || 'Run this command on the daemon machine to connect it to this panel:') + '</p>' +
         '<pre class="bg-neutral-100 dark:bg-neutral-900 p-3 rounded-xl mb-4 overflow-x-auto"><code id="commandCode" class="text-emerald-500">' + data + '</code></pre>' +
         '<div class="flex justify-end">' +
-          '<button id="copyBtn" class="bg-emerald-600 text-white px-4 py-2 rounded-xl mr-2 hover:bg-emerald-700 transition-colors">' + (req.translations.copy || 'Copy') + '</button>' +
-          '<button id="doneBtn" class="bg-neutral-800 dark:bg-neutral-700 text-white px-4 py-2 rounded-xl hover:bg-neutral-700 dark:hover:bg-neutral-600 transition-colors">' + (req.translations.close || 'Close') + '</button>' +
+          '<button id="copyBtn" class="bg-emerald-600 text-white px-4 py-2 rounded-xl mr-2 hover:bg-emerald-700 transition-colors">' + (window.__i18n.copy || 'Copy') + '</button>' +
+          '<button id="doneBtn" class="bg-neutral-800 dark:bg-neutral-700 text-white px-4 py-2 rounded-xl hover:bg-neutral-700 dark:hover:bg-neutral-600 transition-colors">' + (window.__i18n.close || 'Close') + '</button>' +
         '</div>';
 
       window.modal.show({
-        title: req.translations.nodeConfigured || 'Node Configured',
+        title: window.__i18n.nodeConfigured || 'Node Configured',
         bodyNode: popup,
         panelClass: 'max-w-xl',
       });
@@ -206,20 +206,20 @@ function configure(nodeId) {
         var copyBtn = this;
         navigator.clipboard.writeText(command)
           .then(function() {
-            copyBtn.textContent = req.translations.copied || 'Copied!';
+            copyBtn.textContent = window.__i18n.copied || 'Copied!';
             copyBtn.classList.replace('bg-emerald-600', 'bg-neutral-600');
             setTimeout(function() {
-              copyBtn.textContent = req.translations.copy || 'Copy';
+              copyBtn.textContent = window.__i18n.copy || 'Copy';
               copyBtn.classList.replace('bg-neutral-600', 'bg-emerald-600');
             }, 2000);
           })
-          .catch(function(error) { console.error('Failed to copy:', error); showToast(req.translations.couldNotCopyCommand || "Couldn't copy the command. Try again.", 'error'); });
+          .catch(function(error) { console.error('Failed to copy:', error); showToast(window.__i18n.couldNotCopyCommand || "Couldn't copy the command. Try again.", 'error'); });
       });
       document.getElementById('doneBtn').addEventListener('click', function() { window.modal.close(); });
     })
     .catch(function(error) {
       console.error(error);
-      showToast(error.message || (req.translations.failedToFetchConfigCommand || 'Failed to fetch configure command.'), 'error');
+      showToast(error.message || (window.__i18n.failedToFetchConfigCommand || 'Failed to fetch configure command.'), 'error');
     });
 }
 
@@ -249,11 +249,11 @@ function nodeManager() {
     offlineBannerHtml() {
       return alIcon('triangle-alert', 'w-4 h-4 shrink-0 mt-0.5') +
         '<div class="flex-1">' +
-        '<p class="font-medium">' + (req.translations.connectionError || 'Connection Error') + '</p>' +
-        '<p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">' + (req.translations.oneOrMoreNodesOffline || 'One or more nodes are offline. Some information may be unavailable.') + '</p>' +
+        '<p class="font-medium">' + (window.__i18n.connectionError || 'Connection Error') + '</p>' +
+        '<p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">' + (window.__i18n.oneOrMoreNodesOffline || 'One or more nodes are offline. Some information may be unavailable.') + '</p>' +
         '</div>' +
         '<button type="button" onclick="refreshNodeStatuses()" class="shrink-0 px-3 py-1 text-xs rounded-lg transition-colors inline-flex items-center gap-1.5" style="background:var(--theme-danger-bg); color:var(--theme-danger);">' +
-        alIcon('refresh-cw', 'size-3', { strokeWidth: 1.5 }) + ' ' + (req.translations.retryConnection || 'Retry Connection') + '</button>';
+        alIcon('refresh-cw', 'size-3', { strokeWidth: 1.5 }) + ' ' + (window.__i18n.retryConnection || 'Retry Connection') + '</button>';
     },
 
     injectOfflineBanner() {
@@ -315,7 +315,7 @@ function nodeManager() {
 window.refreshNodeStatuses = function () {
   var banner = document.querySelector('.al-alert-danger');
   if (banner) {
-    banner.innerHTML = '<div class="flex items-center gap-3">' + alIcon('loader-circle', 'w-4 h-4 animate-spin') + '<p class="font-medium">' + (req.translations.reconnecting || 'Reconnecting…') + '</p></div>';
+    banner.innerHTML = '<div class="flex items-center gap-3">' + alIcon('loader-circle', 'w-4 h-4 animate-spin') + '<p class="font-medium">' + (window.__i18n.reconnecting || 'Reconnecting…') + '</p></div>';
   }
   fetch('/api/v2/admin/nodes/list')
     .then(function(r) { return r.json(); })
@@ -335,8 +335,8 @@ window.refreshNodeStatuses = function () {
         if (alertEl) {
           alertEl.innerHTML =
             alIcon('triangle-alert', 'w-4 h-4 shrink-0 mt-0.5') +
-            '<div class="flex-1"><p class="font-medium">' + (req.translations.connectionError || 'Connection Error') + '</p><p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">' + (req.translations.oneOrMoreNodesOffline || 'One or more nodes are offline. Some information may be unavailable.') + '</p></div>' +
-            '<button type="button" onclick="refreshNodeStatuses()" class="shrink-0 px-3 py-1 text-xs rounded-lg transition-colors inline-flex items-center gap-1.5" style="background:var(--theme-danger-bg); color:var(--theme-danger);">' + alIcon('refresh-cw', 'size-3', { strokeWidth: 1.5 }) + ' ' + (req.translations.retryConnection || 'Retry Connection') + '</button>';
+            '<div class="flex-1"><p class="font-medium">' + (window.__i18n.connectionError || 'Connection Error') + '</p><p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">' + (window.__i18n.oneOrMoreNodesOffline || 'One or more nodes are offline. Some information may be unavailable.') + '</p></div>' +
+            '<button type="button" onclick="refreshNodeStatuses()" class="shrink-0 px-3 py-1 text-xs rounded-lg transition-colors inline-flex items-center gap-1.5" style="background:var(--theme-danger-bg); color:var(--theme-danger);">' + alIcon('refresh-cw', 'size-3', { strokeWidth: 1.5 }) + ' ' + (window.__i18n.retryConnection || 'Retry Connection') + '</button>';
         } else {
           var table = document.getElementById('admin-nodes-table');
           if (table && table.parentNode) {
@@ -344,8 +344,8 @@ window.refreshNodeStatuses = function () {
             b.className = 'al-alert-danger mb-5';
             b.innerHTML =
               alIcon('triangle-alert', 'w-4 h-4 shrink-0 mt-0.5') +
-              '<div class="flex-1"><p class="font-medium">' + (req.translations.connectionError || 'Connection Error') + '</p><p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">' + (req.translations.oneOrMoreNodesOffline || 'One or more nodes are offline. Some information may be unavailable.') + '</p></div>' +
-              '<button type="button" onclick="refreshNodeStatuses()" class="shrink-0 px-3 py-1 text-xs rounded-lg transition-colors inline-flex items-center gap-1.5" style="background:var(--theme-danger-bg); color:var(--theme-danger);">' + alIcon('refresh-cw', 'size-3', { strokeWidth: 1.5 }) + ' ' + (req.translations.retryConnection || 'Retry Connection') + '</button>';
+              '<div class="flex-1"><p class="font-medium">' + (window.__i18n.connectionError || 'Connection Error') + '</p><p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">' + (window.__i18n.oneOrMoreNodesOffline || 'One or more nodes are offline. Some information may be unavailable.') + '</p></div>' +
+              '<button type="button" onclick="refreshNodeStatuses()" class="shrink-0 px-3 py-1 text-xs rounded-lg transition-colors inline-flex items-center gap-1.5" style="background:var(--theme-danger-bg); color:var(--theme-danger);">' + alIcon('refresh-cw', 'size-3', { strokeWidth: 1.5 }) + ' ' + (window.__i18n.retryConnection || 'Retry Connection') + '</button>';
             table.parentNode.insertBefore(b, table);
           }
         }
@@ -374,12 +374,12 @@ document.getElementById('submitLocationBtn').addEventListener('click', async fun
     });
     var data = await res.json();
     if (res.ok) {
-      showToast(req.translations.locationCreated || 'Location created.', 'success');
+      showToast(window.__i18n.locationCreated || 'Location created.', 'success');
       window.location.reload();
     } else {
-      showToast((data.error && data.error.message) || (req.translations.failedToCreateLocation || 'Failed to create location.'), 'error');
+      showToast((data.error && data.error.message) || (window.__i18n.failedToCreateLocation || 'Failed to create location.'), 'error');
     }
-  } catch (e) { showToast(req.translations.failedToCreateLocation || 'Failed to create location.', 'error'); }
+  } catch (e) { showToast(window.__i18n.failedToCreateLocation || 'Failed to create location.', 'error'); }
   btn.disabled = false;
   label.classList.remove('hidden');
   saving.classList.add('hidden');
@@ -401,21 +401,21 @@ document.getElementById('submitLocationBtn').addEventListener('click', async fun
     body.innerHTML =
       '<form id="editLocationForm" class="flex flex-col gap-4">' +
         '<div>' +
-          '<label class="al-label" for="editLocName">' + (req.translations.name || 'Name') + '</label>'' +
+          '<label class="al-label" for="editLocName">' + (window.__i18n.name || 'Name') + '</label>'' +
           '<input id="editLocName" name="name" type="text" value="' + name.replace(/"/g, '&quot;') + '" class="al-input" required>' +
         '</div>' +
         '<div>' +
-          '<label class="al-label" for="editLocCode">' + (req.translations.shortCode || 'Short code') + '</label>'' +
+          '<label class="al-label" for="editLocCode">' + (window.__i18n.shortCode || 'Short code') + '</label>'' +
           '<input id="editLocCode" name="shortCode" type="text" value="' + shortCode.replace(/"/g, '&quot;') + '" class="al-input" autocapitalize="off" spellcheck="false" required>' +
         '</div>' +
         '<div class="flex justify-end gap-2 pt-1">' +
-          '<button type="button" onclick="window.modal.close()" class="al-btn-secondary px-4 py-2 text-sm font-medium">' + (req.translations.cancel || 'Cancel') + '</button>'' +
-          '<button type="submit" class="al-btn-primary px-4 py-2 text-sm font-medium">' + (req.translations.save || 'Save') + '</button>'' +
+          '<button type="button" onclick="window.modal.close()" class="al-btn-secondary px-4 py-2 text-sm font-medium">' + (window.__i18n.cancel || 'Cancel') + '</button>'' +
+          '<button type="submit" class="al-btn-primary px-4 py-2 text-sm font-medium">' + (window.__i18n.save || 'Save') + '</button>'' +
         '</div>' +
       '</form>';
 
     window.modal.show({
-      title: req.translations.editLocation || 'Edit Location',
+      title: window.__i18n.editLocation || 'Edit Location',
       bodyNode: body,
       panelClass: 'max-w-md',
     });
@@ -432,24 +432,24 @@ document.getElementById('submitLocationBtn').addEventListener('click', async fun
         });
         var data = await res.json();
         if (res.ok) {
-          showToast(req.translations.locationUpdated || 'Location updated.', 'success');
+          showToast(window.__i18n.locationUpdated || 'Location updated.', 'success');
           window.modal.close();
           window.location.reload();
         } else {
-          showToast(data.message || (req.translations.updateFailed || 'Update failed.'), 'error');
+          showToast(data.message || (window.__i18n.updateFailed || 'Update failed.'), 'error');
         }
       } catch(err) {
-        showToast(req.translations.updateFailed || 'Update failed.', 'error');
+        showToast(window.__i18n.updateFailed || 'Update failed.', 'error');
       }
     });
   };
 
   window.openLocationNodes = function(id, name) {
     var body = document.createElement('div');
-    body.innerHTML = '<p class="text-sm" style="color:var(--theme-text-muted);">' + (req.translations.loading || 'Loading...') + '</p>';
+    body.innerHTML = '<p class="text-sm" style="color:var(--theme-text-muted);">' + (window.__i18n.loading || 'Loading...') + '</p>';
 
     window.modal.show({
-      title: (req.translations.nodesIn || 'Nodes in ') + name,
+      title: (window.__i18n.nodesIn || 'Nodes in ') + name,
       bodyNode: body,
       panelClass: 'max-w-lg',
     });
@@ -458,7 +458,7 @@ document.getElementById('submitLocationBtn').addEventListener('click', async fun
       .then(function(r) { return r.json(); })
       .then(function(nodes) {
         if (!nodes || !nodes.length) {
-          body.innerHTML = '<p class="text-sm text-center py-4" style="color:var(--theme-text-muted);">' + (req.translations.noNodesInLocation || 'No nodes in this location.') + '</p>';
+          body.innerHTML = '<p class="text-sm text-center py-4" style="color:var(--theme-text-muted);">' + (window.__i18n.noNodesInLocation || 'No nodes in this location.') + '</p>';
           return;
         }
         var html = '<div class="flex flex-col gap-2">';
@@ -474,7 +474,7 @@ document.getElementById('submitLocationBtn').addEventListener('click', async fun
         body.innerHTML = html;
       })
       .catch(function() {
-        body.innerHTML = '<p class="text-sm text-center py-4" style="color:var(--theme-danger);">' + (req.translations.failedToLoadNodes || 'Failed to load nodes.') + '</p>';
+        body.innerHTML = '<p class="text-sm text-center py-4" style="color:var(--theme-danger);">' + (window.__i18n.failedToLoadNodes || 'Failed to load nodes.') + '</p>';
       });
   };
 })();

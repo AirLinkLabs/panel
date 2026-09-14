@@ -201,14 +201,14 @@
     var pageData = document.getElementById('page-data').dataset;
     window.modal.confirm({
       title: pageData.deleteUserTitle || 'Delete User', body: pageData.deleteUserBody || 'Are you sure you want to delete this user?',
-      danger: true, confirmLabel: req.translations.yeahDeleteIt || 'Yeah, delete it',
+      danger: true, confirmLabel: window.__i18n.yeahDeleteIt || 'Yeah, delete it',
       onConfirm: () => {
         fetch('/api/v2/admin/users/' + userId, { method: 'DELETE' }).then((response) => {
           if (response.ok) {
-            showToast(req.translations.userDeleted || 'User deleted.', 'success');
+            showToast(window.__i18n.userDeleted || 'User deleted.', 'success');
             window.location.reload();
-          } else showToast(req.translations.failedToDeleteUser || 'Failed to delete user.', 'error');
-        }).catch(() => showToast(req.translations.failedToDeleteUser || 'Failed to delete user.', 'error'));
+          } else showToast(window.__i18n.failedToDeleteUser || 'Failed to delete user.', 'error');
+        }).catch(() => showToast(window.__i18n.failedToDeleteUser || 'Failed to delete user.', 'error'));
       }
     });
   };

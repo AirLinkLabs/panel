@@ -366,14 +366,14 @@
         body: params,
       });
       if (res.ok) {
-        showToast(req.translations.apiKeyCreated || 'API key created', 'success');
+        showToast(window.__i18n.apiKeyCreated || 'API key created', 'success');
         hideModal('createApiKeyModal');
         window.location.href = '/admin/apikeys';
       } else {
         var data = await res.json().catch(function() { return {}; });
-        showToast(data.error || (req.translations.apiKeyCreateFailed || 'Failed to create key.'), 'error');
+        showToast(data.error || (window.__i18n.apiKeyCreateFailed || 'Failed to create key.'), 'error');
       }
-    } catch (e) { showToast(req.translations.networkError || 'Network error.', 'error'); }
+    } catch (e) { showToast(window.__i18n.networkError || 'Network error.', 'error'); }
   }
 
   async function submitEdit() {
@@ -391,14 +391,14 @@
         body: params,
       });
       if (res.ok) {
-        showToast(req.translations.apiKeyUpdated || 'API key updated', 'success');
+        showToast(window.__i18n.apiKeyUpdated || 'API key updated', 'success');
         hideModal('editApiKeyModal');
         window.location.reload();
       } else {
         var data = await res.json().catch(function() { return {}; });
-        showToast(data.error || (req.translations.apiKeyUpdateFailed || 'Failed to update key.'), 'error');
+        showToast(data.error || (window.__i18n.apiKeyUpdateFailed || 'Failed to update key.'), 'error');
       }
-    } catch (e) { showToast(req.translations.networkError || 'Network error.', 'error'); }
+    } catch (e) { showToast(window.__i18n.networkError || 'Network error.', 'error'); }
   }
 
   async function deleteKey(keyId) {
@@ -407,13 +407,13 @@
     try {
       var res = await fetch(form.action, { method: 'POST', headers: { 'Accept': 'application/json' }, body: new URLSearchParams(new FormData(form)) });
       if (res.ok) {
-        showToast(req.translations.apiKeyDeleted || 'API key deleted', 'success');
+        showToast(window.__i18n.apiKeyDeleted || 'API key deleted', 'success');
         window.location.reload();
       } else {
         var data = await res.json().catch(function() { return {}; });
-        showToast(data.error || (req.translations.apiKeyDeleteFailed || 'Failed to delete key.'), 'error');
+        showToast(data.error || (window.__i18n.apiKeyDeleteFailed || 'Failed to delete key.'), 'error');
       }
-    } catch (e) { showToast(req.translations.networkError || 'Network error.', 'error'); }
+    } catch (e) { showToast(window.__i18n.networkError || 'Network error.', 'error'); }
   }
 
   async function toggleKey(keyId, enabling) {
@@ -422,14 +422,14 @@
     try {
       var res = await fetch(form.action, { method: 'POST', headers: { 'Accept': 'application/json' }, body: new URLSearchParams(new FormData(form)) });
       if (res.ok) {
-        showToast(enabling ? (req.translations.apiKeyEnabled || 'API key enabled') : (req.translations.apiKeyDisabled || 'API key disabled'), 'success');
+        showToast(enabling ? (window.__i18n.apiKeyEnabled || 'API key enabled') : (window.__i18n.apiKeyDisabled || 'API key disabled'), 'success');
         window.location.reload();
       }
-    } catch (e) { showToast(req.translations.networkError || 'Network error.', 'error'); }
+    } catch (e) { showToast(window.__i18n.networkError || 'Network error.', 'error'); }
   }
 
   function copyToClipboard(text) {
-    navigator.clipboard.writeText(text).then(function() { showToast(req.translations.apiKeyCopied || 'API key copied to clipboard', 'success'); }).catch(function() { showToast(req.translations.apiKeyCopyFailed || 'Failed to copy', 'error'); });
+    navigator.clipboard.writeText(text).then(function() { showToast(window.__i18n.apiKeyCopied || 'API key copied to clipboard', 'success'); }).catch(function() { showToast(window.__i18n.apiKeyCopyFailed || 'Failed to copy', 'error'); });
   }
 
   // Event listeners
@@ -511,8 +511,8 @@
 
   window.confirmDeleteApiKey = function(keyId) {
     window.modal.confirm({
-      title: req.translations.apiKeyDeleteTitle || 'Delete API key', body: req.translations.apiKeyDeleteConfirm || 'This will permanently revoke the key. Any integrations using it will stop working.',
-      danger: true, confirmLabel: req.translations.apiKeyDeleteAction || 'Yeah, delete it',
+      title: window.__i18n.apiKeyDeleteTitle || 'Delete API key', body: window.__i18n.apiKeyDeleteConfirm || 'This will permanently revoke the key. Any integrations using it will stop working.',
+      danger: true, confirmLabel: window.__i18n.apiKeyDeleteAction || 'Yeah, delete it',
       onConfirm: function() { deleteKey(keyId); }
     });
   };

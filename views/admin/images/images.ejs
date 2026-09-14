@@ -51,7 +51,9 @@
         <%- include('../../fragments/admin/images/pending-approvals', { pending, settings, req }) %>
       </div>
 
-      <div id="tab-panel-store" role="tabpanel" aria-labelledby="tab-btn-store" data-tab-panel="store" data-tab-src="/admin/images/store/panel" hidden></div>
+      <div id="tab-panel-store" role="tabpanel" aria-labelledby="tab-btn-store" data-tab-panel="store" hidden>
+        <%- include('store-panel') %>
+      </div>
       </div>
     </div>
   </div>
@@ -119,8 +121,8 @@ document.addEventListener('DOMContentLoaded', function() {
       var data = await res.json();
       closeRejectModal();
       if (data.error) { showToast(data.error, 'error'); }
-      else { showToast(data.message || req.translations.imageRejected || 'Image rejected.', 'success'); window.location.reload(); }
-    } catch (e) { closeRejectModal(); showToast(req.translations.somethingWentWrong || 'Something went wrong.', 'error'); }
+      else { showToast(data.message || window.__i18n.imageRejected || 'Image rejected.', 'success'); window.location.reload(); }
+    } catch (e) { closeRejectModal(); showToast(window.__i18n.somethingWentWrong || 'Something went wrong.', 'error'); }
     finally { btn.disabled = false; document.getElementById('rejectConfirmLabel').textContent = '<%= t('reject') %>'; }
   });
 });
@@ -229,9 +231,9 @@ function imageManager() {
       '<td class="al-table-td whitespace-nowrap px-3 py-4 col-hide">' + esc(image.author || "—") + '</td>' +
       '<td class="al-table-td whitespace-nowrap px-3 py-4 col-hide">' + esc(new Date(image.createdAt).toLocaleDateString()) + '</td>' +
       '<td class="whitespace-nowrap px-3 py-4 text-sm"><div class="flex gap-2">' +
-      '<a href="/admin/images/edit/' + image.id + '" onclick="event.stopPropagation()" class="al-btn-secondary px-3 py-2 text-sm font-medium shadow-lg transition inline-flex items-center gap-1.5">' + (window.alIcon ? alIcon("pencil", "size-4") : "") + (req.translations.edit || 'Edit') + '</a>' +
-      '<a href="/admin/images/export/' + image.id + '" onclick="event.stopPropagation()" class="al-btn-secondary px-3 py-2 text-sm font-medium shadow-lg transition inline-flex items-center gap-1.5">' + (window.alIcon ? alIcon("download", "size-4") : "") + (req.translations.export || 'Export') + '</a>' +
-      '<button onclick="event.stopPropagation(); openDelete(\'' + image.id + '\', \'' + esc(image.name).replace(/\\/g, '\\\\').replace(/'/g, "\\'") + '\')" type="button" class="al-btn-danger" aria-label="' + (req.translations.deleteImage || 'Delete image') + ' ' + esc(image.name) + '">' + (window.alIcon ? alIcon("trash-2", "size-4") : "") + '</button>' +
+      '<a href="/admin/images/edit/' + image.id + '" onclick="event.stopPropagation()" class="al-btn-secondary px-3 py-2 text-sm font-medium shadow-lg transition inline-flex items-center gap-1.5">' + (window.alIcon ? alIcon("pencil", "size-4") : "") + (window.__i18n.edit || 'Edit') + '</a>' +
+      '<a href="/admin/images/export/' + image.id + '" onclick="event.stopPropagation()" class="al-btn-secondary px-3 py-2 text-sm font-medium shadow-lg transition inline-flex items-center gap-1.5">' + (window.alIcon ? alIcon("download", "size-4") : "") + (window.__i18n.export || 'Export') + '</a>' +
+      '<button onclick="event.stopPropagation(); openDelete(\'' + image.id + '\', \'' + esc(image.name).replace(/\\/g, '\\\\').replace(/'/g, "\\'") + '\')" type="button" class="al-btn-danger" aria-label="' + (window.__i18n.deleteImage || 'Delete image') + ' ' + esc(image.name) + '">' + (window.alIcon ? alIcon("trash-2", "size-4") : "") + '</button>' +
       '</div></td></tr>';
   }
 
@@ -300,7 +302,7 @@ function imageManager() {
       if (importUrlSubmit) {
         importUrlSubmit.addEventListener("click", async () => {
           const url = document.getElementById("importUrlInput").value.trim();
-          if (!url) { showToast(req.translations.enterUrl || "Enter a URL.", "error"); return; }
+          if (!url) { showToast(window.__i18n.enterUrl || "Enter a URL.", "error"); return; }
           const btn = importUrlSubmit;
           btn.disabled = true; btn.classList.add("opacity-60");
           try {
@@ -309,10 +311,10 @@ function imageManager() {
             });
             const d = await r.json();
             if (r.ok && d.success) {
-              showToast(d.message || (req.translations.imageImported || "Image imported."), "success");
+              showToast(d.message || (window.__i18n.imageImported || "Image imported."), "success");
               window.location.reload();
-            } else { showToast((d.error?.message) || (req.translations.importFailed || "Import failed."), "error"); }
-          } catch { showToast(req.translations.importFailed || "Import failed.", "error"); }
+            } else { showToast((d.error?.message) || (window.__i18n.importFailed || "Import failed."), "error"); }
+          } catch { showToast(window.__i18n.importFailed || "Import failed.", "error"); }
           finally { btn.disabled = false; btn.classList.remove("opacity-60"); }
         });
       }
@@ -327,7 +329,7 @@ function imageManager() {
     },
     openCreate() {
       window.modal.show({
-        title: req.translations.newImage || "New Image",
+        title: window.__i18n.newImage || "New Image",
         bodyNode: document.getElementById("createContent"),
         panelClass: "max-w-xl",
       });
@@ -336,9 +338,9 @@ function imageManager() {
     openDelete(id, name) {
       _deleteId = id;
       window.modal.confirm({
-        title: req.translations.deleteImageConfirm || "Delete image?",
-        body: '"' + name + '" ' + (req.translations.willBePermanentlyRemoved || 'will be permanently removed.'),
-        danger: true, confirmLabel: req.translations.delete || "Delete",
+        title: window.__i18n.deleteImageConfirm || "Delete image?",
+        body: '"' + name + '" ' + (window.__i18n.willBePermanentlyRemoved || 'will be permanently removed.'),
+        danger: true, confirmLabel: window.__i18n.delete || "Delete",
         onConfirm: () => this.deleteImage(),
       });
     },
@@ -372,8 +374,8 @@ function imageManager() {
     async deleteImage() {
       if (!_deleteId) return;
       const res = await fetch("/api/v2/admin/images/" + _deleteId, { method: "DELETE" });
-      if (res.ok) { showToast(req.translations.imageDeleted || "Image deleted.", "success"); window.location.reload(); }
-      else { showToast(req.translations.failed || "Failed.", "error"); }
+      if (res.ok) { showToast(window.__i18n.imageDeleted || "Image deleted.", "success"); window.location.reload(); }
+      else { showToast(window.__i18n.failed || "Failed.", "error"); }
     },
     openUploadImageModal() {
       setUploadMode("file");
@@ -412,21 +414,21 @@ function imageManager() {
       document.getElementById("imageUploadButton").disabled = false;
     },
     confirmImageUpload() {
-      if (!window.selectedImageFile) { showToast(req.translations.selectJsonFile || "Select a JSON file to upload.", "error"); return; }
+      if (!window.selectedImageFile) { showToast(window.__i18n.selectJsonFile || "Select a JSON file to upload.", "error"); return; }
       const file = window.selectedImageFile;
       this.closeUploadImageModal();
       const self = this;
       const r = new FileReader();
       r.onload = function (e) {
-        try { JSON.parse(e.target.result); } catch { showToast(req.translations.invalidJson || "Invalid JSON.", "error"); return; }
+        try { JSON.parse(e.target.result); } catch { showToast(window.__i18n.invalidJson || "Invalid JSON.", "error"); return; }
         const xhr = new XMLHttpRequest();
         xhr.open("POST", "/admin/images/upload", true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
-          if (xhr.status === 200) { showToast(req.translations.imageUploaded || "Image uploaded.", "success"); window.location.reload(); }
-          else { showToast(req.translations.uploadFailed || "Upload failed.", "error"); }
+          if (xhr.status === 200) { showToast(window.__i18n.imageUploaded || "Image uploaded.", "success"); window.location.reload(); }
+          else { showToast(window.__i18n.uploadFailed || "Upload failed.", "error"); }
         };
-        xhr.onerror = () => showToast(req.translations.uploadFailed || "Upload failed.", "error");
+        xhr.onerror = () => showToast(window.__i18n.uploadFailed || "Upload failed.", "error");
         xhr.send(e.target.result);
       };
       r.readAsText(file);
@@ -434,7 +436,7 @@ function imageManager() {
     submitCreateImage(e) {
       const form = e.target;
       const data = Object.fromEntries(new FormData(form));
-      if (!data.name || !data.startup) { showToast(req.translations.nameStartupRequired || "Name and startup command are required.", "error"); return; }
+      if (!data.name || !data.startup) { showToast(window.__i18n.nameStartupRequired || "Name and startup command are required.", "error"); return; }
       const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || "";
       fetch("/api/v2/admin/images", {
         method: "POST",
@@ -442,11 +444,11 @@ function imageManager() {
         body: JSON.stringify(data),
       }).then(r => r.json()).then(result => {
         if (result.success !== false) {
-          showToast(req.translations.imageCreated || "Image created.", "success");
+          showToast(window.__i18n.imageCreated || "Image created.", "success");
           this.closeCreate();
           window.location.reload();
-        } else { showToast(result.error || result.message || (req.translations.imageCreateFailed || "Failed to create image."), "error"); }
-      }).catch(() => { showToast(req.translations.networkError || "Network error.", "error"); });
+        } else { showToast(result.error || result.message || (window.__i18n.imageCreateFailed || "Failed to create image."), "error"); }
+      }).catch(() => { showToast(window.__i18n.networkError || "Network error.", "error"); });
     }
   };
 }

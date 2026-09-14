@@ -266,7 +266,7 @@ function nodeCreate() {
         const emptyMessage = document.createElement('div');
         emptyMessage.className = 'col-span-4 text-sm italic';
         emptyMessage.style.color = 'var(--theme-text-muted)';
-        emptyMessage.textContent = req.translations.noPortsAllocated || 'No ports allocated yet. Add ports that will be available for servers.';
+        emptyMessage.textContent = window.__i18n.noPortsAllocated || 'No ports allocated yet. Add ports that will be available for servers.';
         portsList.appendChild(emptyMessage);
         return;
       }
@@ -321,7 +321,7 @@ function nodeCreate() {
       if (input.includes('-')) {
         const [start, end] = input.split('-').map(p => parseInt(p.trim()));
         if (isNaN(start) || isNaN(end) || start >= end || start < this.PORT_MIN || end > this.PORT_MAX) {
-          showToast((req.translations.invalidPortRange || 'Invalid port range. Format should be start-end (e.g., 25565-25570) with ports between ') + this.PORT_MIN + (req.translations.and || ' and ') + this.PORT_MAX + '.', 'error');
+          showToast((window.__i18n.invalidPortRange || 'Invalid port range. Format should be start-end (e.g., 25565-25570) with ports between ') + this.PORT_MIN + (window.__i18n.and || ' and ') + this.PORT_MAX + '.', 'error');
           return;
         }
         for (let port = start; port <= end; port++) {
@@ -330,7 +330,7 @@ function nodeCreate() {
       } else {
         const port = parseInt(input.trim());
         if (isNaN(port) || port < this.PORT_MIN || port > this.PORT_MAX) {
-          showToast((req.translations.invalidPort || 'Invalid port. Port must be between ') + this.PORT_MIN + (req.translations.and || ' and ') + this.PORT_MAX + '.', 'error');
+          showToast((window.__i18n.invalidPort || 'Invalid port. Port must be between ') + this.PORT_MIN + (window.__i18n.and || ' and ') + this.PORT_MAX + '.', 'error');
           return;
         }
         if (!this.allocatedPorts.includes(port)) this.allocatedPorts.push(port);
@@ -388,16 +388,16 @@ function nodeCreate() {
       };
 
       if (!nodeData.name || !nodeData.address || !nodeData.port) {
-        showToast(req.translations.pleaseFillAllRequired || 'Please fill in all required fields.', 'error');
+        showToast(window.__i18n.pleaseFillAllRequired || 'Please fill in all required fields.', 'error');
         return;
       }
 
-      if (!ramAll && !nodeData.ram) { showToast(req.translations.ramRequired || 'RAM is required when not unlimited.', 'error'); return; }
-      if (!diskAll && !nodeData.disk) { showToast(req.translations.diskRequired || 'Disk is required when not unlimited.', 'error'); return; }
-      if (!cpuAll && !nodeData.cpu) { showToast(req.translations.cpuRequired || 'CPU is required when not unlimited.', 'error'); return; }
+      if (!ramAll && !nodeData.ram) { showToast(window.__i18n.ramRequired || 'RAM is required when not unlimited.', 'error'); return; }
+      if (!diskAll && !nodeData.disk) { showToast(window.__i18n.diskRequired || 'Disk is required when not unlimited.', 'error'); return; }
+      if (!cpuAll && !nodeData.cpu) { showToast(window.__i18n.cpuRequired || 'CPU is required when not unlimited.', 'error'); return; }
 
-      const loader = showLoadingPopup(req.translations.creatingNode || 'Creating Node', req.translations.initializingNodeCreation || 'Initializing node creation...');
-      loader.updateProgress(20, req.translations.sendingNodeConfig || 'Sending node configuration...');
+      const loader = showProgressToast(window.__i18n.initializingNodeCreation || 'Initializing node creation...');
+      loader.setStage(window.__i18n.sendingNodeConfig || 'Sending node configuration...');
 
       try {
         const response = await fetch('/api/v2/admin/nodes', {
@@ -408,21 +408,18 @@ function nodeCreate() {
 
         if (response.ok) {
           const data = await response.json();
-          loader.updateProgress(100, req.translations.nodeCreated || 'Node created!');
-          setTimeout(() => {
-            loader.close();
-            sessionStorage.setItem('airlink:newNode', JSON.stringify(data.node));
-            window.location.hash = '#created';
-          }, 500);
+          loader.complete(true, window.__i18n.nodeCreated || 'Node created!');
+          sessionStorage.setItem('airlink:newNode', JSON.stringify(data.node));
+          window.location.hash = '#created';
         } else {
           loader.close();
           const data = await response.json().catch(() => ({}));
-          showToast(data.error || data.message || (req.translations.failedToCreateNode || 'Failed to create node.'), 'error');
+          showToast(data.error || data.message || (window.__i18n.failedToCreateNode || 'Failed to create node.'), 'error');
         }
       } catch (error) {
         loader.close();
         console.error('Error creating node:', error);
-        showToast(req.translations.errorCreatingNode || 'Error creating node. Try again.', 'error');
+        showToast(window.__i18n.errorCreatingNode || 'Error creating node. Try again.', 'error');
       }
     },
 
@@ -437,7 +434,7 @@ function nodeCreate() {
       document.getElementById('daemonCliCommand').textContent = cli;
 
       const copyHint = document.getElementById('copyDaemonCliHint');
-      copyHint.textContent = req.translations.pasteIntoTerminal || 'Paste into a terminal on the machine where the daemon runs.';
+      copyHint.textContent = window.__i18n.pasteIntoTerminal || 'Paste into a terminal on the machine where the daemon runs.';
 
       this._currentNode = node;
       this._currentCli = cli;
@@ -462,11 +459,11 @@ function nodeCreate() {
           ta.remove();
         }
         copyCli.innerHTML = '<svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
-        copyHint.textContent = req.translations.copied || 'Copied!';
+        copyHint.textContent = window.__i18n.copied || 'Copied!';
       } catch {
-        copyHint.textContent = req.translations.couldNotCopySelect || 'Could not copy. Select the command above and copy it manually.';
+        copyHint.textContent = window.__i18n.couldNotCopySelect || 'Could not copy. Select the command above and copy it manually.';
       }
-      setTimeout(() => { copyCli.innerHTML = label; copyHint.textContent = req.translations.pasteIntoTerminal || 'Paste into a terminal on the machine where the daemon runs.'; }, this.COPY_RESET_DELAY_MS);
+      setTimeout(() => { copyCli.innerHTML = label; copyHint.textContent = window.__i18n.pasteIntoTerminal || 'Paste into a terminal on the machine where the daemon runs.'; }, this.COPY_RESET_DELAY_MS);
     },
 
     async verifyDaemon() {
@@ -474,7 +471,7 @@ function nodeCreate() {
       const btn = document.getElementById('verifyDaemonBtn');
       const result = document.getElementById('daemonVerifyResult');
       btn.disabled = true;
-      btn.textContent = req.translations.checking || 'Checking...';
+      btn.textContent = window.__i18n.checking || 'Checking...';
       result.classList.add('hidden');
 
       try {
@@ -483,20 +480,20 @@ function nodeCreate() {
         result.classList.remove('hidden');
         if (d.connected) {
           result.style.color = 'var(--theme-success)';
-          result.textContent = (req.translations.daemonIsLive || 'Daemon is live') + (d.version ? ' (' + d.version + ')' : '') + '. ' + (req.translations.keyChecksOut || 'Key checks out \u2014 servers can now run on this node.');
-          showToast(req.translations.daemonVerified || 'Daemon verified!', 'success');
+          result.textContent = (window.__i18n.daemonIsLive || 'Daemon is live') + (d.version ? ' (' + d.version + ')' : '') + '. ' + (window.__i18n.keyChecksOut || 'Key checks out \u2014 servers can now run on this node.');
+          showToast(window.__i18n.daemonVerified || 'Daemon verified!', 'success');
           setTimeout(() => { window.location.href = '/admin/nodes?verified=' + node.id; }, this.VERIFY_DELAY_MS);
         } else {
           result.style.color = 'var(--theme-danger)';
-          result.textContent = (d.error?.message) || (req.translations.couldNotReachDaemon || 'Could not reach the daemon. Check the address, port, and key.');
+          result.textContent = (d.error?.message) || (window.__i18n.couldNotReachDaemon || 'Could not reach the daemon. Check the address, port, and key.');
         }
       } catch {
         result.classList.remove('hidden');
         result.style.color = 'var(--theme-danger)';
-        result.textContent = req.translations.verificationFailed || 'Verification failed. Check the address, port, and key, then try again.';
+        result.textContent = window.__i18n.verificationFailed || 'Verification failed. Check the address, port, and key, then try again.';
       } finally {
         btn.disabled = false;
-        btn.textContent = req.translations.verifyConnection || 'I\'ve done this — verify connection';
+        btn.textContent = window.__i18n.verifyConnection || 'I\'ve done this — verify connection';
       }
     },
 

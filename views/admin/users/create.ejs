@@ -290,8 +290,8 @@
     saving = true;
     submitBtn.disabled = true;
     submitText.textContent = '<%= t('creating') %>';
-    const loader = showLoadingPopup('<%= t('createUserLoading') %>', '<%= t('createUserProcessing') %>');
-    loader.updateProgress(20, '<%= t('createUserSending') %>');
+    const loader = showProgressToast('<%= t('createUserProcessing') %>');
+    loader.setStage('<%= t('createUserSending') %>');
 
     try {
       const maxMemoryDisplay = document.getElementById('createMaxMemoryDisplay').value;
@@ -318,12 +318,8 @@
         }),
       });
       if (res.ok) {
-        loader.updateProgress(100, '<%= t('createUserSuccess') %>');
-        setTimeout(() => {
-          loader.close();
-          showToast('<%= t('createUserAdded') %>', 'success');
-          setTimeout(() => { window.location.href = '/admin/users?err=none'; }, 1000);
-        }, 500);
+        loader.complete(true, '<%= t('createUserAdded') %>');
+        setTimeout(() => { window.location.href = '/admin/users?err=none'; }, 1000);
       } else {
         const err = await res.json().catch(() => ({ message: 'Unknown error' }));
         loader.close();

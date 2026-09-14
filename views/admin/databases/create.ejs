@@ -98,7 +98,7 @@
         errEl.classList.add('hidden');
 
         if (!form.name || !form.host || !form.username || !form.password) {
-          errEl.textContent = req.translations.fillAllRequiredFields || 'Please fill in all required fields.';
+          errEl.textContent = window.__i18n.fillAllRequiredFields || 'Please fill in all required fields.';
           errEl.classList.remove('hidden');
           return;
         }
@@ -109,16 +109,16 @@
           body: JSON.stringify(form),
         }).then(function(res) {
           if (res.ok) {
-            showToast(req.translations.dbHostAdded || 'Database host added.', 'success');
+            showToast(window.__i18n.dbHostAdded || 'Database host added.', 'success');
             setTimeout(function() { window.location.href = '/admin/databases'; }, 500);
           } else {
             return res.json().then(function(data) {
-              errEl.textContent = data.error || data.message || (req.translations.dbHostCreateFailed || 'Failed to create host.');
+              errEl.textContent = data.error || data.message || (window.__i18n.dbHostCreateFailed || 'Failed to create host.');
               errEl.classList.remove('hidden');
             });
           }
         }).catch(function() {
-          errEl.textContent = req.translations.networkErrorTryAgain || 'Network error. Try again.';
+          errEl.textContent = window.__i18n.networkErrorTryAgain || 'Network error. Try again.';
           errEl.classList.remove('hidden');
         });
       }

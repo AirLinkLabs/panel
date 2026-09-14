@@ -174,7 +174,7 @@ var adminOverviewState = (function() {
 
   async function checkUpdate() {
     var statusDiv = document.getElementById('updateStatus');
-    statusDiv.innerHTML = '<span class="text-neutral-500">' + (req.translations.checking || 'Checking...') + '</span>';
+    statusDiv.innerHTML = '<span class="text-neutral-500">' + (window.__i18n.checking || 'Checking...') + '</span>';
     statusDiv.classList.remove('hidden');
 
     try {
@@ -184,7 +184,7 @@ var adminOverviewState = (function() {
       var updateInfo = document.getElementById('updateInfo');
 
       if (data.hasUpdate) {
-        statusDiv.innerHTML = '<span class="text-amber-600 dark:text-amber-400">' + (req.translations.updateAvailable || 'Update available') + ' — v' + data.latestVersion + '</span>';
+        statusDiv.innerHTML = '<span class="text-amber-600 dark:text-amber-400">' + (window.__i18n.updateAvailable || 'Update available') + ' — v' + data.latestVersion + '</span>';
         fadeIn(statusDiv);
         updateBtn.classList.remove('hidden');
         updateBtn.classList.add('inline-flex');
@@ -201,32 +201,32 @@ var adminOverviewState = (function() {
         updateInfo.classList.add('hidden');
       }
     } catch (error) {
-      statusDiv.innerHTML = '<span class="text-red-500">' + (req.translations.failedToCheckUpdates || 'Failed to check for updates.') + '</span>';
+      statusDiv.innerHTML = '<span class="text-red-500">' + (window.__i18n.failedToCheckUpdates || 'Failed to check for updates.') + '</span>';
       fadeIn(statusDiv);
     }
   }
 
   function performUpdate() {
     window.modal.confirm({
-      title: req.translations.installUpdate || 'Install Update',
-      body: req.translations.panelWillUpdate || 'The panel will perform the update and restart the server.',
-      confirmLabel: req.translations.install || 'Install',
+      title: window.__i18n.installUpdate || 'Install Update',
+      body: window.__i18n.panelWillUpdate || 'The panel will perform the update and restart the server.',
+      confirmLabel: window.__i18n.install || 'Install',
       danger: false,
       onConfirm: async function() {
         var statusDiv = document.getElementById('updateStatus');
-        statusDiv.innerHTML = '<span class="text-neutral-500">' + (req.translations.installing || 'Installing...') + '</span>';
+        statusDiv.innerHTML = '<span class="text-neutral-500">' + (window.__i18n.installing || 'Installing...') + '</span>';
         fadeIn(statusDiv);
         try {
           var response = await fetch('/api/v2/admin/overview/perform-update', { method: 'POST', headers: { 'csrf-token': document.querySelector('meta[name="csrf-token"]')?.content || '' } });
           var data = await response.json();
-          showToast(data.message || (req.translations.updateCompleteRestarting || 'Update complete. Restarting.'), 'success');
-          statusDiv.innerHTML = '<span class="text-emerald-600 dark:text-emerald-400">' + (req.translations.updateSuccessfulRestarting || 'Update successful. Restarting...') + '</span>';
+          showToast(data.message || (window.__i18n.updateCompleteRestarting || 'Update complete. Restarting.'), 'success');
+          statusDiv.innerHTML = '<span class="text-emerald-600 dark:text-emerald-400">' + (window.__i18n.updateSuccessfulRestarting || 'Update successful. Restarting...') + '</span>';
           fadeIn(statusDiv);
           setTimeout(function() { window.location.reload(); }, UPDATE_RELOAD_DELAY_MS);
         } catch (error) {
-          statusDiv.innerHTML = '<span class="text-red-500">' + (req.translations.updateFailed || 'Update failed.') + '</span>';
+          statusDiv.innerHTML = '<span class="text-red-500">' + (window.__i18n.updateFailed || 'Update failed.') + '</span>';
           fadeIn(statusDiv);
-          showToast(req.translations.updateFailedCheckLogs || 'Update failed. Check the logs.', 'error');
+          showToast(window.__i18n.updateFailedCheckLogs || 'Update failed. Check the logs.', 'error');
         }
       }
     });

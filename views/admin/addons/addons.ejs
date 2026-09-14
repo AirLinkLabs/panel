@@ -119,10 +119,10 @@ function addonManager() {
   return {
     init() {
       document.getElementById('reloadBtn').addEventListener('click', () => {
-        showLoadingPopup(req.translations.addonReloading || 'Reloading addons…', req.translations.pleaseWait || 'Please wait…');
+        showProgressToast(window.__i18n.addonReloading || 'Reloading addons…');
         fetch('/api/v2/admin/addons/reload', { method: 'POST', headers: { 'Content-Type': 'application/json' } })
-          .then(r => r.json()).then(data => { hideLoadingPopup(); showToast(data.message || (data.success ? (req.translations.addonReloaded || 'Reloaded') : (req.translations.failed || 'Failed')), data.success ? 'success' : 'error'); })
-          .catch(() => { hideLoadingPopup(); showToast(req.translations.somethingWentWrong || 'Something went wrong.', 'error'); });
+          .then(r => r.json()).then(data => { showToast(data.message || (data.success ? (window.__i18n.addonReloaded || 'Reloaded') : (window.__i18n.failed || 'Failed')), data.success ? 'success' : 'error'); })
+          .catch(() => { showToast(window.__i18n.somethingWentWrong || 'Something went wrong.', 'error'); });
       });
       const addonSearchInput = document.getElementById('addonSearchInput');
       if (addonSearchInput) {
@@ -140,15 +140,14 @@ function addonManager() {
       }
     },
     toggleAddon(slug, enable) {
-      showLoadingPopup(req.translations.addonUpdating || 'Updating addon…', req.translations.applyingChanges || 'Applying changes…');
+      showProgressToast(window.__i18n.applyingChanges || 'Applying changes…');
       fetch('/api/v2/admin/addons/' + slug + '/toggle', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ enabled: enable.toString() }),
       }).then(r => r.json()).then(data => {
-        hideLoadingPopup();
-        if (data.success) { showToast(req.translations.addonUpdated || 'Addon updated', 'success'); window.location.reload(); }
-        else showToast(data.message || (req.translations.failed || 'Failed'), 'error');
-      }).catch(() => { hideLoadingPopup(); showToast(req.translations.somethingWentWrong || 'Something went wrong.', 'error'); });
+        if (data.success) { showToast(window.__i18n.addonUpdated || 'Addon updated', 'success'); window.location.reload(); }
+        else showToast(data.message || (window.__i18n.failed || 'Failed'), 'error');
+      }).catch(() => { showToast(window.__i18n.somethingWentWrong || 'Something went wrong.', 'error'); });
     },
     updateRow(slug, enabled) {
       const row = document.querySelector('[data-slug="' + slug + '"]');
@@ -156,24 +155,23 @@ function addonManager() {
       const badge = row.querySelector('.status-badge');
       if (badge) {
         badge.className = enabled ? BADGE_ENABLED : BADGE_DISABLED;
-        badge.textContent = enabled ? (req.translations.addonEnabled || 'Enabled') : (req.translations.addonDisabled || 'Disabled');
+        badge.textContent = enabled ? (window.__i18n.addonEnabled || 'Enabled') : (window.__i18n.addonDisabled || 'Disabled');
       }
       const btn = row.querySelector('.toggle-btn');
-      if (btn) { btn.textContent = enabled ? (req.translations.addonDisable || 'Disable') : (req.translations.addonEnable || 'Enable'); btn.onclick = () => this.toggleAddon(slug, !enabled); }
+      if (btn) { btn.textContent = enabled ? (window.__i18n.addonDisable || 'Disable') : (window.__i18n.addonEnable || 'Enable'); btn.onclick = () => this.toggleAddon(slug, !enabled); }
     },
     confirmUninstall(slug, name) {
       window.modal && window.modal.confirm
-        ? window.modal.confirm({ title: req.translations.addonUninstallTitle || 'Uninstall Addon', body: (req.translations.addonUninstallConfirm || 'Uninstall "') + name + (req.translations.addonUninstallConfirmSuffix || '"? This cannot be undone.'), danger: true, confirmLabel: req.translations.addonUninstallAction || 'Uninstall', onConfirm: () => this.uninstall(slug) })
+        ? window.modal.confirm({ title: window.__i18n.addonUninstallTitle || 'Uninstall Addon', body: (window.__i18n.addonUninstallConfirm || 'Uninstall "') + name + (window.__i18n.addonUninstallConfirmSuffix || '"? This cannot be undone.'), danger: true, confirmLabel: window.__i18n.addonUninstallAction || 'Uninstall', onConfirm: () => this.uninstall(slug) })
         : this.uninstall(slug);
     },
     uninstall(slug) {
-      showLoadingPopup(req.translations.addonUninstalling || 'Uninstalling…', req.translations.addonRemovingFiles || 'Removing files…');
+      showProgressToast(window.__i18n.addonRemovingFiles || 'Removing files…');
       fetch('/api/v2/admin/addons/' + slug + '/uninstall', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ slug }) })
         .then(r => r.json()).then(data => {
-          hideLoadingPopup();
-          if (data.success) { showToast(req.translations.addonUninstalled || 'Uninstalled', 'success'); window.location.reload(); }
-          else showToast(data.message || (req.translations.failed || 'Failed'), 'error');
-        }).catch(() => { hideLoadingPopup(); showToast(req.translations.somethingWentWrong || 'Something went wrong.', 'error'); });
+          if (data.success) { showToast(window.__i18n.addonUninstalled || 'Uninstalled', 'success'); window.location.reload(); }
+          else showToast(data.message || (window.__i18n.failed || 'Failed'), 'error');
+        }).catch(() => { showToast(window.__i18n.somethingWentWrong || 'Something went wrong.', 'error'); });
     }
   };
 }
