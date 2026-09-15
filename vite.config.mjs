@@ -7,7 +7,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 /**
  * Vite config for Airlink Panel.
  *
- * Source: public/styles/tw.css (Tailwind v4 + custom CSS)
+ * Source: views/styles/main.css (Tailwind v4 + custom CSS fragments)
  * Output: public/assets/css/panel-[hash].css + public/.vite/manifest.json
  *
  * All panel assets live in public/. assetUrl() resolves paths and
@@ -22,7 +22,7 @@ export default defineConfig({
     manifest: true,
     rollupOptions: {
       input: {
-        panel: path.resolve(__dirname, "public/styles/tw.css"),
+        panel: path.resolve(__dirname, "views/styles/main.css"),
       },
       output: {
         entryFileNames: "assets/js/[name]-[hash].js",

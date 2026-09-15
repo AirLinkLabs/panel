@@ -1,0 +1,104 @@
+<!-- UI Form Field component -->
+<%
+// Params: type ('text'|'email'|'password'|'number'|'textarea'|'select'|'checkbox'|'radio'), name, label, id, value, placeholder,
+//         required, disabled, helpText, error, options (for select: [{value, label, selected}]),
+//         checked (for checkbox/radio), min, max, step, autocomplete, class
+const fieldType = typeof type !== 'undefined' ? type : 'text';
+const fieldName = typeof name !== 'undefined' ? name : '';
+const fieldLabel = typeof label !== 'undefined' ? label : '';
+const fieldId = typeof id !== 'undefined' ? id : fieldName;
+const fieldValue = typeof value !== 'undefined' ? value : '';
+const fieldPlaceholder = typeof placeholder !== 'undefined' ? placeholder : '';
+const fieldRequired = typeof required !== 'undefined' ? required : false;
+const fieldDisabled = typeof disabled !== 'undefined' ? disabled : false;
+const fieldHelp = typeof helpText !== 'undefined' ? helpText : '';
+const fieldError = typeof error !== 'undefined' ? error : '';
+const fieldCls = typeof cls !== 'undefined' ? cls : '';
+const fieldOptions = typeof options !== 'undefined' ? options : [];
+const fieldChecked = typeof checked !== 'undefined' ? checked : false;
+const fieldMin = typeof min !== 'undefined' ? min : '';
+const fieldMax = typeof max !== 'undefined' ? max : '';
+const fieldStep = typeof step !== 'undefined' ? step : '';
+const fieldAutocomplete = typeof autocomplete !== 'undefined' ? autocomplete : '';
+%>
+<div class="al-form-field <%= fieldCls %>">
+  <% if (fieldLabel) { %>
+    <label for="<%= fieldId %>" class="al-form-label">
+      <%- fieldLabel %>
+      <% if (fieldRequired) { %><span class="text-red-500 ml-0.5">*</span><% } %>
+    </label>
+  <% } %>
+
+  <% if (fieldType === 'textarea') { %>
+    <textarea id="<%= fieldId %>" name="<%= fieldName %>"
+      class="al-form-textarea <%= fieldError ? 'al-form-error' : '' %>"
+      placeholder="<%= fieldPlaceholder %>"
+      <% if (fieldRequired) { %> required<% } %>
+      <% if (fieldDisabled) { %> disabled<% } %>
+      <% if (fieldAutocomplete) { %> autocomplete="<%= fieldAutocomplete %>"<% } %>
+    ><%- fieldValue %></textarea>
+
+  <% } else if (fieldType === 'select') { %>
+    <select id="<%= fieldId %>" name="<%= fieldName %>"
+      class="al-form-select <%= fieldError ? 'al-form-error' : '' %>"
+      <% if (fieldRequired) { %> required<% } %>
+      <% if (fieldDisabled) { %> disabled<% } %>>
+      <% if (fieldPlaceholder) { %>
+        <option value="" disabled<%= !fieldValue ? ' selected' : '' %>><%= fieldPlaceholder %></option>
+      <% } %>
+      <% fieldOptions.forEach(function(opt) { %>
+        <option value="<%= opt.value %>"
+          <% if (opt.value === fieldValue || opt.selected) { %> selected<% } %>
+          <% if (typeof opt.disabled !== 'undefined' && opt.disabled) { %> disabled<% } %>>
+          <%- opt.label %>
+        </option>
+      <% }); %>
+    </select>
+
+  <% } else if (fieldType === 'checkbox') { %>
+    <div class="al-form-check">
+      <input type="checkbox" id="<%= fieldId %>" name="<%= fieldName %>" value="true"
+        class="al-form-checkbox"
+        <% if (fieldChecked) { %> checked<% } %>
+        <% if (fieldRequired) { %> required<% } %>
+        <% if (fieldDisabled) { %> disabled<% } %>>
+      <% if (fieldLabel) { %>
+        <label for="<%= fieldId %>" class="al-form-check-label"><%- fieldLabel %></label>
+      <% } %>
+    </div>
+    <% if (fieldLabel) { %>
+      <style>.al-form-field:has(.al-form-check) .al-form-label { display: none; }</style>
+    <% } %>
+
+  <% } else if (fieldType === 'radio') { %>
+    <div class="al-form-check">
+      <input type="radio" id="<%= fieldId %>" name="<%= fieldName %>" value="<%= fieldValue %>"
+        class="al-form-radio"
+        <% if (fieldChecked) { %> checked<% } %>
+        <% if (fieldRequired) { %> required<% } %>
+        <% if (fieldDisabled) { %> disabled<% } %>>
+      <% if (fieldLabel) { %>
+        <label for="<%= fieldId %>" class="al-form-check-label"><%- fieldLabel %></label>
+      <% } %>
+    </div>
+
+  <% } else { %>
+    <input type="<%= fieldType %>" id="<%= fieldId %>" name="<%= fieldName %>"
+      class="al-form-input <%= fieldError ? 'al-form-error' : '' %>"
+      value="<%= fieldValue %>"
+      placeholder="<%= fieldPlaceholder %>"
+      <% if (fieldRequired) { %> required<% } %>
+      <% if (fieldDisabled) { %> disabled<% } %>
+      <% if (fieldMin !== '') { %> min="<%= fieldMin %>"<% } %>
+      <% if (fieldMax !== '') { %> max="<%= fieldMax %>"<% } %>
+      <% if (fieldStep !== '') { %> step="<%= fieldStep %>"<% } %>
+      <% if (fieldAutocomplete) { %> autocomplete="<%= fieldAutocomplete %>"<% } %>>
+  <% } %>
+
+  <% if (fieldHelp) { %>
+    <p class="al-form-help"><%- fieldHelp %></p>
+  <% } %>
+  <% if (fieldError) { %>
+    <p class="al-form-error-msg"><%- fieldError %></p>
+  <% } %>
+</div>

@@ -1,0 +1,75 @@
+/* ── al-field: error/success association ────────────────────────────── */
+.al-field-invalid .al-input {
+  border-color: var(--theme-danger, #dc2626);
+}
+.al-field-invalid .al-input:focus {
+  box-shadow: 0 0 0 3px
+    color-mix(in srgb, var(--theme-danger, #dc2626) 15%, transparent);
+}
+.al-field-success .al-input {
+  border-color: var(--theme-success, #16a34a);
+}
+.al-field-message {
+  @apply text-xs mt-1.5;
+}
+.al-field-invalid .al-field-message {
+  color: var(--theme-danger, #dc2626);
+}
+.al-field-success .al-field-message {
+  color: var(--theme-success, #16a34a);
+}
+
+/* Inputs */
+.al-input {
+  @apply w-full rounded-xl px-2.5 py-1.5 text-[13px] transition-colors outline-none;
+  background: var(--theme-bg-input);
+  border: 1px solid var(--theme-border-input);
+  color: var(--theme-text-strong);
+}
+.al-input::placeholder {
+  color: var(--theme-text-placeholder);
+}
+.al-input:focus {
+  border-color: var(--theme-border-accent);
+  box-shadow: 0 0 0 3px var(--theme-accent-subtle);
+}
+.al-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Labels */
+.al-label {
+  @apply block text-[11px] font-medium mb-1;
+  color: var(--theme-text-muted);
+}
+
+/* Radio selection — active state uses theme accent */
+.al-radio-active {
+  border-color: var(--theme-accent);
+  background: var(--theme-accent-subtle);
+}
+.al-radio-ring-active {
+  border-color: var(--theme-accent);
+}
+.al-radio-dot-active {
+  background: var(--theme-accent);
+}
+
+/* Toggle switch — activated: accent track + accent-text dot */
+.al-toggle-track {
+  @apply w-10 h-[22px] rounded-full flex items-center p-0.5 transition-colors cursor-pointer;
+  background: var(--theme-toggle-bg, var(--theme-border));
+  border: 1px solid var(--theme-btn-border, var(--theme-border));
+}
+.peer:checked ~ .al-toggle-track {
+  background: var(--theme-accent);
+}
+.al-toggle-dot {
+  @apply w-[18px] h-[18px] rounded-full transition-transform shadow-sm;
+  background: var(--theme-accent-text);
+}
+.peer:checked ~ .al-toggle-track .al-toggle-dot {
+  transform: translateX(18px);
+  background: var(--theme-accent-text);
+}

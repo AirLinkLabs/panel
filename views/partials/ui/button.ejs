@@ -1,0 +1,55 @@
+<!-- UI Button component -->
+<%
+// Params: variant ('primary'|'secondary'|'danger'|'ghost'|'link'), size ('sm'|'md'|'lg'), href, type, disabled, class, icon, iconPosition, id
+const btnVariant = typeof variant !== 'undefined' ? variant : 'primary';
+const btnSize = typeof size !== 'undefined' ? size : 'md';
+const btnDisabled = typeof disabled !== 'undefined' ? disabled : false;
+const btnIconPos = typeof iconPosition !== 'undefined' ? iconPosition : 'left';
+const btnClass = typeof cls !== 'undefined' ? cls : '';
+
+const sizeClasses = {
+  sm: 'px-3 py-1.5 text-xs rounded-lg',
+  md: 'px-4 py-2 text-sm rounded-xl',
+  lg: 'px-5 py-2.5 text-base rounded-xl'
+};
+
+const variantClasses = {
+  primary: 'btn-primary',
+  secondary: 'btn-secondary',
+  danger: 'btn-danger',
+  ghost: 'btn-ghost',
+  link: 'btn-link'
+};
+
+const classes = [
+  'al-btn',
+  variantClasses[btnVariant] || variantClasses.primary,
+  sizeClasses[btnSize] || sizeClasses.md,
+  btnDisabled ? 'al-btn-disabled' : '',
+  btnClass
+].filter(Boolean).join(' ');
+%>
+<% if (typeof href !== 'undefined' && href) { %>
+  <a href="<%= href %>" class="<%= classes %>" id="<%= typeof id !== 'undefined' ? id : '' %>"
+    <% if (btnDisabled) { %> aria-disabled="true" tabindex="-1"<% } %>>
+    <% if (typeof icon !== 'undefined' && icon && btnIconPos === 'left') { %>
+      <%- icon %>
+    <% } %>
+    <span><%- typeof label !== 'undefined' ? label : (typeof body !== 'undefined' ? body : '') %></span>
+    <% if (typeof icon !== 'undefined' && icon && btnIconPos === 'right') { %>
+      <%- icon %>
+    <% } %>
+  </a>
+<% } else { %>
+  <button type="<%= typeof type !== 'undefined' ? type : 'button' %>" class="<%= classes %>"
+    id="<%= typeof id !== 'undefined' ? id : '' %>"
+    <% if (btnDisabled) { %> disabled<% } %>>
+    <% if (typeof icon !== 'undefined' && icon && btnIconPos === 'left') { %>
+      <%- icon %>
+    <% } %>
+    <span><%- typeof label !== 'undefined' ? label : (typeof body !== 'undefined' ? body : '') %></span>
+    <% if (typeof icon !== 'undefined' && icon && btnIconPos === 'right') { %>
+      <%- icon %>
+    <% } %>
+  </button>
+<% } %>

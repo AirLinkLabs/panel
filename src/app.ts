@@ -120,8 +120,17 @@ app.use(express.static(path.join(__dirname, "../public")));
 // Runtime uploads (user-uploaded files)
 app.use("/uploads", express.static(path.join(__dirname, "../storage/uploads")));
 
-// Themes — built-in + user-installed
-app.use("/themes", express.static(path.join(__dirname, "../storage/themes")));
+// Themes — built-in (immutable shipped CSS)
+app.use(
+  "/themes/builtin",
+  express.static(path.join(__dirname, "../storage/themes/builtin")),
+);
+
+// Themes — user-installed (uploaded via admin)
+app.use(
+  "/themes/user",
+  express.static(path.join(__dirname, "../storage/themes/user")),
+);
 
 // Root favicon (runtime-generated)
 app.use(

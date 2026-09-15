@@ -1,0 +1,13 @@
+@layer utilities {
+  .shadow-md {
+    box-shadow: var(--theme-shadow-md, 0 6px 12px -10px rgb(0 0 0 / 0.32));
+  }
+
+  .shadow-lg {
+    box-shadow: var(--theme-shadow-lg, 0 8px 18px -14px rgb(0 0 0 / 0.34));
+  }
+
+  .shadow-2xl {
+    box-shadow: var(--theme-shadow-xl, 0 18px 44px -28px rgb(0 0 0 / 0.45));
+  }
+}

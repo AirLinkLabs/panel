@@ -1,0 +1,32 @@
+@layer base {
+  html {
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p,
+  li,
+  dd {
+    text-wrap: pretty;
+  }
+
+  :where(button, [role="button"], a, input, select, textarea):focus-visible {
+    outline: 2px solid var(--theme-border-accent, #000000);
+    outline-offset: 2px;
+  }
+
+  :where(button, [role="button"]) {
+    min-height: 2.25rem;
+  }
+
+  :where(button, input, select, textarea) {
+    font-variant-numeric: tabular-nums;
+  }
+}

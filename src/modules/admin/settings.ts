@@ -275,14 +275,19 @@ const adminModule: Module = {
 
           const settings = await getSettings();
 
-          const builtinThemesDir = path.join(process.cwd(), "public", "themes");
+          const builtinThemesDir = path.join(
+            process.cwd(),
+            "storage",
+            "themes",
+            "builtin",
+          );
           const builtinThemes = fs.existsSync(builtinThemesDir)
             ? fs
                 .readdirSync(builtinThemesDir)
                 .filter((f) => f.endsWith(".css"))
                 .map((f) => ({
                   name: f.replace(".css", ""),
-                  path: `/themes/${f}`,
+                  path: `/themes/builtin/${f}`,
                   builtin: true,
                 }))
             : [];

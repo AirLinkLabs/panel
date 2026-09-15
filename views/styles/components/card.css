@@ -1,0 +1,26 @@
+/* Cards */
+.al-card {
+  @apply rounded-xl overflow-hidden p-3;
+  background: var(--theme-bg-card);
+  border: 1px solid var(--theme-border);
+  box-shadow: var(--theme-shadow-sm, var(--shadow-sheet));
+}
+
+/* ── Enhanced al-card: first-class header/title/action ────── */
+.al-card-header {
+  @apply -mx-4 -mt-4 mb-0 px-4 py-3 text-sm font-medium border-b flex items-center justify-between gap-3;
+  background: var(--theme-bg-secondary);
+  border-color: var(--theme-border);
+  color: var(--theme-text-muted);
+}
+.al-card-header-title {
+  @apply text-sm font-semibold truncate;
+  color: var(--theme-text-strong);
+}
+.al-card-header-desc {
+  @apply text-xs mt-0.5;
+  color: var(--theme-text-muted);
+}
+.al-card-header-actions {
+  @apply flex items-center gap-2 shrink-0;
+}

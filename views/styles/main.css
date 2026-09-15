@@ -1,0 +1,38 @@
+/* ── All imports must precede other CSS statements ──────────── */
+@import "./tokens/colors.css";
+@import "./tokens/spacing-radius-shadow.css";
+@import "./tokens/z-index.css";
+@import "./base/reset.css";
+@import "./base/typography.css";
+@import "./base/forms.css";
+@import "./components/button.css";
+@import "./components/card.css";
+@import "./components/table.css";
+@import "./components/badge.css";
+@import "./components/modal.css";
+@import "./components/toast.css";
+@import "./components/sheet.css";
+@import "./components/custom-select.css";
+@import "./components/field.css";
+@import "./components/state.css";
+@import "./components/tab.css";
+@import "./components/format-switcher.css";
+@import "./components/schedule.css";
+@import "./components/nav-settings.css";
+@import "./components/sidebar.css";
+@import "./components/ports-allocator.css";
+@import "./components/empty-state.css";
+@import "./components/breadcrumb.css";
+@import "./components/pagination.css";
+@import "./components/server-header.css";
+@import "./components/sftp-panel.css";
+@import "./pages/wallpaper.css";
+@import "./pages/console.css";
+@import "./pages/page-layout.css";
+@import "./pages/loading.css";
+@import "./pages/motion.css";
+
+@import "tailwindcss";
+@plugin "@tailwindcss/forms";
+
+@custom-variant dark (&:where(.dark, .dark *));
