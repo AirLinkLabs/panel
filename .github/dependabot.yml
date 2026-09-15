@@ -1,0 +1,89 @@
+version: 2
+
+updates:
+  # Node.js / TypeScript dependencies
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "Asia/Kolkata"
+
+    # Don't let Dependabot open dozens of PRs at once
+    open-pull-requests-limit: 10
+
+    # Keep related dependency updates together
+    groups:
+      production-dependencies:
+        dependency-type: "production"
+        update-types:
+          - "minor"
+          - "patch"
+
+      development-dependencies:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
+
+      major-dependencies:
+        update-types:
+          - "major"
+
+    # Useful PR metadata
+    labels:
+      - "dependencies"
+      - "npm"
+
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:30"
+      timezone: "Asia/Kolkata"
+
+    open-pull-requests-limit: 5
+
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+
+    labels:
+      - "dependencies"
+      - "github-actions"
+
+    commit-message:
+      prefix: "ci(deps)"
+      include: "scope"
+
+  # Docker images / Dockerfiles
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "05:00"
+      timezone: "Asia/Kolkata"
+
+    open-pull-requests-limit: 5
+
+    groups:
+      docker:
+        patterns:
+          - "*"
+
+    labels:
+      - "dependencies"
+      - "docker"
+
+    commit-message:
+      prefix: "build(deps)"
+      include: "scope"
