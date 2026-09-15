@@ -2,9 +2,14 @@ import { Router } from "express";
 import {
   isAuthenticatedForServer,
   requireSubUserPermission,
-} from "../../../handlers/utils/auth/serverAuthUtil";
-import { apiGet, apiPost } from "../../../handlers/internalApiClient";
-import type { Module } from "../../../handlers/moduleInit";
+} from "../../../../handlers/utils/auth/serverAuthUtil";
+import {
+  apiGet,
+  apiPost,
+  apiPatch,
+  apiDelete,
+} from "../../../../handlers/internalApiClient";
+import type { Module } from "../../../../handlers/moduleInit";
 
 const module: Module = {
   info: {
@@ -59,6 +64,21 @@ const module: Module = {
       },
     );
 
+    // WebSocket token
+    router.get(
+      "/server/:id/ws-token",
+      isAuthenticatedForServer("id"),
+      requireSubUserPermission("console"),
+      async (req, res, next) => {
+        try {
+          const data = await apiGet(req, `/servers/${req.params.id}/ws-token`);
+          res.json(data);
+        } catch (err) {
+          next(err);
+        }
+      },
+    );
+
     // Console
     router.get(
       "/server/:id/console",
@@ -66,12 +86,12 @@ const module: Module = {
       requireSubUserPermission("console"),
       async (req, res, next) => {
         try {
-          const data = await apiGet(
+          const serverRes = (await apiGet(
             req,
-            `/api/v2/user/servers/${req.params.id}/console`,
-          );
+            `/servers/${req.params.id}`,
+          )) as any;
           res.render("user/server/console", {
-            ...data,
+            server: serverRes.data || serverRes,
             user: req.session?.user,
             req,
           });
@@ -90,7 +110,7 @@ const module: Module = {
         try {
           const data = await apiGet(
             req,
-            `/api/v2/user/servers/${req.params.id}/console/logs`,
+            `/servers/${req.params.id}/console/logs`,
           );
           res.json(data);
         } catch (err) {
@@ -225,12 +245,13 @@ const module: Module = {
       requireSubUserPermission("backups"),
       async (req, res, next) => {
         try {
-          const data = await apiGet(
+          const backupsRes = (await apiGet(
             req,
-            `/api/v2/user/servers/${req.params.id}/backups`,
-          );
+            `/servers/${req.params.id}/backups`,
+          )) as any;
           res.render("user/server/backups", {
-            ...data,
+            backups: backupsRes.data || [],
+            server: { UUID: req.params.id },
             user: req.session?.user,
             req,
           });
@@ -249,8 +270,26 @@ const module: Module = {
         try {
           const result = await apiPost(
             req,
-            `/api/v2/user/servers/${req.params.id}/backups/create`,
+            `/servers/${req.params.id}/backups`,
             req.body,
+          );
+          res.json(result);
+        } catch (err) {
+          next(err);
+        }
+      },
+    );
+
+    // Backup delete
+    router.delete(
+      "/server/:id/backups/:backupId",
+      isAuthenticatedForServer("id"),
+      requireSubUserPermission("backups"),
+      async (req, res, next) => {
+        try {
+          const result = await apiDelete(
+            req,
+            `/servers/${req.params.id}/backups/${req.params.backupId}`,
           );
           res.json(result);
         } catch (err) {
@@ -268,7 +307,26 @@ const module: Module = {
         try {
           const result = await apiPost(
             req,
-            `/api/v2/user/servers/${req.params.id}/backups/${req.params.backupId}/restore`,
+            `/servers/${req.params.id}/backups/${req.params.backupId}/restore`,
+            req.body,
+          );
+          res.json(result);
+        } catch (err) {
+          next(err);
+        }
+      },
+    );
+
+    // Backup lock toggle
+    router.patch(
+      "/server/:id/backups/:backupId/lock",
+      isAuthenticatedForServer("id"),
+      requireSubUserPermission("backups"),
+      async (req, res, next) => {
+        try {
+          const result = await apiPatch(
+            req,
+            `/servers/${req.params.id}/backups/${req.params.backupId}/lock`,
             req.body,
           );
           res.json(result);
@@ -287,7 +345,7 @@ const module: Module = {
         try {
           const data = await apiGet(
             req,
-            `/api/v2/user/servers/${req.params.id}/backups/${req.params.backupId}/download`,
+            `/servers/${req.params.id}/backups/${req.params.backupId}/download`,
           );
           res.json(data);
         } catch (err) {
@@ -296,16 +354,67 @@ const module: Module = {
       },
     );
 
-    // Backup delete
-    router.post(
-      "/server/:id/backups/:backupId/delete",
+    // Backup progress
+    router.get(
+      "/server/:id/backups/progress",
       isAuthenticatedForServer("id"),
       requireSubUserPermission("backups"),
       async (req, res, next) => {
         try {
+          const data = await apiGet(
+            req,
+            `/servers/${req.params.id}/backups/progress`,
+          );
+          res.json(data);
+        } catch (err) {
+          next(err);
+        }
+      },
+    );
+
+    // Restore progress
+    router.get(
+      "/server/:id/backups/restore/progress",
+      isAuthenticatedForServer("id"),
+      requireSubUserPermission("backups"),
+      async (req, res, next) => {
+        try {
+          const data = await apiGet(
+            req,
+            `/servers/${req.params.id}/backups/restore/progress`,
+          );
+          res.json(data);
+        } catch (err) {
+          next(err);
+        }
+      },
+    );
+
+    // SFTP credentials — GET
+    router.get(
+      "/server/:id/sftp/credentials",
+      isAuthenticatedForServer("id"),
+      requireSubUserPermission("files.sftp"),
+      async (req, res, next) => {
+        try {
+          const data = await apiGet(req, `/servers/${req.params.id}/sftp`);
+          res.json(data);
+        } catch (err) {
+          next(err);
+        }
+      },
+    );
+
+    // SFTP credentials — POST (generate)
+    router.post(
+      "/server/:id/sftp/credentials",
+      isAuthenticatedForServer("id"),
+      requireSubUserPermission("files.sftp"),
+      async (req, res, next) => {
+        try {
           const result = await apiPost(
             req,
-            `/api/v2/user/servers/${req.params.id}/backups/${req.params.backupId}/delete`,
+            `/servers/${req.params.id}/sftp`,
             req.body,
           );
           res.json(result);
@@ -315,19 +424,56 @@ const module: Module = {
       },
     );
 
-    // Backup schedule
-    router.post(
-      "/server/:id/backups/schedule",
+    // SFTP credentials — DELETE
+    router.delete(
+      "/server/:id/sftp/credentials",
       isAuthenticatedForServer("id"),
-      requireSubUserPermission("backups"),
+      requireSubUserPermission("files.sftp"),
       async (req, res, next) => {
         try {
-          const result = await apiPost(
-            req,
-            `/api/v2/user/servers/${req.params.id}/backups/schedule`,
-            req.body,
-          );
+          const result = await apiDelete(req, `/servers/${req.params.id}/sftp`);
           res.json(result);
+        } catch (err) {
+          next(err);
+        }
+      },
+    );
+
+    // SFTP activity
+    router.get(
+      "/server/:id/sftp/activity",
+      isAuthenticatedForServer("id"),
+      requireSubUserPermission("files.sftp"),
+      async (req, res, next) => {
+        try {
+          const data = await apiGet(
+            req,
+            `/servers/${req.params.id}/sftp/activity`,
+          );
+          res.json(data);
+        } catch (err) {
+          next(err);
+        }
+      },
+    );
+
+    // SFTP page
+    router.get(
+      "/server/:id/sftp",
+      isAuthenticatedForServer("id"),
+      requireSubUserPermission("files.sftp"),
+      async (req, res, next) => {
+        try {
+          const sftpRes = (await apiGet(
+            req,
+            `/servers/${req.params.id}/sftp`,
+          )) as any;
+          res.render("user/server/sftp", {
+            sftp: sftpRes.data || sftpRes,
+            server: { UUID: req.params.id },
+            user: req.session?.user,
+            req,
+          });
         } catch (err) {
           next(err);
         }
@@ -416,19 +562,20 @@ const module: Module = {
       },
     );
 
-    // Players
+    // Players page
     router.get(
       "/server/:id/players",
       isAuthenticatedForServer("id"),
-      requireSubUserPermission("players"),
+      requireSubUserPermission("console"),
       async (req, res, next) => {
         try {
-          const data = await apiGet(
+          const playersRes = (await apiGet(
             req,
-            `/api/v2/user/servers/${req.params.id}/players`,
-          );
+            `/servers/${req.params.id}/players`,
+          )) as any;
           res.render("user/server/players", {
-            ...data,
+            players: playersRes.data || [],
+            server: { UUID: req.params.id },
             user: req.session?.user,
             req,
           });
@@ -438,19 +585,15 @@ const module: Module = {
       },
     );
 
-    // Player action
-    router.post(
-      "/server/:id/players/:playerId/:action",
+    // Players data (JSON for AJAX refresh)
+    router.get(
+      "/server/:id/players/data",
       isAuthenticatedForServer("id"),
-      requireSubUserPermission("players"),
+      requireSubUserPermission("console"),
       async (req, res, next) => {
         try {
-          const result = await apiPost(
-            req,
-            `/api/v2/user/servers/${req.params.id}/players/${req.params.playerId}/${req.params.action}`,
-            req.body,
-          );
-          res.json(result);
+          const data = await apiGet(req, `/servers/${req.params.id}/players`);
+          res.json(data);
         } catch (err) {
           next(err);
         }
@@ -461,15 +604,16 @@ const module: Module = {
     router.get(
       "/server/:id/worlds",
       isAuthenticatedForServer("id"),
-      requireSubUserPermission("worlds"),
+      requireSubUserPermission("console"),
       async (req, res, next) => {
         try {
-          const data = await apiGet(
+          const worldsRes = (await apiGet(
             req,
-            `/api/v2/user/servers/${req.params.id}/worlds`,
-          );
+            `/servers/${req.params.id}/worlds`,
+          )) as any;
           res.render("user/server/worlds", {
-            ...data,
+            worlds: worldsRes.data || [],
+            server: { UUID: req.params.id },
             user: req.session?.user,
             req,
           });
@@ -483,12 +627,12 @@ const module: Module = {
     router.post(
       "/server/:id/worlds/:worldId/:action",
       isAuthenticatedForServer("id"),
-      requireSubUserPermission("worlds"),
+      requireSubUserPermission("console"),
       async (req, res, next) => {
         try {
           const result = await apiPost(
             req,
-            `/api/v2/user/servers/${req.params.id}/worlds/${req.params.worldId}/${req.params.action}`,
+            `/servers/${req.params.id}/worlds/${req.params.worldId}/${req.params.action}`,
             req.body,
           );
           res.json(result);
@@ -502,7 +646,7 @@ const module: Module = {
     router.get(
       "/server/:id/subusers",
       isAuthenticatedForServer("id"),
-      requireSubUserPermission("subusers"),
+      requireSubUserPermission("settings"),
       async (req, res, next) => {
         try {
           const data = await apiGet(
@@ -524,7 +668,7 @@ const module: Module = {
     router.post(
       "/server/:id/subusers",
       isAuthenticatedForServer("id"),
-      requireSubUserPermission("subusers"),
+      requireSubUserPermission("settings"),
       async (req, res, next) => {
         try {
           const result = await apiPost(
@@ -543,7 +687,7 @@ const module: Module = {
     router.post(
       "/server/:id/subusers/:subuserId",
       isAuthenticatedForServer("id"),
-      requireSubUserPermission("subusers"),
+      requireSubUserPermission("settings"),
       async (req, res, next) => {
         try {
           const result = await apiPost(
@@ -562,7 +706,7 @@ const module: Module = {
     router.post(
       "/server/:id/subusers/:subuserId/delete",
       isAuthenticatedForServer("id"),
-      requireSubUserPermission("subusers"),
+      requireSubUserPermission("settings"),
       async (req, res, next) => {
         try {
           const result = await apiPost(
@@ -581,7 +725,7 @@ const module: Module = {
     router.get(
       "/server/:id/schedules",
       isAuthenticatedForServer("id"),
-      requireSubUserPermission("schedules"),
+      requireSubUserPermission("schedule.create"),
       async (req, res, next) => {
         try {
           const data = await apiGet(
@@ -603,7 +747,7 @@ const module: Module = {
     router.post(
       "/server/:id/schedules",
       isAuthenticatedForServer("id"),
-      requireSubUserPermission("schedules"),
+      requireSubUserPermission("schedule.create"),
       async (req, res, next) => {
         try {
           const result = await apiPost(
@@ -622,7 +766,7 @@ const module: Module = {
     router.post(
       "/server/:id/schedules/:scheduleId",
       isAuthenticatedForServer("id"),
-      requireSubUserPermission("schedules"),
+      requireSubUserPermission("schedule.create"),
       async (req, res, next) => {
         try {
           const result = await apiPost(
@@ -641,7 +785,7 @@ const module: Module = {
     router.post(
       "/server/:id/schedules/:scheduleId/delete",
       isAuthenticatedForServer("id"),
-      requireSubUserPermission("schedules"),
+      requireSubUserPermission("schedule.create"),
       async (req, res, next) => {
         try {
           const result = await apiPost(
@@ -660,7 +804,7 @@ const module: Module = {
     router.post(
       "/server/:id/schedules/:scheduleId/run",
       isAuthenticatedForServer("id"),
-      requireSubUserPermission("schedules"),
+      requireSubUserPermission("schedule.create"),
       async (req, res, next) => {
         try {
           const result = await apiPost(
@@ -679,7 +823,7 @@ const module: Module = {
     router.get(
       "/server/:id/databases",
       isAuthenticatedForServer("id"),
-      requireSubUserPermission("databases"),
+      requireSubUserPermission("database.create"),
       async (req, res, next) => {
         try {
           const data = await apiGet(
@@ -701,7 +845,7 @@ const module: Module = {
     router.post(
       "/server/:id/databases",
       isAuthenticatedForServer("id"),
-      requireSubUserPermission("databases"),
+      requireSubUserPermission("database.create"),
       async (req, res, next) => {
         try {
           const result = await apiPost(
@@ -720,7 +864,7 @@ const module: Module = {
     router.post(
       "/server/:id/databases/:databaseId/delete",
       isAuthenticatedForServer("id"),
-      requireSubUserPermission("databases"),
+      requireSubUserPermission("database.create"),
       async (req, res, next) => {
         try {
           const result = await apiPost(
@@ -739,7 +883,7 @@ const module: Module = {
     router.post(
       "/server/:id/databases/:databaseId/rotate",
       isAuthenticatedForServer("id"),
-      requireSubUserPermission("databases"),
+      requireSubUserPermission("database.create"),
       async (req, res, next) => {
         try {
           const result = await apiPost(

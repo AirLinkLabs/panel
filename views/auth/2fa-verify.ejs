@@ -15,12 +15,12 @@
       </p>
     </div>
 
-    <form method="POST" action="/auth/2fa/verify" class="space-y-4">
+    <form method="POST" action="/2fa" class="space-y-4">
       <%- include('../partials/csrf') %>
 
       <%- include('../partials/ui/form-field', {
         type: 'text',
-        name: 'code',
+        name: 'token',
         label: t('field2faCode'),
         id: 'twofa-code',
         placeholder: t('field2faCodePlaceholder'),
@@ -38,7 +38,7 @@
     </form>
 
     <p class="text-center text-sm mt-6" style="color:var(--theme-text-muted);">
-      <a href="/auth/login" class="font-medium hover:underline" style="color:var(--theme-primary);">
+      <a href="/login" class="font-medium hover:underline" style="color:var(--theme-primary);">
         <%- icon('arrow-left', { class: 'w-3.5 h-3.5 inline-block mr-1 -mt-0.5' }) %>
         <%= t('backToLogin') %>
       </a>

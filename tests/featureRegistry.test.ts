@@ -54,10 +54,10 @@ describe("feature registry", () => {
     ).toBe(true);
 
     // Api group follows.
-    const apiStart = names.indexOf("api/legacy");
+    const apiStart = names.indexOf("api/client");
     const apiEnd = names.indexOf("api/v2");
     expect(apiStart).toBe(adminEnd + 1);
-    expect(apiEnd).toBe(apiStart + 2);
+    expect(apiEnd).toBe(apiStart + 1);
     expect(
       names.slice(apiStart, apiEnd + 1).every((n) => n.startsWith("api/")),
     ).toBe(true);

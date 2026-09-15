@@ -9,9 +9,7 @@
     "rust",
     "management-panel",
     "prisma",
-    "express",
-    "htmx",
-    "petrodactyl-alternaitve"
+    "express"
   ],
   "homepage": "https://airlinklabs.xyz/",
   "repository": {

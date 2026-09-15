@@ -15,7 +15,19 @@
       </p>
     </div>
 
-    <form method="POST" action="/auth/register" class="space-y-4">
+    <% if (req.query.err) { %>
+    <div class="rounded-xl px-4 py-3 mb-5" style="background:var(--theme-danger-bg);border:1px solid var(--theme-danger)" role="alert" aria-live="assertive">
+      <p class="text-sm font-medium" style="color:var(--theme-danger)">
+        <% if (req.query.err === 'missing_credentials') { %><%= t('errorAllFieldsRequired') %>
+        <% } else if (req.query.err === 'invalid_username') { %><%= t('errorInvalidUsername') %>
+        <% } else if (req.query.err === 'user_already_exists') { %><%= t('errorUserAlreadyExists') %>
+        <% } else if (req.query.err === 'weak_password') { %><%= t('errorWeakPassword') %>
+        <% } else { %><%= t('errorGeneric') %><% } %>
+      </p>
+    </div>
+    <% } %>
+
+    <form method="POST" action="/register" class="space-y-4">
       <%- include('../partials/csrf') %>
 
       <%- include('../partials/ui/form-field', {
@@ -75,7 +87,7 @@
 
     <p class="text-center text-sm mt-6" style="color:var(--theme-text-muted);">
       <%= t('hasAccount') %>
-      <a href="/auth/login" class="font-medium hover:underline" style="color:var(--theme-primary);">
+      <a href="/login" class="font-medium hover:underline" style="color:var(--theme-primary);">
         <%= t('login') %>
       </a>
     </p>

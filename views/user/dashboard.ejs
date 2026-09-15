@@ -1,0 +1,80 @@
+<%- include('../../layouts/user', { title: 'Dashboard' }) %>
+
+<div class="px-4 sm:px-6 lg:px-8 pt-4">
+  <div class="flex items-start justify-between gap-4">
+    <div>
+      <h1 class="text-xl font-semibold tracking-tight" style="color:var(--theme-text-strong)"><%= t('dashboard') %></h1>
+      <p class="text-sm mt-1" style="color:var(--theme-text-muted)"><%= t('welcomeBack') %>, <%= user.username %></p>
+    </div>
+    <% if (typeof canCreateServer !== 'undefined' && canCreateServer) { %>
+    <a href="/create-server" class="al-btn al-btn-primary inline-flex items-center gap-1.5 shrink-0">
+      <%- icon('plus', { class: 'size-4', strokeWidth: 1.5 }) %>
+      <%= t('createServer') %>
+    </a>
+    <% } %>
+  </div>
+
+  <% if (typeof errorMessage !== 'undefined' && errorMessage && errorMessage.message) { %>
+  <div class="mt-4 p-3 rounded-xl text-[13px]" style="background:var(--theme-warning-bg); border:1px solid var(--theme-warning); color:var(--theme-warning);">
+    <%= errorMessage.message %>
+  </div>
+  <% } %>
+
+  <div class="mt-5">
+    <% if (!Array.isArray(servers) || servers.length === 0) { %>
+      <%- include('../../partials/empty-state', {
+        iconName: 'server',
+        title: t('noServersYet'),
+        description: t('createFirstServerDesc'),
+        action: (typeof canCreateServer !== 'undefined' && canCreateServer)
+          ? '<a href="/create-server" class="al-btn al-btn-primary">' + t('createServer') + '</a>'
+          : ''
+      }) %>
+    <% } else { %>
+
+      <% if (typeof folders !== 'undefined' && Array.isArray(folders) && folders.length > 0) { %>
+        <% folders.forEach(function(folder) { %>
+        <div class="mb-6">
+          <div class="flex items-center gap-2 mb-3">
+            <%- icon('folder', { class: 'w-4 h-4', style: 'color:var(--theme-text-muted)' }) %>
+            <h3 class="text-sm font-medium" style="color:var(--theme-text-strong)"><%= folder.name %></h3>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <% servers.filter(function(s) { return folder.members && folder.members.some(function(m) { return m.serverUUID === s.UUID; }); }).forEach(function(server) { %>
+              <%- include('../../partials/server-card', { server: server }) %>
+            <% }); %>
+          </div>
+        </div>
+        <% }); %>
+
+        <% var unfoldered = servers.filter(function(s) { return !folders.some(function(f) { return f.members && f.members.some(function(m) { return m.serverUUID === s.UUID; }); }); }); %>
+        <% if (unfoldered.length > 0) { %>
+        <div class="mb-6">
+          <div class="flex items-center gap-2 mb-3">
+            <%- icon('layers', { class: 'w-4 h-4', style: 'color:var(--theme-text-muted)' }) %>
+            <h3 class="text-sm font-medium" style="color:var(--theme-text-strong)"><%= t('other') %></h3>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <% unfoldered.forEach(function(server) { %>
+              <%- include('../../partials/server-card', { server: server }) %>
+            <% }); %>
+          </div>
+        </div>
+        <% } %>
+      <% } else { %>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <% servers.forEach(function(server) { %>
+            <%- include('../../partials/server-card', { server: server }) %>
+          <% }); %>
+        </div>
+      <% } %>
+
+      <% if (typeof totalPages !== 'undefined' && totalPages > 1) { %>
+        <%- include('../../partials/pagination', { currentPage: typeof currentPage !== 'undefined' ? currentPage : 1, totalPages: totalPages }) %>
+      <% } %>
+
+    <% } %>
+  </div>
+</div>
+
+<%- include('../../layouts/user-footer') %>

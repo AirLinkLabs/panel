@@ -1,28 +1,44 @@
-import { Router } from "express";
-import { isAuthenticated } from "../../../handlers/utils/auth/authUtil";
-import { apiGet, apiPost } from "../../../handlers/internalApiClient";
-import type { Module } from "../../../handlers/moduleInit";
+import { Router } from 'express';
+import { isAuthenticated } from '../../../handlers/utils/auth/authUtil';
+import {
+  apiGet,
+  apiPost,
+  apiPut,
+  apiDelete,
+} from '../../../handlers/internalApiClient';
+import type { Module } from '../../../handlers/moduleInit';
 
 const module: Module = {
   info: {
-    name: "Admin Servers Page",
-    version: "2.0.0",
-    moduleVersion: "1.0.0",
-    author: "AirLinkLab",
-    license: "MIT",
-    description: "",
+    name: 'Admin Servers Page',
+    version: '2.0.0',
+    moduleVersion: '1.0.0',
+    author: 'AirLinkLab',
+    license: 'MIT',
+    description: '',
   },
   router: () => {
     const router = Router();
 
+    // -----------------------------------------------------------------------
+    // GET /admin/servers — List servers
+    // -----------------------------------------------------------------------
     router.get(
-      "/admin/servers",
-      isAuthenticated(true, "airlink.admin.servers.view"),
+      '/admin/servers',
+      isAuthenticated(true, 'airlink.admin.servers.view'),
       async (req, res, next) => {
         try {
-          const servers = await apiGet(req, "/api/v2/admin/servers");
-          res.render("admin/servers/servers", {
-            servers,
+          const page = req.query.page || '1';
+          const perPage = req.query.perPage || '25';
+          const search = req.query.search || '';
+          const qs = `?page=${page}&perPage=${perPage}${search ? `&search=${search}` : ''}`;
+          const result = (await apiGet(
+            req,
+            `/api/v2/admin/servers${qs}`,
+          )) as any;
+          res.render('admin/servers/servers', {
+            servers: result.data || [],
+            meta: result.meta,
             user: req.session?.user,
             req,
           });
@@ -32,14 +48,30 @@ const module: Module = {
       },
     );
 
+    // -----------------------------------------------------------------------
+    // GET /admin/servers/create — Create form
+    // -----------------------------------------------------------------------
     router.get(
-      "/admin/servers/create",
-      isAuthenticated(true, "airlink.admin.servers.view"),
+      '/admin/servers/create',
+      isAuthenticated(true, 'airlink.admin.servers.view'),
       async (req, res, next) => {
         try {
-          const data = await apiGet(req, "/api/v2/admin/servers/create");
-          res.render("admin/servers/create", {
-            ...data,
+          const [usersRes, nodesRes, imagesRes, settingsRes] =
+            await Promise.all([
+              apiGet(req, '/api/v2/admin/users?perPage=9999'),
+              apiGet(req, '/api/v2/admin/nodes/list'),
+              apiGet(req, '/api/v2/admin/images/list'),
+              apiGet(req, '/api/v2/admin/settings'),
+            ]);
+          const usersData = (usersRes as any).data || [];
+          const nodesData = (nodesRes as any).data || [];
+          const imagesData = (imagesRes as any).data || [];
+          const settingsObj = (settingsRes as any).data || {};
+          res.render('admin/servers/create', {
+            users: usersData,
+            nodes: nodesData,
+            images: imagesData,
+            settings: settingsObj,
             user: req.session?.user,
             req,
           });
@@ -49,30 +81,60 @@ const module: Module = {
       },
     );
 
+    // -----------------------------------------------------------------------
+    // POST /admin/servers/create — Submit create (PRG)
+    // -----------------------------------------------------------------------
     router.post(
-      "/admin/servers/create",
-      isAuthenticated(true, "airlink.admin.servers.create"),
+      '/admin/servers/create',
+      isAuthenticated(true, 'airlink.admin.servers.create'),
       async (req, res, next) => {
         try {
-          await apiPost(req, "/api/v2/admin/servers", req.body);
-          res.status(200).json({ success: true });
+          await apiPost(req, '/api/v2/admin/servers', req.body);
+          req.session.flash = {
+            type: 'success',
+            message: 'Server created successfully.',
+          };
+          res.redirect('/admin/servers');
         } catch (err) {
           next(err);
         }
       },
     );
 
+    // -----------------------------------------------------------------------
+    // GET /admin/servers/edit/:id — Edit form
+    // -----------------------------------------------------------------------
     router.get(
-      "/admin/servers/edit/:id",
-      isAuthenticated(true, "airlink.admin.servers.view"),
+      '/admin/servers/edit/:id',
+      isAuthenticated(true, 'airlink.admin.servers.view'),
       async (req, res, next) => {
         try {
-          const data = await apiGet(
-            req,
-            `/api/v2/admin/servers/${req.params.id}`,
-          );
-          res.render("admin/servers/edit", {
-            ...data,
+          const [serverRes, usersRes, nodesRes, imagesRes, settingsRes] =
+            await Promise.all([
+              apiGet(req, `/api/v2/admin/servers/${req.params.id}`),
+              apiGet(req, '/api/v2/admin/users?perPage=9999'),
+              apiGet(req, '/api/v2/admin/nodes/list'),
+              apiGet(req, '/api/v2/admin/images/list'),
+              apiGet(req, '/api/v2/admin/settings'),
+            ]);
+          const server = (serverRes as any).data;
+          if (!server) {
+            req.session.flash = {
+              type: 'error',
+              message: 'Server not found.',
+            };
+            return res.redirect('/admin/servers');
+          }
+          const usersData = (usersRes as any).data || [];
+          const nodesData = (nodesRes as any).data || [];
+          const imagesData = (imagesRes as any).data || [];
+          const settingsObj = (settingsRes as any).data || {};
+          res.render('admin/servers/edit', {
+            server,
+            users: usersData,
+            nodes: nodesData,
+            images: imagesData,
+            settings: settingsObj,
             user: req.session?.user,
             req,
           });
@@ -82,43 +144,52 @@ const module: Module = {
       },
     );
 
+    // -----------------------------------------------------------------------
+    // POST /admin/servers/edit/:id — Submit edit (PRG)
+    // -----------------------------------------------------------------------
     router.post(
-      "/admin/servers/edit/:id",
-      isAuthenticated(true, "airlink.admin.servers.update"),
+      '/admin/servers/edit/:id',
+      isAuthenticated(true, 'airlink.admin.servers.update'),
       async (req, res, next) => {
         try {
-          await apiPost(
-            req,
-            `/api/v2/admin/servers/${req.params.id}`,
-            req.body,
-          );
-          res.status(200).json({ success: true });
+          await apiPut(req, `/api/v2/admin/servers/${req.params.id}`, req.body);
+          req.session.flash = {
+            type: 'success',
+            message: 'Server updated successfully.',
+          };
+          res.redirect('/admin/servers');
         } catch (err) {
           next(err);
         }
       },
     );
 
+    // -----------------------------------------------------------------------
+    // POST /admin/server/delete/:id — Delete server (PRG)
+    // -----------------------------------------------------------------------
     router.post(
-      "/admin/server/delete/:id",
-      isAuthenticated(true, "airlink.admin.servers.delete"),
+      '/admin/server/delete/:id',
+      isAuthenticated(true, 'airlink.admin.servers.delete'),
       async (req, res, next) => {
         try {
-          await apiPost(
-            req,
-            `/api/v2/admin/servers/${req.params.id}/delete`,
-            req.body,
-          );
-          res.redirect("/admin/servers");
+          await apiDelete(req, `/api/v2/admin/servers/${req.params.id}`);
+          req.session.flash = {
+            type: 'success',
+            message: 'Server deleted successfully.',
+          };
+          res.redirect('/admin/servers');
         } catch (err) {
           next(err);
         }
       },
     );
 
+    // -----------------------------------------------------------------------
+    // POST /admin/servers/:id/suspend — Suspend (JSON for JS callers)
+    // -----------------------------------------------------------------------
     router.post(
-      "/admin/servers/:id/suspend",
-      isAuthenticated(true, "airlink.admin.servers.update"),
+      '/admin/servers/:id/suspend',
+      isAuthenticated(true, 'airlink.admin.servers.update'),
       async (req, res, next) => {
         try {
           await apiPost(
@@ -133,9 +204,12 @@ const module: Module = {
       },
     );
 
+    // -----------------------------------------------------------------------
+    // POST /admin/servers/:id/unsuspend — Unsuspend (JSON for JS callers)
+    // -----------------------------------------------------------------------
     router.post(
-      "/admin/servers/:id/unsuspend",
-      isAuthenticated(true, "airlink.admin.servers.update"),
+      '/admin/servers/:id/unsuspend',
+      isAuthenticated(true, 'airlink.admin.servers.update'),
       async (req, res, next) => {
         try {
           await apiPost(
@@ -150,9 +224,12 @@ const module: Module = {
       },
     );
 
+    // -----------------------------------------------------------------------
+    // POST /admin/servers/:id/transfer — Transfer (JSON for JS callers)
+    // -----------------------------------------------------------------------
     router.post(
-      "/admin/servers/:id/transfer",
-      isAuthenticated(true, "airlink.admin.servers.update"),
+      '/admin/servers/:id/transfer',
+      isAuthenticated(true, 'airlink.admin.servers.update'),
       async (req, res, next) => {
         try {
           await apiPost(
@@ -167,9 +244,12 @@ const module: Module = {
       },
     );
 
+    // -----------------------------------------------------------------------
+    // GET /admin/servers/:id/transfer/status — Transfer poll (JSON)
+    // -----------------------------------------------------------------------
     router.get(
-      "/admin/servers/:id/transfer/status",
-      isAuthenticated(true, "airlink.admin.servers.view"),
+      '/admin/servers/:id/transfer/status',
+      isAuthenticated(true, 'airlink.admin.servers.view'),
       async (req, res, next) => {
         try {
           const status = await apiGet(

@@ -1,32 +1,35 @@
-import { Router } from "express";
-import { isAuthenticated } from "../../../handlers/utils/auth/authUtil";
+import { Router } from 'express';
+import { isAuthenticated } from '../../../handlers/utils/auth/authUtil';
 import {
   apiGet,
   apiPost,
   apiDelete,
-} from "../../../handlers/internalApiClient";
-import type { Module } from "../../../handlers/moduleInit";
+} from '../../../handlers/internalApiClient';
+import type { Module } from '../../../handlers/moduleInit';
 
 const module: Module = {
   info: {
-    name: "Admin Addons Page",
-    version: "2.0.0",
-    moduleVersion: "1.0.0",
-    author: "AirLinkLab",
-    license: "MIT",
-    description: "",
+    name: 'Admin Addons Page',
+    version: '2.0.0',
+    moduleVersion: '1.0.0',
+    author: 'AirLinkLab',
+    license: 'MIT',
+    description: '',
   },
   router: () => {
     const router = Router();
 
+    // -----------------------------------------------------------------------
+    // GET /admin/addons — List installed addons
+    // -----------------------------------------------------------------------
     router.get(
-      "/admin/addons",
-      isAuthenticated(true, "airlink.admin.addons.view"),
+      '/admin/addons',
+      isAuthenticated(true, 'airlink.admin.addons.view'),
       async (req, res, next) => {
         try {
-          const data = await apiGet(req, "/api/v2/admin/addons");
-          res.render("admin/addons/addons", {
-            ...data,
+          const data = (await apiGet(req, '/api/v2/admin/addons')) as any;
+          res.render('admin/addons/index', {
+            addons: data?.data || data || [],
             user: req.session?.user,
             req,
           });
@@ -36,29 +39,15 @@ const module: Module = {
       },
     );
 
+    // -----------------------------------------------------------------------
+    // GET /admin/addons/list — Addons list (JSON)
+    // -----------------------------------------------------------------------
     router.get(
-      "/admin/addons/store",
-      isAuthenticated(true, "airlink.admin.addons.view"),
+      '/admin/addons/list',
+      isAuthenticated(true, 'airlink.admin.addons.view'),
       async (req, res, next) => {
         try {
-          const data = await apiGet(req, "/api/v2/admin/addons/store");
-          res.render("admin/addons/store", {
-            ...data,
-            user: req.session?.user,
-            req,
-          });
-        } catch (err) {
-          next(err);
-        }
-      },
-    );
-
-    router.get(
-      "/admin/addons/store/list",
-      isAuthenticated(true, "airlink.admin.addons.view"),
-      async (req, res, next) => {
-        try {
-          const data = await apiGet(req, "/api/v2/admin/addons/store/list");
+          const data: any = await apiGet(req, '/api/v2/admin/addons');
           res.json(data);
         } catch (err) {
           next(err);
@@ -66,17 +55,20 @@ const module: Module = {
       },
     );
 
+    // -----------------------------------------------------------------------
+    // GET /admin/addons/:slug — Addon detail
+    // -----------------------------------------------------------------------
     router.get(
-      "/admin/addons/store/:slug",
-      isAuthenticated(true, "airlink.admin.addons.view"),
+      '/admin/addons/:slug',
+      isAuthenticated(true, 'airlink.admin.addons.view'),
       async (req, res, next) => {
         try {
-          const data = await apiGet(
+          const data = (await apiGet(
             req,
-            `/api/v2/admin/addons/store/${req.params.slug}`,
-          );
-          res.render("admin/addons/store-details", {
-            ...data,
+            `/api/v2/admin/addons/${req.params.slug}`,
+          )) as any;
+          res.render('admin/addons/detail', {
+            addon: data?.data || data || {},
             user: req.session?.user,
             req,
           });
@@ -86,156 +78,17 @@ const module: Module = {
       },
     );
 
-    router.get(
-      "/admin/addons/config",
-      isAuthenticated(true, "airlink.admin.addons.view"),
-      async (req, res, next) => {
-        try {
-          const data = await apiGet(req, "/api/v2/admin/addons/config");
-          res.render("admin/addons/config", {
-            ...data,
-            user: req.session?.user,
-            req,
-          });
-        } catch (err) {
-          next(err);
-        }
-      },
-    );
-
-    router.get(
-      "/admin/addons/scripts",
-      isAuthenticated(true, "airlink.admin.addons.view"),
-      async (req, res, next) => {
-        try {
-          const data = await apiGet(req, "/api/v2/admin/addons/scripts");
-          res.render("admin/addons/scripts", {
-            ...data,
-            user: req.session?.user,
-            req,
-          });
-        } catch (err) {
-          next(err);
-        }
-      },
-    );
-
-    router.get(
-      "/admin/addons/scripts/create",
-      isAuthenticated(true, "airlink.admin.addons.view"),
-      async (req, res, next) => {
-        try {
-          res.render("admin/addons/scripts/create", {
-            user: req.session?.user,
-            req,
-          });
-        } catch (err) {
-          next(err);
-        }
-      },
-    );
-
-    router.get(
-      "/admin/addons/scripts/edit/:id",
-      isAuthenticated(true, "airlink.admin.addons.view"),
-      async (req, res, next) => {
-        try {
-          const data = await apiGet(
-            req,
-            `/api/v2/admin/addons/scripts/${req.params.id}`,
-          );
-          res.render("admin/addons/scripts/edit", {
-            ...data,
-            user: req.session?.user,
-            req,
-          });
-        } catch (err) {
-          next(err);
-        }
-      },
-    );
-
-    router.get(
-      "/admin/addons/logs",
-      isAuthenticated(true, "airlink.admin.addons.logs.view"),
-      async (req, res, next) => {
-        try {
-          const data = await apiGet(req, "/api/v2/admin/addons/logs");
-          res.render("admin/addons/logs", {
-            ...data,
-            user: req.session?.user,
-            req,
-          });
-        } catch (err) {
-          next(err);
-        }
-      },
-    );
-
-    router.get(
-      "/admin/addons/install",
-      isAuthenticated(true, "airlink.admin.addons.view"),
-      async (req, res, next) => {
-        try {
-          const data = await apiGet(req, "/api/v2/admin/addons/install");
-          res.render("admin/addons/install", {
-            ...data,
-            user: req.session?.user,
-            req,
-          });
-        } catch (err) {
-          next(err);
-        }
-      },
-    );
-
+    // -----------------------------------------------------------------------
+    // POST /admin/addons/toggle/:slug — Toggle addon
+    // -----------------------------------------------------------------------
     router.post(
-      "/admin/addons",
-      isAuthenticated(true, "airlink.admin.addons.install"),
-      async (req, res, next) => {
-        try {
-          await apiPost(req, "/api/v2/admin/addons", req.body);
-          res.status(200).json({ success: true });
-        } catch (err) {
-          next(err);
-        }
-      },
-    );
-
-    router.post(
-      "/admin/addons/install/file",
-      isAuthenticated(true, "airlink.admin.addons.install"),
-      async (req, res, next) => {
-        try {
-          await apiPost(req, "/api/v2/admin/addons/install/file", req.body);
-          res.status(200).json({ success: true });
-        } catch (err) {
-          next(err);
-        }
-      },
-    );
-
-    router.delete(
-      "/admin/addons/uninstall/:id",
-      isAuthenticated(true, "airlink.admin.addons.uninstall"),
-      async (req, res, next) => {
-        try {
-          await apiDelete(req, `/api/v2/admin/addons/${req.params.id}`);
-          res.status(200).json({ success: true });
-        } catch (err) {
-          next(err);
-        }
-      },
-    );
-
-    router.post(
-      "/admin/addons/:id/toggle",
-      isAuthenticated(true, "airlink.admin.addons.update"),
+      '/admin/addons/toggle/:slug',
+      isAuthenticated(true, 'airlink.admin.addons.update'),
       async (req, res, next) => {
         try {
           await apiPost(
             req,
-            `/api/v2/admin/addons/${req.params.id}/toggle`,
+            `/api/v2/admin/addons/${req.params.slug}/toggle`,
             req.body,
           );
           res.status(200).json({ success: true });
@@ -245,12 +98,15 @@ const module: Module = {
       },
     );
 
+    // -----------------------------------------------------------------------
+    // POST /admin/addons/reload — Reload all addons
+    // -----------------------------------------------------------------------
     router.post(
-      "/admin/addons/reload",
-      isAuthenticated(true, "airlink.admin.addons.update"),
+      '/admin/addons/reload',
+      isAuthenticated(true, 'airlink.admin.addons.update'),
       async (req, res, next) => {
         try {
-          await apiPost(req, "/api/v2/admin/addons/reload", req.body);
+          await apiPost(req, '/api/v2/admin/addons/reload', req.body);
           res.status(200).json({ success: true });
         } catch (err) {
           next(err);
@@ -258,14 +114,17 @@ const module: Module = {
       },
     );
 
+    // -----------------------------------------------------------------------
+    // POST /admin/addons/settings/:slug — Update addon settings
+    // -----------------------------------------------------------------------
     router.post(
-      "/admin/addons/:id/save",
-      isAuthenticated(true, "airlink.admin.addons.update"),
+      '/admin/addons/settings/:slug',
+      isAuthenticated(true, 'airlink.admin.addons.update'),
       async (req, res, next) => {
         try {
           await apiPost(
             req,
-            `/api/v2/admin/addons/${req.params.id}/save`,
+            `/api/v2/admin/addons/${req.params.slug}/settings`,
             req.body,
           );
           res.status(200).json({ success: true });
@@ -275,14 +134,17 @@ const module: Module = {
       },
     );
 
+    // -----------------------------------------------------------------------
+    // POST /admin/addons/command/:slug/:command — Run addon command
+    // -----------------------------------------------------------------------
     router.post(
-      "/admin/addons/:id/restart",
-      isAuthenticated(true, "airlink.admin.addons.update"),
+      '/admin/addons/command/:slug/:command',
+      isAuthenticated(true, 'airlink.admin.addons.update'),
       async (req, res, next) => {
         try {
           await apiPost(
             req,
-            `/api/v2/admin/addons/${req.params.id}/restart`,
+            `/api/v2/admin/addons/${req.params.slug}/command/${req.params.command}`,
             req.body,
           );
           res.status(200).json({ success: true });
@@ -292,14 +154,17 @@ const module: Module = {
       },
     );
 
+    // -----------------------------------------------------------------------
+    // POST /admin/addons/capability/:slug — Toggle addon capability
+    // -----------------------------------------------------------------------
     router.post(
-      "/admin/addons/:id/command",
-      isAuthenticated(true, "airlink.admin.addons.update"),
+      '/admin/addons/capability/:slug',
+      isAuthenticated(true, 'airlink.admin.addons.update'),
       async (req, res, next) => {
         try {
           await apiPost(
             req,
-            `/api/v2/admin/addons/${req.params.id}/command`,
+            `/api/v2/admin/addons/${req.params.slug}/capability`,
             req.body,
           );
           res.status(200).json({ success: true });
@@ -309,12 +174,55 @@ const module: Module = {
       },
     );
 
+    // -----------------------------------------------------------------------
+    // POST /admin/addons/uninstall/:slug — Uninstall addon
+    // -----------------------------------------------------------------------
+    router.post(
+      '/admin/addons/uninstall/:slug',
+      isAuthenticated(true, 'airlink.admin.addons.uninstall'),
+      async (req, res, next) => {
+        try {
+          await apiPost(
+            req,
+            `/api/v2/admin/addons/${req.params.slug}/uninstall`,
+            req.body,
+          );
+          res.status(200).json({ success: true });
+        } catch (err) {
+          next(err);
+        }
+      },
+    );
+
+    // -----------------------------------------------------------------------
+    // GET /admin/addons/store — Addon store
+    // -----------------------------------------------------------------------
     router.get(
-      "/admin/addons/script/logs",
-      isAuthenticated(true, "airlink.admin.addons.logs.view"),
+      '/admin/addons/store',
+      isAuthenticated(true, 'airlink.admin.addons.view'),
       async (req, res, next) => {
         try {
-          const data = await apiGet(req, "/api/v2/admin/addons/script/logs");
+          const data = (await apiGet(req, '/api/v2/admin/addons/store')) as any;
+          res.render('admin/addons/store', {
+            addons: data?.data || data || [],
+            user: req.session?.user,
+            req,
+          });
+        } catch (err) {
+          next(err);
+        }
+      },
+    );
+
+    // -----------------------------------------------------------------------
+    // GET /admin/addons/store/list — Store list (JSON)
+    // -----------------------------------------------------------------------
+    router.get(
+      '/admin/addons/store/list',
+      isAuthenticated(true, 'airlink.admin.addons.view'),
+      async (req, res, next) => {
+        try {
+          const data: any = await apiGet(req, '/api/v2/admin/addons/store/list');
           res.json(data);
         } catch (err) {
           next(err);
@@ -322,14 +230,17 @@ const module: Module = {
       },
     );
 
+    // -----------------------------------------------------------------------
+    // GET /admin/addons/store/discussions — Store discussions
+    // -----------------------------------------------------------------------
     router.get(
-      "/admin/addons/script/logs/:id",
-      isAuthenticated(true, "airlink.admin.addons.logs.view"),
+      '/admin/addons/store/discussions',
+      isAuthenticated(true, 'airlink.admin.addons.view'),
       async (req, res, next) => {
         try {
-          const data = await apiGet(
+          const data: any = await apiGet(
             req,
-            `/api/v2/admin/addons/script/logs/${req.params.id}`,
+            '/api/v2/admin/addons/store/discussions',
           );
           res.json(data);
         } catch (err) {
@@ -338,12 +249,15 @@ const module: Module = {
       },
     );
 
+    // -----------------------------------------------------------------------
+    // POST /admin/addons/store/install — Install from store
+    // -----------------------------------------------------------------------
     router.post(
-      "/admin/addons/scripts/create",
-      isAuthenticated(true, "airlink.admin.addons.scripts.create"),
+      '/admin/addons/store/install',
+      isAuthenticated(true, 'airlink.admin.addons.install'),
       async (req, res, next) => {
         try {
-          await apiPost(req, "/api/v2/admin/addons/scripts", req.body);
+          await apiPost(req, '/api/v2/admin/addons/store/install', req.body);
           res.status(200).json({ success: true });
         } catch (err) {
           next(err);
@@ -351,29 +265,15 @@ const module: Module = {
       },
     );
 
+    // -----------------------------------------------------------------------
+    // POST /admin/addons/store/uninstall — Uninstall from store
+    // -----------------------------------------------------------------------
     router.post(
-      "/admin/addons/scripts/update/:id",
-      isAuthenticated(true, "airlink.admin.addons.scripts.update"),
+      '/admin/addons/store/uninstall',
+      isAuthenticated(true, 'airlink.admin.addons.uninstall'),
       async (req, res, next) => {
         try {
-          await apiPost(
-            req,
-            `/api/v2/admin/addons/scripts/${req.params.id}`,
-            req.body,
-          );
-          res.status(200).json({ success: true });
-        } catch (err) {
-          next(err);
-        }
-      },
-    );
-
-    router.delete(
-      "/admin/addons/scripts/:id",
-      isAuthenticated(true, "airlink.admin.addons.scripts.delete"),
-      async (req, res, next) => {
-        try {
-          await apiDelete(req, `/api/v2/admin/addons/scripts/${req.params.id}`);
+          await apiPost(req, '/api/v2/admin/addons/store/uninstall', req.body);
           res.status(200).json({ success: true });
         } catch (err) {
           next(err);

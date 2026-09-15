@@ -1,27 +1,27 @@
-import { Router } from "express";
-import { isAuthenticated } from "../../../handlers/utils/auth/authUtil";
-import { apiGet, apiPost } from "../../../handlers/internalApiClient";
-import type { Module } from "../../../handlers/moduleInit";
+import { Router } from 'express';
+import { isAuthenticated } from '../../../handlers/utils/auth/authUtil';
+import { apiGet, apiPost } from '../../../handlers/internalApiClient';
+import type { Module } from '../../../handlers/moduleInit';
 
 const module: Module = {
   info: {
-    name: "Admin Radar Page",
-    version: "2.0.0",
-    moduleVersion: "1.0.0",
-    author: "AirLinkLab",
-    license: "MIT",
-    description: "",
+    name: 'Admin Radar Page',
+    version: '2.0.0',
+    moduleVersion: '1.0.0',
+    author: 'AirLinkLab',
+    license: 'MIT',
+    description: '',
   },
   router: () => {
     const router = Router();
 
     router.get(
-      "/admin/radar",
-      isAuthenticated(true, "airlink.admin.radar.view"),
+      '/admin/radar',
+      isAuthenticated(true, 'airlink.admin.radar.view'),
       async (req, res, next) => {
         try {
-          const data = await apiGet(req, "/api/v2/admin/radar");
-          res.render("admin/radar/index", {
+          const data: any = await apiGet(req, '/api/v2/admin/radar');
+          res.render('admin/radar/index', {
             ...data,
             user: req.session?.user,
             req,
@@ -33,12 +33,12 @@ const module: Module = {
     );
 
     router.get(
-      "/admin/radar/scripts",
-      isAuthenticated(true, "airlink.admin.radar.scripts.view"),
+      '/admin/radar/scripts',
+      isAuthenticated(true, 'airlink.admin.radar.scripts.view'),
       async (req, res, next) => {
         try {
-          const data = await apiGet(req, "/api/v2/admin/radar/scripts");
-          res.render("admin/radar/scripts/index", {
+          const data: any = await apiGet(req, '/api/v2/admin/radar/scripts');
+          res.render('admin/radar/scripts/index', {
             ...data,
             user: req.session?.user,
             req,
@@ -50,12 +50,12 @@ const module: Module = {
     );
 
     router.get(
-      "/admin/radar/scripts/create",
-      isAuthenticated(true, "airlink.admin.radar.scripts.create"),
+      '/admin/radar/scripts/create',
+      isAuthenticated(true, 'airlink.admin.radar.scripts.create'),
       async (req, res, next) => {
         try {
-          const data = await apiGet(req, "/api/v2/admin/radar/scripts/create");
-          res.render("admin/radar/scripts/create", {
+          const data: any = await apiGet(req, '/api/v2/admin/radar/scripts/create');
+          res.render('admin/radar/scripts/create', {
             ...data,
             user: req.session?.user,
             req,
@@ -67,15 +67,15 @@ const module: Module = {
     );
 
     router.get(
-      "/admin/radar/scripts/edit/:id",
-      isAuthenticated(true, "airlink.admin.radar.scripts.view"),
+      '/admin/radar/scripts/edit/:id',
+      isAuthenticated(true, 'airlink.admin.radar.scripts.view'),
       async (req, res, next) => {
         try {
-          const data = await apiGet(
+          const data: any = await apiGet(
             req,
             `/api/v2/admin/radar/scripts/${req.params.id}`,
           );
-          res.render("admin/radar/scripts/edit", {
+          res.render('admin/radar/scripts/edit', {
             ...data,
             user: req.session?.user,
             req,
@@ -87,12 +87,12 @@ const module: Module = {
     );
 
     router.get(
-      "/admin/radar/virustotal",
-      isAuthenticated(true, "airlink.admin.radar.virustotal.view"),
+      '/admin/radar/virustotal',
+      isAuthenticated(true, 'airlink.admin.radar.virustotal.view'),
       async (req, res, next) => {
         try {
-          const data = await apiGet(req, "/api/v2/admin/radar/virustotal");
-          res.render("admin/radar/virustotal/index", {
+          const data: any = await apiGet(req, '/api/v2/admin/radar/virustotal');
+          res.render('admin/radar/virustotal/index', {
             ...data,
             user: req.session?.user,
             req,
@@ -104,11 +104,11 @@ const module: Module = {
     );
 
     router.get(
-      "/admin/radar/virustotal/scan/:hash",
-      isAuthenticated(true, "airlink.admin.radar.virustotal.view"),
+      '/admin/radar/virustotal/scan/:hash',
+      isAuthenticated(true, 'airlink.admin.radar.virustotal.view'),
       async (req, res, next) => {
         try {
-          const data = await apiGet(
+          const data: any = await apiGet(
             req,
             `/api/v2/admin/radar/virustotal/scan/${req.params.hash}`,
           );
@@ -120,11 +120,11 @@ const module: Module = {
     );
 
     router.post(
-      "/admin/radar/scripts",
-      isAuthenticated(true, "airlink.admin.radar.scripts.create"),
+      '/admin/radar/scripts',
+      isAuthenticated(true, 'airlink.admin.radar.scripts.create'),
       async (req, res, next) => {
         try {
-          await apiPost(req, "/api/v2/admin/radar/scripts", req.body);
+          await apiPost(req, '/api/v2/admin/radar/scripts', req.body);
           res.status(200).json({ success: true });
         } catch (err) {
           next(err);
@@ -133,8 +133,8 @@ const module: Module = {
     );
 
     router.post(
-      "/admin/radar/scripts/:id",
-      isAuthenticated(true, "airlink.admin.radar.scripts.update"),
+      '/admin/radar/scripts/:id',
+      isAuthenticated(true, 'airlink.admin.radar.scripts.update'),
       async (req, res, next) => {
         try {
           await apiPost(
@@ -150,8 +150,8 @@ const module: Module = {
     );
 
     router.post(
-      "/admin/radar/scripts/:id/delete",
-      isAuthenticated(true, "airlink.admin.radar.scripts.delete"),
+      '/admin/radar/scripts/:id/delete',
+      isAuthenticated(true, 'airlink.admin.radar.scripts.delete'),
       async (req, res, next) => {
         try {
           await apiPost(
@@ -167,11 +167,11 @@ const module: Module = {
     );
 
     router.post(
-      "/admin/radar/virustotal",
-      isAuthenticated(true, "airlink.admin.radar.virustotal.scan"),
+      '/admin/radar/virustotal',
+      isAuthenticated(true, 'airlink.admin.radar.virustotal.scan'),
       async (req, res, next) => {
         try {
-          await apiPost(req, "/api/v2/admin/radar/virustotal", req.body);
+          await apiPost(req, '/api/v2/admin/radar/virustotal', req.body);
           res.status(200).json({ success: true });
         } catch (err) {
           next(err);
@@ -180,8 +180,8 @@ const module: Module = {
     );
 
     router.post(
-      "/admin/radar/virustotal/:hash",
-      isAuthenticated(true, "airlink.admin.radar.virustotal.scan"),
+      '/admin/radar/virustotal/:hash',
+      isAuthenticated(true, 'airlink.admin.radar.virustotal.scan'),
       async (req, res, next) => {
         try {
           await apiPost(

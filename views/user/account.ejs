@@ -1,0 +1,546 @@
+<%- include('../../layouts/user', { title: 'Account' }) %>
+
+<div class="px-4 sm:px-6 lg:px-8 pt-4">
+  <div class="flex items-start justify-between gap-4">
+    <div>
+      <h1 class="text-xl font-semibold tracking-tight" style="color:var(--theme-text-strong)"><%= t('accountSettings') %></h1>
+      <p class="text-sm mt-1" style="color:var(--theme-text-muted)"><%= t('manageYourAccount') %></p>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="mt-5 flex gap-1 p-1 rounded-xl w-fit" style="background:var(--theme-bg-secondary); border:1px solid var(--theme-border)">
+    <button type="button" class="tab-btn active px-3 py-1.5 text-[12px] font-medium rounded-lg" data-tab="profile"><%= t('profile') %></button>
+    <button type="button" class="tab-btn px-3 py-1.5 text-[12px] font-medium rounded-lg" data-tab="security"><%= t('security') %></button>
+    <button type="button" class="tab-btn px-3 py-1.5 text-[12px] font-medium rounded-lg" data-tab="images"><%= t('images') %></button>
+    <button type="button" class="tab-btn px-3 py-1.5 text-[12px] font-medium rounded-lg" data-tab="folders"><%= t('folders') %></button>
+  </div>
+
+  <!-- Profile Tab -->
+  <div id="tab-profile" class="tab-content mt-4">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+      <!-- Avatar -->
+      <div class="al-card p-4">
+        <h3 class="text-[13px] font-medium mb-3" style="color:var(--theme-text-strong)"><%= t('avatar') %></h3>
+        <div class="flex items-center gap-4">
+          <img id="avatarPreview"
+            src="<%= account.avatar ? account.avatar : '/avatar/' + encodeURIComponent(account.username) %>"
+            class="h-16 w-16 rounded-xl object-cover" alt="<%= account.username %>"
+            style="border:2px solid var(--theme-border)">
+          <div>
+            <form id="avatarForm" enctype="multipart/form-data">
+              <input type="file" id="avatarInput" name="avatar" accept="image/*" class="hidden">
+              <button type="button" onclick="document.getElementById('avatarInput').click()"
+                class="al-btn al-btn-secondary text-[12px]"><%= t('uploadAvatar') %></button>
+            </form>
+            <% if (account.avatar) { %>
+            <button type="button" onclick="removeAvatar()"
+              class="al-btn al-btn-ghost text-[12px] mt-1.5" style="color:var(--theme-danger)"><%= t('removeAvatar') %></button>
+            <% } %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Username -->
+      <div class="al-card p-4">
+        <h3 class="text-[13px] font-medium mb-3" style="color:var(--theme-text-strong)"><%= t('username') %></h3>
+        <form id="usernameForm">
+          <div class="al-form-field">
+            <input type="text" id="username" name="username" value="<%= account.username %>"
+              class="al-form-input" minlength="3" maxlength="32" pattern="[a-zA-Z0-9_-]+">
+          </div>
+          <button type="submit" class="al-btn al-btn-primary text-[12px] mt-3"><%= t('saveChanges') %></button>
+        </form>
+      </div>
+
+      <!-- Email -->
+      <div class="al-card p-4">
+        <h3 class="text-[13px] font-medium mb-3" style="color:var(--theme-text-strong)"><%= t('email') %></h3>
+        <form id="emailForm">
+          <div class="al-form-field">
+            <input type="email" id="email" name="email" value="<%= account.email %>"
+              class="al-form-input">
+          </div>
+          <button type="submit" class="al-btn al-btn-primary text-[12px] mt-3"><%= t('saveChanges') %></button>
+        </form>
+      </div>
+
+      <!-- Description -->
+      <div class="al-card p-4">
+        <h3 class="text-[13px] font-medium mb-3" style="color:var(--theme-text-strong)"><%= t('description') %></h3>
+        <form id="descriptionForm">
+          <div class="al-form-field">
+            <textarea id="description" name="description" class="al-form-textarea" rows="3"
+              maxlength="500"><%= account.description || '' %></textarea>
+          </div>
+          <button type="submit" class="al-btn al-btn-primary text-[12px] mt-3"><%= t('saveChanges') %></button>
+        </form>
+      </div>
+
+      <!-- Preferred Node -->
+      <div class="al-card p-4">
+        <h3 class="text-[13px] font-medium mb-3" style="color:var(--theme-text-strong)"><%= t('preferredNode') %></h3>
+        <form id="preferredNodeForm">
+          <div class="al-form-field">
+            <select id="preferredNodeId" name="preferredNodeId" class="al-form-select">
+              <option value="" <%= !account.preferredNodeId ? 'selected' : '' %>><%= t('auto') %></option>
+            </select>
+          </div>
+          <button type="submit" class="al-btn al-btn-primary text-[12px] mt-3"><%= t('saveChanges') %></button>
+        </form>
+      </div>
+
+      <!-- Language -->
+      <div class="al-card p-4">
+        <h3 class="text-[13px] font-medium mb-3" style="color:var(--theme-text-strong)"><%= t('language') %></h3>
+        <form id="languageForm">
+          <div class="al-form-field">
+            <select id="language" name="language" class="al-form-select">
+              <option value="en">English</option>
+              <option value="es">Espanol</option>
+              <option value="fr">Francais</option>
+              <option value="de">Deutsch</option>
+              <option value="pt">Portugues</option>
+              <option value="tr">Turkce</option>
+            </select>
+          </div>
+          <button type="submit" class="al-btn al-btn-primary text-[12px] mt-3"><%= t('saveChanges') %></button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Security Tab -->
+  <div id="tab-security" class="tab-content mt-4 hidden">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+      <!-- Change Password -->
+      <div class="al-card p-4">
+        <h3 class="text-[13px] font-medium mb-3" style="color:var(--theme-text-strong)"><%= t('changePassword') %></h3>
+        <form id="passwordForm">
+          <div class="al-form-field">
+            <label class="al-form-label"><%= t('currentPassword') %></label>
+            <input type="password" id="currentPassword" name="currentPassword" class="al-form-input" required>
+          </div>
+          <div class="al-form-field mt-3">
+            <label class="al-form-label"><%= t('newPassword') %></label>
+            <input type="password" id="newPassword" name="newPassword" class="al-form-input" minlength="8" required>
+          </div>
+          <button type="submit" class="al-btn al-btn-primary text-[12px] mt-3"><%= t('changePassword') %></button>
+        </form>
+      </div>
+
+      <!-- 2FA -->
+      <div class="al-card p-4">
+        <h3 class="text-[13px] font-medium mb-3" style="color:var(--theme-text-strong)">Two-Factor Authentication</h3>
+        <% if (account.totpEnabled) { %>
+        <div class="flex items-center gap-2 mb-3">
+          <span class="al-dot-online"></span>
+          <span class="text-[12px] font-medium" style="color:var(--theme-success)">Enabled</span>
+        </div>
+        <button type="button" onclick="disable2FA()" class="al-btn al-btn-danger text-[12px]">Disable 2FA</button>
+        <% } else { %>
+        <div class="flex items-center gap-2 mb-3">
+          <span class="al-dot-offline"></span>
+          <span class="text-[12px] font-medium" style="color:var(--theme-text-muted)">Disabled</span>
+        </div>
+        <button type="button" onclick="setup2FA()" class="al-btn al-btn-primary text-[12px]">Enable 2FA</button>
+        <% } %>
+        <div id="twofa-setup" class="hidden mt-3">
+          <p class="text-[12px] mb-2" style="color:var(--theme-text-muted)">Scan this QR code with your authenticator app:</p>
+          <div id="qr-container" class="inline-block p-2 rounded-xl" style="background:white"></div>
+          <div class="al-form-field mt-3">
+            <label class="al-form-label">Verification Code</label>
+            <input type="text" id="totpCode" class="al-form-input" maxlength="6" pattern="[0-9]{6}" placeholder="000000">
+          </div>
+          <button type="button" onclick="verify2FA()" class="al-btn al-btn-primary text-[12px] mt-2">Verify & Enable</button>
+        </div>
+      </div>
+
+      <!-- 2FA Recovery Codes -->
+      <div id="two-factor-recovery-codes" class="hidden al-card p-6 max-w-xl mx-auto">
+        <div class="flex items-start gap-3">
+          <div class="shrink-0">
+            <%- icon('key-round', { class: 'w-5 h-5', strokeWidth: 1.5, style: 'color:var(--theme-accent)' }) %>
+          </div>
+          <div>
+            <h2 class="text-sm font-semibold" style="color:var(--theme-text-strong)"><%= t('savedRecoveryCodes') %></h2>
+            <p class="text-xs mt-1" style="color:var(--theme-text-muted)"><%= t('recoveryCodesDesc') %></p>
+          </div>
+        </div>
+        <div id="recoveryCodesList" class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-4"></div>
+        <div class="flex items-center justify-between mt-5 gap-3">
+          <button type="button" id="copyRecoveryCodes" class="al-btn-ghost text-sm inline-flex items-center gap-1.5">
+            <%- icon('copy', { size: 14 }) %>
+            <%= t('copyAll') %>
+          </button>
+          <a href="/account" class="al-btn-primary text-sm px-5"><%= t('iveSavedThem') %></a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Images Tab -->
+  <div id="tab-images" class="tab-content mt-4 hidden">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-sm font-medium" style="color:var(--theme-text-strong)"><%= t('myImages') %></h3>
+      <div class="flex gap-2">
+        <button type="button" onclick="showImportModal()" class="al-btn al-btn-secondary text-[12px]">
+          <%- icon('download', { class: 'w-3.5 h-3.5' }) %> Import URL
+        </button>
+        <a href="/my-images/new" class="al-btn al-btn-primary text-[12px]">
+          <%- icon('plus', { class: 'w-3.5 h-3.5' }) %> New Image
+        </a>
+      </div>
+    </div>
+
+    <% if (!Array.isArray(images) || images.length === 0) { %>
+      <%- include('../../partials/empty-state', {
+        iconName: 'box',
+        title: t('noImagesYet'),
+        description: t('submitYourFirstImage')
+      }) %>
+    <% } else { %>
+    <div class="overflow-x-auto rounded-xl border" style="border-color:var(--theme-border)">
+      <table class="al-table">
+        <thead class="al-table-head">
+          <tr>
+            <th class="al-table-th"><%= t('name') %></th>
+            <th class="al-table-th"><%= t('status') %></th>
+            <th class="al-table-th"><%= t('author') %></th>
+            <th class="al-table-th"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% images.forEach(function(img) { %>
+          <tr class="al-table-tr">
+            <td class="al-table-td">
+              <span class="text-[13px] font-medium" style="color:var(--theme-text-strong)"><%= img.name %></span>
+            </td>
+            <td class="al-table-td">
+              <span class="inline-flex items-center rounded-md px-1.5 py-0.5 text-[11px] font-medium ring-1 ring-inset"
+                style="<%= img.status === 'approved' ? 'background:var(--theme-success-bg);color:var(--theme-success)' : img.status === 'pending' ? 'background:var(--theme-warning-bg);color:var(--theme-warning)' : 'background:var(--theme-danger-bg);color:var(--theme-danger)' %>">
+                <%= img.status %>
+              </span>
+            </td>
+            <td class="al-table-td">
+              <span class="text-[12px]" style="color:var(--theme-text-muted)"><%= img.author || '' %></span>
+            </td>
+            <td class="al-table-td">
+              <div class="flex items-center gap-1">
+                <a href="/my-images/edit/<%= img.id %>" class="al-btn al-btn-ghost p-1.5" title="Edit">
+                  <%- icon('pencil', { class: 'w-3.5 h-3.5' }) %>
+                </a>
+                <button type="button" onclick="deleteImage(<%= img.id %>, '<%= img.name %>')"
+                  class="al-btn al-btn-ghost p-1.5" style="color:var(--theme-danger)" title="Delete">
+                  <%- icon('trash-2', { class: 'w-3.5 h-3.5' }) %>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+    <% } %>
+  </div>
+
+  <!-- Folders Tab -->
+  <div id="tab-folders" class="tab-content mt-4 hidden">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-sm font-medium" style="color:var(--theme-text-strong)"><%= t('serverFolders') %></h3>
+      <button type="button" onclick="showCreateFolder()" class="al-btn al-btn-primary text-[12px]">
+        <%- icon('plus', { class: 'w-3.5 h-3.5' }) %> <%= t('createFolder') %>
+      </button>
+    </div>
+
+    <div id="create-folder-form" class="hidden mb-4">
+      <div class="al-card p-4">
+        <form id="newFolderForm" class="flex gap-2">
+          <input type="text" id="folderName" class="al-form-input flex-1" placeholder="Folder name" maxlength="64" required>
+          <button type="submit" class="al-btn al-btn-primary text-[12px]"><%= t('create') %></button>
+          <button type="button" onclick="hideCreateFolder()" class="al-btn al-btn-ghost text-[12px]"><%= t('cancel') %></button>
+        </form>
+      </div>
+    </div>
+
+    <% if (!Array.isArray(folders) || folders.length === 0) { %>
+      <%- include('../../partials/empty-state', {
+        iconName: 'folder',
+        title: t('noFolders'),
+        description: t('createFoldersToOrganize')
+      }) %>
+    <% } else { %>
+    <div class="space-y-3">
+      <% folders.forEach(function(folder) { %>
+      <div class="al-card p-4" data-folder-id="<%= folder.id %>">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <%- icon('folder', { class: 'w-4 h-4', style: 'color:var(--theme-text-muted)' }) %>
+            <span class="text-[13px] font-medium" style="color:var(--theme-text-strong)"><%= folder.name %></span>
+            <% if (folder.members) { %>
+            <span class="text-[11px] px-1.5 py-0.5 rounded-md" style="background:var(--theme-bg-secondary); border:1px solid var(--theme-border); color:var(--theme-text-muted)"><%= folder.members.length %> <%= t('servers') %></span>
+            <% } %>
+          </div>
+          <div class="flex items-center gap-1">
+            <button type="button" onclick="renameFolder(<%= folder.id %>, '<%= folder.name %>')"
+              class="al-btn al-btn-ghost p-1.5" title="Rename">
+              <%- icon('pencil', { class: 'w-3.5 h-3.5' }) %>
+            </button>
+            <button type="button" onclick="deleteFolder(<%= folder.id %>, '<%= folder.name %>')"
+              class="al-btn al-btn-ghost p-1.5" style="color:var(--theme-danger)" title="Delete">
+              <%- icon('trash-2', { class: 'w-3.5 h-3.5' }) %>
+            </button>
+          </div>
+        </div>
+      </div>
+      <% }); %>
+    </div>
+    <% } %>
+  </div>
+
+</div>
+
+<script nonce="<%- nonce %>">
+(function() {
+  // Tab switching
+  var tabs = document.querySelectorAll('.tab-btn');
+  var contents = document.querySelectorAll('.tab-content');
+  tabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      tabs.forEach(function(t) { t.classList.remove('active'); t.style.background = ''; t.style.color = ''; });
+      contents.forEach(function(c) { c.classList.add('hidden'); });
+      tab.classList.add('active');
+      tab.style.background = 'var(--theme-bg)';
+      tab.style.color = 'var(--theme-text-strong)';
+      document.getElementById('tab-' + tab.dataset.tab).classList.remove('hidden');
+    });
+  });
+  // Set initial active
+  tabs[0].style.background = 'var(--theme-bg)';
+  tabs[0].style.color = 'var(--theme-text-strong)';
+
+  var csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+
+  // Username form
+  document.getElementById('usernameForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    try {
+      var r = await fetch('/update-username', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-csrf-token': csrfToken },
+        body: JSON.stringify({ username: document.getElementById('username').value })
+      });
+      if (r.ok) { showToast('<%= t("usernameUpdated") %>', 'success'); }
+      else { var d = await r.text(); showToast(d, 'error'); }
+    } catch(err) { showToast('<%= t("failedToUpdate") %>', 'error'); }
+  });
+
+  // Email form
+  document.getElementById('emailForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    try {
+      var r = await fetch('/change-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-csrf-token': csrfToken },
+        body: JSON.stringify({ email: document.getElementById('email').value })
+      });
+      if (r.ok) { showToast('<%= t("emailUpdated") %>', 'success'); }
+      else { var d = await r.text(); showToast(d, 'error'); }
+    } catch(err) { showToast('<%= t("failedToUpdate") %>', 'error'); }
+  });
+
+  // Description form
+  document.getElementById('descriptionForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    try {
+      var r = await fetch('/update-description', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-csrf-token': csrfToken },
+        body: JSON.stringify({ description: document.getElementById('description').value })
+      });
+      if (r.ok) { showToast('<%= t("descriptionUpdated") %>', 'success'); }
+      else { var d = await r.text(); showToast(d, 'error'); }
+    } catch(err) { showToast('<%= t("failedToUpdate") %>', 'error'); }
+  });
+
+  // Password form
+  document.getElementById('passwordForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    try {
+      var r = await fetch('/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-csrf-token': csrfToken },
+        body: JSON.stringify({
+          currentPassword: document.getElementById('currentPassword').value,
+          newPassword: document.getElementById('newPassword').value
+        })
+      });
+      if (r.ok) { showToast('<%= t("passwordChanged") %>', 'success'); document.getElementById('passwordForm').reset(); }
+      else { var d = await r.text(); showToast(d, 'error'); }
+    } catch(err) { showToast('<%= t("failedToUpdate") %>', 'error'); }
+  });
+
+  // Avatar upload
+  document.getElementById('avatarInput').addEventListener('change', async function(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    var fd = new FormData();
+    fd.append('avatar', file);
+    try {
+      var r = await fetch('/upload-avatar', { method: 'POST', headers: { 'x-csrf-token': csrfToken }, body: fd });
+      if (r.ok) { showToast('<%= t("avatarUpdated") %>', 'success'); window.location.reload(); }
+      else { showToast('<%= t("failedToUpload") %>', 'error'); }
+    } catch(err) { showToast('<%= t("failedToUpload") %>', 'error'); }
+  });
+
+  // Folders
+  window.showCreateFolder = function() { document.getElementById('create-folder-form').classList.remove('hidden'); };
+  window.hideCreateFolder = function() { document.getElementById('create-folder-form').classList.add('hidden'); };
+
+  document.getElementById('newFolderForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    var name = document.getElementById('folderName').value.trim();
+    if (!name) return;
+    try {
+      var r = await fetch('/api/folders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-csrf-token': csrfToken },
+        body: JSON.stringify({ name: name })
+      });
+      if (r.ok) { showToast('<%= t("folderCreated") %>', 'success'); window.location.reload(); }
+      else { showToast('<%= t("failedToCreate") %>', 'error'); }
+    } catch(err) { showToast('<%= t("failedToCreate") %>', 'error'); }
+  });
+
+  window.deleteFolder = function(id, name) {
+    window.modal.confirm({
+      title: '<%= t("deleteFolder") %>',
+      body: '<%= t("deleteFolderConfirm") %> "' + name + '"?',
+      danger: true,
+      confirmLabel: '<%= t("delete") %>',
+      onConfirm: async function() {
+        try {
+          var r = await fetch('/api/folders/' + id, { method: 'DELETE', headers: { 'x-csrf-token': csrfToken } });
+          if (r.ok) { showToast('<%= t("folderDeleted") %>', 'success'); window.location.reload(); }
+          else { showToast('<%= t("failedToDelete") %>', 'error'); }
+        } catch(err) { showToast('<%= t("failedToDelete") %>', 'error'); }
+      }
+    });
+  };
+
+  window.renameFolder = function(id, currentName) {
+    var newName = prompt('<%= t("enterNewName") %>', currentName);
+    if (newName && newName.trim()) {
+      fetch('/api/folders/' + id, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'x-csrf-token': csrfToken },
+        body: JSON.stringify({ name: newName.trim() })
+      }).then(function(r) { if (r.ok) window.location.reload(); });
+    }
+  };
+
+  // Images
+  window.deleteImage = function(id, name) {
+    window.modal.confirm({
+      title: '<%= t("deleteImage") %>',
+      body: '<%= t("deleteImageConfirm") %> "' + name + '"?',
+      danger: true,
+      confirmLabel: '<%= t("delete") %>',
+      onConfirm: async function() {
+        try {
+          var r = await fetch('/my-images/' + id, { method: 'DELETE', headers: { 'x-csrf-token': csrfToken } });
+          if (r.ok) { showToast('<%= t("imageDeleted") %>', 'success'); window.location.reload(); }
+          else { showToast('<%= t("failedToDelete") %>', 'error'); }
+        } catch(err) { showToast('<%= t("failedToDelete") %>', 'error'); }
+      }
+    });
+  };
+
+  window.showImportModal = function() {
+    var url = prompt('Enter image URL:');
+    if (url && url.trim()) {
+      fetch('/my-images/import-url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-csrf-token': csrfToken },
+        body: JSON.stringify({ url: url.trim() })
+      }).then(function(r) { if (r.ok) { showToast('Image imported!', 'success'); window.location.reload(); } });
+    }
+  };
+
+  // 2FA
+  window.setup2FA = async function() {
+    try {
+      var r = await fetch('/account/2fa/setup', { headers: { 'x-csrf-token': csrfToken } });
+      var data = await r.json();
+      if (data.otpauthUrl) {
+        document.getElementById('twofa-setup').classList.remove('hidden');
+        // Use a QR code library or show the otpauth URL
+        document.getElementById('qr-container').innerHTML = '<p class="text-[11px] font-mono break-all" style="color:#333">' + data.otpauthUrl + '</p>';
+      }
+    } catch(err) { showToast('Failed to set up 2FA', 'error'); }
+  };
+
+  window.verify2FA = async function() {
+    var code = document.getElementById('totpCode').value;
+    if (!code || code.length !== 6) return;
+    try {
+      var r = await fetch('/account/2fa/enable', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-csrf-token': csrfToken },
+        body: JSON.stringify({ code: code })
+      });
+      var data = await r.json();
+      if (data.enabled) {
+        showToast('2FA enabled!', 'success');
+        // Populate recovery codes
+        var list = document.getElementById('recoveryCodesList');
+        list.innerHTML = '';
+        if (Array.isArray(data.recoveryCodes)) {
+          data.recoveryCodes.forEach(function(code) {
+            var el = document.createElement('div');
+            el.className = 'al-card p-2 text-center font-mono text-[13px] tracking-wider';
+            el.style.cssText = 'color:var(--theme-text-strong); background:var(--theme-bg-secondary)';
+            el.textContent = code;
+            list.appendChild(el);
+          });
+        }
+        // Wire copy button
+        document.getElementById('copyRecoveryCodes').addEventListener('click', function() {
+          var codes = Array.isArray(data.recoveryCodes) ? data.recoveryCodes.join('\n') : '';
+          navigator.clipboard.writeText(codes).then(function() { showToast('Copied!', 'success'); });
+        });
+        // Show recovery codes panel
+        document.getElementById('two-factor-recovery-codes').classList.remove('hidden');
+      }
+      else { showToast(data.error || 'Invalid code', 'error'); }
+    } catch(err) { showToast('Failed to enable 2FA', 'error'); }
+  };
+
+  window.disable2FA = async function() {
+    window.modal.confirm({
+      title: 'Disable 2FA',
+      body: 'Are you sure you want to disable two-factor authentication?',
+      danger: true,
+      confirmLabel: 'Disable',
+      onConfirm: async function() {
+        try {
+          var r = await fetch('/account/2fa/disable', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-csrf-token': csrfToken } });
+          if (r.ok) { showToast('2FA disabled', 'success'); window.location.reload(); }
+        } catch(err) { showToast('Failed to disable 2FA', 'error'); }
+      }
+    });
+  };
+
+  // Check hash for tab
+  var hash = window.location.hash.replace('#', '');
+  if (hash && document.getElementById('tab-' + hash)) {
+    document.querySelector('[data-tab="' + hash + '"]').click();
+  }
+})();
+</script>
+
+<%- include('../../layouts/user-footer') %>

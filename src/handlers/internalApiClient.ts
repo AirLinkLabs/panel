@@ -12,9 +12,9 @@
  * behind TLS/reverse-proxy where the public URL may not be loopback-accessible.
  */
 
-import type { Request } from "express";
-import { getConfig } from "../config";
-import logger from "./logger";
+import type { Request } from 'express';
+import { getConfig } from '../config';
+import logger from './logger';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -27,7 +27,7 @@ export class InternalApiError extends Error {
     public readonly body?: unknown,
   ) {
     super(message);
-    this.name = "InternalApiError";
+    this.name = 'InternalApiError';
   }
 }
 
@@ -78,14 +78,14 @@ function getInternalApiKey(): string | undefined {
 function buildCookieHeader(req: Request): string | undefined {
   const cookies = (req as unknown as Record<string, unknown>).cookies as
     Record<string, string> | undefined;
-  if (!cookies || typeof cookies !== "object") {
+  if (!cookies || typeof cookies !== 'object') {
     return undefined;
   }
   const entries = Object.entries(cookies);
   if (entries.length === 0) {
     return undefined;
   }
-  return entries.map(([k, v]) => `${k}=${v}`).join("; ");
+  return entries.map(([k, v]) => `${k}=${v}`).join('; ');
 }
 
 // ---------------------------------------------------------------------------
@@ -104,19 +104,19 @@ function buildCookieHeader(req: Request): string | undefined {
 function extractCsrfToken(req: Request): string | undefined {
   // Check if a middleware stored it on req
   const reqWithCsrf = req as unknown as Record<string, unknown>;
-  if (typeof reqWithCsrf.csrfToken === "string") {
+  if (typeof reqWithCsrf.csrfToken === 'string') {
     return reqWithCsrf.csrfToken;
   }
 
   // Check headers (forwarded from original request)
-  const headerToken = req.headers["x-csrf-token"];
-  if (typeof headerToken === "string") {
+  const headerToken = req.headers['x-csrf-token'];
+  if (typeof headerToken === 'string') {
     return headerToken;
   }
 
   // Check body (form field)
   const body = req.body as Record<string, unknown> | undefined;
-  if (typeof body?._csrf === "string") {
+  if (typeof body?._csrf === 'string') {
     return body._csrf;
   }
 
@@ -138,36 +138,36 @@ async function apiRequest(
 ): Promise<unknown> {
   const timeoutMs = options?.timeoutMs ?? DEFAULT_TIMEOUT_MS;
 
-  const url = `${getBaseUrl()}/api/v2${path.startsWith("/") ? path : `/${path}`}`;
+  const url = `${getBaseUrl()}/api/v2${path.startsWith('/') ? path : `/${path}`}`;
 
   // Build headers
   const headers: Record<string, string> = {
-    Accept: "application/json",
+    Accept: 'application/json',
   };
 
   const apiKey = getInternalApiKey();
 
   if (apiKey) {
     // API key auth → CSRF exempt, no cookies needed
-    headers["Authorization"] = `Bearer ${apiKey}`;
+    headers['Authorization'] = `Bearer ${apiKey}`;
   } else {
     // Session auth → forward cookies from incoming request
     const cookieHeader = buildCookieHeader(req);
     if (cookieHeader) {
-      headers["Cookie"] = cookieHeader;
+      headers['Cookie'] = cookieHeader;
     }
     // Forward CSRF token for mutations
-    if (method !== "GET" && method !== "HEAD") {
+    if (method !== 'GET' && method !== 'HEAD') {
       const csrfToken = extractCsrfToken(req);
       if (csrfToken) {
-        headers["x-csrf-token"] = csrfToken;
+        headers['x-csrf-token'] = csrfToken;
       }
     }
   }
 
   // Set content type for bodies
-  if (body !== undefined && method !== "GET" && method !== "HEAD") {
-    headers["Content-Type"] = "application/json";
+  if (body !== undefined && method !== 'GET' && method !== 'HEAD') {
+    headers['Content-Type'] = 'application/json';
   }
 
   const controller = new AbortController();
@@ -178,7 +178,7 @@ async function apiRequest(
       method,
       headers,
       body:
-        body !== undefined && method !== "GET" && method !== "HEAD"
+        body !== undefined && method !== 'GET' && method !== 'HEAD'
           ? JSON.stringify(body)
           : undefined,
       signal: controller.signal,
@@ -187,9 +187,9 @@ async function apiRequest(
     clearTimeout(timer);
 
     // Parse response
-    const contentType = response.headers.get("content-type") ?? "";
+    const contentType = response.headers.get('content-type') ?? '';
     let responseBody: unknown;
-    if (contentType.includes("application/json")) {
+    if (contentType.includes('application/json')) {
       responseBody = await response.json();
     } else {
       responseBody = await response.text();
@@ -197,7 +197,7 @@ async function apiRequest(
 
     if (!response.ok) {
       const message =
-        typeof responseBody === "object" && responseBody !== null
+        typeof responseBody === 'object' && responseBody !== null
           ? (responseBody as Record<string, unknown>).error ||
             (responseBody as Record<string, unknown>).message ||
             `v2 API error: ${response.status}`
@@ -222,7 +222,7 @@ async function apiRequest(
     // AbortError = timeout
     if (
       error instanceof Error &&
-      (error.name === "AbortError" || error.message?.includes("abort"))
+      (error.name === 'AbortError' || error.message?.includes('abort'))
     ) {
       logger.error(
         `Internal API ${method} ${path} timed out after ${timeoutMs}ms`,
@@ -244,7 +244,7 @@ async function apiRequest(
       code: errObj?.code,
     });
     throw new InternalApiError(
-      errObj?.message ?? "Internal API request failed",
+      errObj?.message ?? 'Internal API request failed',
       0,
     );
   }
@@ -266,7 +266,7 @@ export async function apiGet(
   path: string,
   options?: { timeoutMs?: number },
 ): Promise<unknown> {
-  return apiRequest(req, "GET", path, undefined, options);
+  return apiRequest(req, 'GET', path, undefined, options);
 }
 
 /**
@@ -278,7 +278,7 @@ export async function apiPost(
   body?: unknown,
   options?: { timeoutMs?: number },
 ): Promise<unknown> {
-  return apiRequest(req, "POST", path, body, options);
+  return apiRequest(req, 'POST', path, body, options);
 }
 
 /**
@@ -290,7 +290,7 @@ export async function apiPut(
   body?: unknown,
   options?: { timeoutMs?: number },
 ): Promise<unknown> {
-  return apiRequest(req, "PUT", path, body, options);
+  return apiRequest(req, 'PUT', path, body, options);
 }
 
 /**
@@ -302,7 +302,7 @@ export async function apiPatch(
   body?: unknown,
   options?: { timeoutMs?: number },
 ): Promise<unknown> {
-  return apiRequest(req, "PATCH", path, body, options);
+  return apiRequest(req, 'PATCH', path, body, options);
 }
 
 /**
@@ -313,5 +313,5 @@ export async function apiDelete(
   path: string,
   options?: { timeoutMs?: number },
 ): Promise<unknown> {
-  return apiRequest(req, "DELETE", path, undefined, options);
+  return apiRequest(req, 'DELETE', path, undefined, options);
 }

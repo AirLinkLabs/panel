@@ -1,0 +1,102 @@
+<%- include('../../layouts/user', { title: (server.name || 'Server') + ' — Backups' }) %>
+
+<nav aria-label="Breadcrumb" class="al-breadcrumb mb-6">
+  <ol class="flex items-center text-sm gap-1">
+    <li class="flex items-center">
+      <a href="/" class="transition-colors hover:underline" style="color:var(--theme-text-muted);"><%= t('dashboard') %></a>
+    </li>
+    <li class="flex items-center">
+      <span class="mx-1.5" style="color:var(--theme-text-muted);"><%- icon('chevron-right', { class: 'w-3.5 h-3.5' }) %></span>
+      <a href="/server/<%= server.UUID %>" class="transition-colors hover:underline" style="color:var(--theme-text-muted);"><%= server.name %></a>
+    </li>
+    <li class="flex items-center">
+      <span class="mx-1.5" style="color:var(--theme-text-muted);"><%- icon('chevron-right', { class: 'w-3.5 h-3.5' }) %></span>
+      <span style="color:var(--theme-text);"><%= t('backups') %></span>
+    </li>
+  </ol>
+</nav>
+
+<div class="px-6 sm:px-8 pb-12" data-server-uuid="<%= server.UUID %>">
+
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-xl font-semibold" style="color:var(--theme-text);"><%= t('backups') %></h1>
+    <button id="createBackupBtn" type="button" class="al-btn-primary px-4 py-2 rounded-xl text-sm font-medium inline-flex items-center gap-1.5" data-url="/server/<%= server.UUID %>/backups/create">
+      <%- icon('plus', { class: 'w-4 h-4', strokeWidth: 2 }) %> <%= t('createBackup') %>
+    </button>
+  </div>
+
+  <!-- Progress Bar -->
+  <div id="backup-progress" class="hidden mb-4">
+    <div class="al-card p-4">
+      <div class="flex items-center justify-between mb-2">
+        <span id="progress-label" class="text-sm font-medium" style="color:var(--theme-text-strong);">Creating backup...</span>
+        <span id="progress-percent" class="text-sm" style="color:var(--theme-text-muted);">0%</span>
+      </div>
+      <div class="w-full h-2 rounded-full" style="background:var(--theme-bg-secondary);">
+        <div id="progress-bar" class="h-full rounded-full transition-all duration-300" style="background:var(--theme-primary);width:0%;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Restore Progress -->
+  <div id="restore-progress" class="hidden mb-4">
+    <div class="al-card p-4">
+      <div class="flex items-center justify-between mb-2">
+        <span id="restore-progress-label" class="text-sm font-medium" style="color:var(--theme-text-strong);">Restoring backup...</span>
+        <span id="restore-progress-percent" class="text-sm" style="color:var(--theme-text-muted);">0%</span>
+      </div>
+      <div class="w-full h-2 rounded-full" style="background:var(--theme-bg-secondary);">
+        <div id="restore-progress-bar" class="h-full rounded-full transition-all duration-300" style="background:var(--theme-primary);width:0%;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Backup List -->
+  <div id="backup-list">
+    <% if (!backups || backups.length === 0) { %>
+      <div class="al-card p-8 text-center">
+        <%- icon('archive', { class: 'w-10 h-10 mx-auto mb-3', strokeWidth: 1.5, style: 'color:var(--theme-text-muted);' }) %>
+        <p class="text-sm mb-1" style="color:var(--theme-text-strong);"><%= t('noBackups') %></p>
+        <p class="text-xs" style="color:var(--theme-text-muted);"><%= t('noBackupsDesc') %></p>
+      </div>
+    <% } else { %>
+      <% backups.forEach(function(backup) { %>
+        <div class="al-card p-4 mb-3 flex flex-col sm:flex-row sm:items-center gap-3" data-backup-id="<%= backup.UUID %>">
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-1">
+              <p class="text-sm font-medium truncate" style="color:var(--theme-text-strong);"><%= backup.Name %></p>
+              <% if (backup.isLocked) { %>
+                <%- icon('lock', { class: 'w-3.5 h-3.5', style: 'color:var(--theme-warning);' }) %>
+              <% } %>
+            </div>
+            <p class="text-xs" style="color:var(--theme-text-muted);">
+              <%= backup.createdAt ? new Date(backup.createdAt).toLocaleString() : '' %>
+              <% if (backup.bytes) { %> · <%= (backup.bytes / 1024 / 1024).toFixed(1) %> MB<% } %>
+            </p>
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <button type="button" class="lock-btn al-btn-secondary px-3 py-1.5 rounded-lg text-xs font-medium" data-backup-id="<%= backup.UUID %>" data-locked="<%= backup.isLocked %>">
+              <%- icon(backup.isLocked ? 'unlock' : 'lock', { class: 'w-3.5 h-3.5', strokeWidth: 2 }) %>
+              <%= backup.isLocked ? t('unlock') : t('lock') %>
+            </button>
+            <button type="button" class="restore-btn al-btn-secondary px-3 py-1.5 rounded-lg text-xs font-medium" data-backup-id="<%= backup.UUID %>">
+              <%- icon('rotate-ccw', { class: 'w-3.5 h-3.5', strokeWidth: 2 }) %> <%= t('restore') %>
+            </button>
+            <button type="button" class="delete-btn al-btn-danger px-3 py-1.5 rounded-lg text-xs font-medium" data-backup-id="<%= backup.UUID %>">
+              <%- icon('trash-2', { class: 'w-3.5 h-3.5', strokeWidth: 2 }) %>
+            </button>
+          </div>
+        </div>
+      <% }); %>
+    <% } %>
+  </div>
+
+</div>
+
+<script type="module" nonce="<%- nonce %>">
+  import { mount } from '<%= assetUrl('/javascript/user/server/backups.js') %>';
+  const root = document.querySelector('[data-server-uuid]');
+  if (root) mount(root);
+</script>
+
+<%- include('../../layouts/user-footer') %>

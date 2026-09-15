@@ -1,32 +1,34 @@
-import { Router } from "express";
-import { isAuthenticated } from "../../../handlers/utils/auth/authUtil";
+import { Router } from 'express';
+import { isAuthenticated } from '../../../handlers/utils/auth/authUtil';
 import {
   apiGet,
   apiPost,
+  apiPut,
   apiDelete,
-} from "../../../handlers/internalApiClient";
-import type { Module } from "../../../handlers/moduleInit";
+} from '../../../handlers/internalApiClient';
+import type { Module } from '../../../handlers/moduleInit';
 
 const module: Module = {
   info: {
-    name: "Admin Images Page",
-    version: "2.0.0",
-    moduleVersion: "1.0.0",
-    author: "AirLinkLab",
-    license: "MIT",
-    description: "",
+    name: 'Admin Images Page',
+    version: '2.0.0',
+    moduleVersion: '1.0.0',
+    author: 'AirLinkLab',
+    license: 'MIT',
+    description: '',
   },
   router: () => {
     const router = Router();
 
+    // ── List ────────────────────────────────────────────────────────────
     router.get(
-      "/admin/images",
-      isAuthenticated(true),
+      '/admin/images',
+      isAuthenticated(true, 'airlink.admin.images.view'),
       async (req, res, next) => {
         try {
-          const data = await apiGet(req, "/api/v2/admin/images");
-          res.render("admin/images/images", {
-            ...data,
+          const data = await apiGet(req, '/api/v2/admin/images');
+          res.render('admin/images/index', {
+            ...((data as Record<string, unknown>) || {}),
             user: req.session?.user,
             req,
           });
@@ -36,12 +38,13 @@ const module: Module = {
       },
     );
 
+    // ── JSON list (AJAX reload) ─────────────────────────────────────────
     router.get(
-      "/admin/images/list",
-      isAuthenticated(true),
+      '/admin/images/list',
+      isAuthenticated(true, 'airlink.admin.images.view'),
       async (req, res, next) => {
         try {
-          const data = await apiGet(req, "/api/v2/admin/images/list");
+          const data = await apiGet(req, '/api/v2/admin/images/list');
           res.json(data);
         } catch (err) {
           next(err);
@@ -49,17 +52,18 @@ const module: Module = {
       },
     );
 
+    // ── Edit form ───────────────────────────────────────────────────────
     router.get(
-      "/admin/images/edit/:id",
-      isAuthenticated(true),
+      '/admin/images/edit/:id',
+      isAuthenticated(true, 'airlink.admin.images.view'),
       async (req, res, next) => {
         try {
           const data = await apiGet(
             req,
             `/api/v2/admin/images/${req.params.id}`,
           );
-          res.render("admin/images/edit", {
-            ...data,
+          res.render('admin/images/edit', {
+            ...((data as Record<string, unknown>) || {}),
             user: req.session?.user,
             req,
           });
@@ -69,12 +73,13 @@ const module: Module = {
       },
     );
 
+    // ── Submit edit ─────────────────────────────────────────────────────
     router.post(
-      "/admin/images/edit/:id",
-      isAuthenticated(true),
+      '/admin/images/edit/:id',
+      isAuthenticated(true, 'airlink.admin.images.update'),
       async (req, res, next) => {
         try {
-          await apiPost(req, `/api/v2/admin/images/${req.params.id}`, req.body);
+          await apiPut(req, `/api/v2/admin/images/${req.params.id}`, req.body);
           res.redirect(`/admin/images/edit/${req.params.id}?success=true`);
         } catch (err) {
           next(err);
@@ -82,25 +87,45 @@ const module: Module = {
       },
     );
 
+    // ── Create ──────────────────────────────────────────────────────────
     router.post(
-      "/admin/images/create",
-      isAuthenticated(true),
+      '/admin/images/create',
+      isAuthenticated(true, 'airlink.admin.images.create'),
       async (req, res, next) => {
         try {
-          const result = await apiPost(req, "/api/v2/admin/images", req.body);
-          res.redirect(`/admin/images/edit/${(result as any).id}?success=true`);
+          const result = (await apiPost(
+            req,
+            '/api/v2/admin/images',
+            req.body,
+          )) as Record<string, unknown>;
+          res.redirect(`/admin/images/edit/${String(result?.id)}?success=true`);
         } catch (err) {
           next(err);
         }
       },
     );
 
-    router.post(
-      "/admin/images/upload",
-      isAuthenticated(true),
+    // ── Delete ──────────────────────────────────────────────────────────
+    router.delete(
+      '/admin/images/delete/:id',
+      isAuthenticated(true, 'airlink.admin.images.delete'),
       async (req, res, next) => {
         try {
-          await apiPost(req, "/api/v2/admin/images/upload", req.body);
+          await apiDelete(req, `/api/v2/admin/images/${req.params.id}`);
+          res.status(200).json({ success: true });
+        } catch (err) {
+          next(err);
+        }
+      },
+    );
+
+    // ── Upload ──────────────────────────────────────────────────────────
+    router.post(
+      '/admin/images/upload',
+      isAuthenticated(true, 'airlink.admin.images.create'),
+      async (req, res, next) => {
+        try {
+          await apiPost(req, '/api/v2/admin/images/upload', req.body);
           res.json({ success: true });
         } catch (err) {
           next(err);
@@ -108,12 +133,13 @@ const module: Module = {
       },
     );
 
+    // ── Import from URL ─────────────────────────────────────────────────
     router.post(
-      "/admin/images/import-url",
-      isAuthenticated(true),
+      '/admin/images/import-url',
+      isAuthenticated(true, 'airlink.admin.images.create'),
       async (req, res, next) => {
         try {
-          await apiPost(req, "/api/v2/admin/images/import-url", req.body);
+          await apiPost(req, '/api/v2/admin/images/import-url', req.body);
           res.json({ success: true });
         } catch (err) {
           next(err);
@@ -121,9 +147,10 @@ const module: Module = {
       },
     );
 
+    // ── Export / download ───────────────────────────────────────────────
     router.get(
-      "/admin/images/export/:id",
-      isAuthenticated(true),
+      '/admin/images/export/:id',
+      isAuthenticated(true, 'airlink.admin.images.view'),
       async (req, res, next) => {
         try {
           const data = await apiGet(
@@ -137,100 +164,23 @@ const module: Module = {
       },
     );
 
-    router.delete(
-      "/admin/images/delete/:id",
-      isAuthenticated(true),
-      async (req, res, next) => {
-        try {
-          await apiDelete(req, `/api/v2/admin/images/${req.params.id}`);
-          res.status(200).send("Image deleted successfully.");
-        } catch (err) {
-          next(err);
-        }
-      },
-    );
-
+    // ── Approvals (redirect to tab) ─────────────────────────────────────
     router.get(
-      "/admin/images/store",
-      isAuthenticated(true),
-      async (req, res, next) => {
+      '/admin/images/approvals',
+      isAuthenticated(true, 'airlink.admin.images.view'),
+      async (_req, res, next) => {
         try {
-          res.redirect("/admin/images#store");
+          res.redirect('/admin/images#approvals');
         } catch (err) {
           next(err);
         }
       },
     );
 
-    router.get(
-      "/admin/images/store/panel",
-      isAuthenticated(true),
-      async (req, res, next) => {
-        try {
-          res.render("admin/images/store-panel");
-        } catch (err) {
-          next(err);
-        }
-      },
-    );
-
-    router.get(
-      "/admin/images/store/catalogue",
-      isAuthenticated(true),
-      async (req, res, next) => {
-        try {
-          const data = await apiGet(
-            req,
-            "/api/v2/admin/images/store/catalogue",
-          );
-          res.json(data);
-        } catch (err) {
-          next(err);
-        }
-      },
-    );
-
+    // ── Approve ─────────────────────────────────────────────────────────
     router.post(
-      "/admin/images/store/install",
-      isAuthenticated(true),
-      async (req, res, next) => {
-        try {
-          await apiPost(req, "/api/v2/admin/images/store/install", req.body);
-          res.json({ success: true });
-        } catch (err) {
-          next(err);
-        }
-      },
-    );
-
-    router.post(
-      "/admin/images/store/refresh",
-      isAuthenticated(true),
-      async (req, res, next) => {
-        try {
-          await apiPost(req, "/api/v2/admin/images/store/refresh", {});
-          res.json({ success: true });
-        } catch (err) {
-          next(err);
-        }
-      },
-    );
-
-    router.get(
-      "/admin/images/approvals",
-      isAuthenticated(true),
-      async (req, res, next) => {
-        try {
-          res.redirect("/admin/images#approvals");
-        } catch (err) {
-          next(err);
-        }
-      },
-    );
-
-    router.post(
-      "/admin/images/approve/:id",
-      isAuthenticated(true),
+      '/admin/images/approve/:id',
+      isAuthenticated(true, 'airlink.admin.images.approve'),
       async (req, res, next) => {
         try {
           await apiPost(
@@ -245,9 +195,10 @@ const module: Module = {
       },
     );
 
+    // ── Reject ──────────────────────────────────────────────────────────
     router.post(
-      "/admin/images/reject/:id",
-      isAuthenticated(true),
+      '/admin/images/reject/:id',
+      isAuthenticated(true, 'airlink.admin.images.reject'),
       async (req, res, next) => {
         try {
           await apiPost(
@@ -255,6 +206,77 @@ const module: Module = {
             `/api/v2/admin/images/${req.params.id}/reject`,
             req.body,
           );
+          res.json({ success: true });
+        } catch (err) {
+          next(err);
+        }
+      },
+    );
+
+    // ── Store (redirect to tab) ─────────────────────────────────────────
+    router.get(
+      '/admin/images/store',
+      isAuthenticated(true, 'airlink.admin.images.view'),
+      async (_req, res, next) => {
+        try {
+          res.redirect('/admin/images#store');
+        } catch (err) {
+          next(err);
+        }
+      },
+    );
+
+    // ── Store catalogue (AJAX) ──────────────────────────────────────────
+    router.get(
+      '/admin/images/store/catalogue',
+      isAuthenticated(true, 'airlink.admin.images.view'),
+      async (req, res, next) => {
+        try {
+          const data = await apiGet(
+            req,
+            '/api/v2/admin/images/store/catalogue',
+          );
+          res.json(data);
+        } catch (err) {
+          next(err);
+        }
+      },
+    );
+
+    // ── Store panel (fragment) ──────────────────────────────────────────
+    router.get(
+      '/admin/images/store/panel',
+      isAuthenticated(true, 'airlink.admin.images.view'),
+      async (_req, res, next) => {
+        try {
+          res.render('admin/images/store-panel');
+        } catch (err) {
+          next(err);
+        }
+      },
+    );
+
+    // ── Store install ───────────────────────────────────────────────────
+    router.post(
+      '/admin/images/store/install',
+      isAuthenticated(true, 'airlink.admin.images.create'),
+      async (req, res, next) => {
+        try {
+          await apiPost(req, '/api/v2/admin/images/store/install', req.body);
+          res.json({ success: true });
+        } catch (err) {
+          next(err);
+        }
+      },
+    );
+
+    // ── Store refresh ───────────────────────────────────────────────────
+    router.post(
+      '/admin/images/store/refresh',
+      isAuthenticated(true, 'airlink.admin.images.update'),
+      async (req, res, next) => {
+        try {
+          await apiPost(req, '/api/v2/admin/images/store/refresh', {});
           res.json({ success: true });
         } catch (err) {
           next(err);

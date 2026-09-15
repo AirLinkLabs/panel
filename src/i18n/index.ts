@@ -1,22 +1,22 @@
-import { setupI18n, type I18n } from "@lingui/core";
+import { setupI18n, type I18n } from '@lingui/core';
 
 // ─── Supported locales ─────────────────────────────────────────
 export const SUPPORTED_LOCALES = [
-  "en",
-  "de",
-  "es",
-  "fr",
-  "it",
-  "ja",
-  "pt",
-  "ru",
-  "ta",
-  "zh",
+  'en',
+  'de',
+  'es',
+  'fr',
+  'it',
+  'ja',
+  'pt',
+  'ru',
+  'ta',
+  'zh',
 ] as const;
 
 export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
 
-export const DEFAULT_LOCALE: SupportedLocale = "en";
+export const DEFAULT_LOCALE: SupportedLocale = 'en';
 
 const LOCALE_SET = new Set<string>(SUPPORTED_LOCALES);
 
@@ -36,12 +36,12 @@ export function isValidLocale(locale: string): locale is SupportedLocale {
  * Strips region codes (e.g. "en-US" -> "en").
  */
 export function resolveLocale(raw: string | undefined): SupportedLocale {
-  if (!raw) return DEFAULT_LOCALE;
+  if (!raw) {return DEFAULT_LOCALE;}
   const normalized = raw.trim().toLowerCase();
   // Strip region: "en-US" -> "en", "zh-CN" -> "zh"
-  const base = normalized.split("-")[0];
-  if (base && isValidLocale(base)) return base;
-  if (isValidLocale(normalized)) return normalized;
+  const base = normalized.split('-')[0];
+  if (base && isValidLocale(base)) {return base;}
+  if (isValidLocale(normalized)) {return normalized;}
   return DEFAULT_LOCALE;
 }
 
@@ -61,7 +61,7 @@ function loadCatalog(locale: string): Record<string, string> {
     // Compiled catalogs are plain JS: module.exports = { messages: {...} }
     // But lingui compile --format minimal outputs: { "key": "value" }
     const catalogPath = `../../locales/${locale}/messages`;
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
+     
     const mod = require(catalogPath);
     const messages = mod.messages ?? mod.default ?? mod;
     catalogCache.set(locale, messages);

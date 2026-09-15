@@ -1,10 +1,10 @@
-import type { Request, Response, NextFunction } from "express";
+import type { Request, Response, NextFunction } from 'express';
 import {
   resolveLocale,
   createRequestI18n,
   createI18nHelpers,
   type SupportedLocale,
-} from "../../i18n";
+} from '../../i18n';
 
 /**
  * Express middleware that:
@@ -20,12 +20,12 @@ export function localeMiddleware(
 ): void {
   // Locale detection: cookie > Accept-Language > default
   const cookieLang = req.cookies?.lang as string | undefined;
-  const acceptLang = req.headers["accept-language"];
+  const acceptLang = req.headers['accept-language'];
   let rawLocale = cookieLang;
 
   if (!rawLocale && acceptLang) {
     // Parse first language from Accept-Language header: "en-US,en;q=0.9"
-    const firstLang = acceptLang.split(",")[0]?.split("-")[0]?.trim();
+    const firstLang = acceptLang.split(',')[0]?.split('-')[0]?.trim();
     rawLocale = firstLang;
   }
 

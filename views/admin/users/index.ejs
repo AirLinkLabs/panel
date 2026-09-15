@@ -1,0 +1,165 @@
+<%- include('../../layouts/admin', { title: t('adminUsersTitle') }) %>
+
+<div class="px-4 sm:px-6 lg:px-8 pt-4">
+  <%- include('../../partials/ui/breadcrumb', { items: [
+    { label: t('admin'), url: '/admin/overview' },
+    { label: t('breadcrumbUsers') }
+  ] }) %>
+
+  <div class="flex items-start justify-between gap-4 mt-4">
+    <div>
+      <h1 class="text-xl font-semibold tracking-tight" style="color:var(--theme-text-strong)"><%= t('adminUsersTitle') %></h1>
+      <p class="text-sm mt-1" style="color:var(--theme-text-muted)"><%= t('adminUsersText') %></p>
+    </div>
+    <div class="flex gap-2 shrink-0">
+      <a href="/admin/users/create" class="al-btn-primary">
+        <%- icon('plus', { class: 'size-4', strokeWidth: 1.5 }) %>
+        <span><%= t('createNewUser') %></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
+    <%- include('../../partials/stat-card', { label: t('totalUsers'), value: users.length, iconName: 'users' }) %>
+    <%- include('../../partials/stat-card', { label: t('admins'), value: users.filter(function(u) { return u.isAdmin; }).length, iconName: 'shield' }) %>
+  </div>
+
+  <% if (typeof req !== 'undefined' && req.query && req.query.err === 'none') { %>
+    <div class="mt-4 px-4 py-3 rounded-xl text-sm" style="background:var(--theme-success-bg);border:1px solid color-mix(in srgb, var(--theme-success) 25%, transparent);color:var(--theme-success)">
+      <%= t('actionCompleted') %>
+    </div>
+  <% } %>
+
+  <% if (users.length === 0) { %>
+    <%- include('../../partials/empty-state', {
+      iconName: 'users',
+      title: t('noUsersYet'),
+      description: t('createYourFirstUser'),
+      action: '<a href="/admin/users/create" class="al-btn-primary">' + icon('plus', { class: 'w-3.5 h-3.5' }).toString() + ' ' + t('createUserBtn') + '</a>'
+    }) %>
+  <% } else { %>
+
+  <div class="lg:hidden space-y-1.5 mt-5">
+    <% users.forEach(function(u) { %>
+    <div class="al-card flex items-center gap-2.5 p-4">
+      <div class="relative shrink-0">
+        <img loading="lazy" decoding="async" class="w-7 h-7 rounded-lg object-cover" src="<%= u.avatar ? u.avatar : '/avatar/' + encodeURIComponent(u.username) %>" alt="<%= u.username %>">
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="text-[13px] font-medium truncate" style="color:var(--theme-text-strong)"><%= u.username %></p>
+        <p class="text-[11px] truncate" style="color:var(--theme-text-muted)">
+          <span class="inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-medium ring-1 ring-inset"
+            style="<%= u.role === 'owner' ? 'background:var(--theme-warning-bg);color:var(--theme-warning)' : u.isAdmin ? 'background:var(--theme-accent-subtle);color:var(--theme-accent)' : 'background:var(--theme-bg-secondary);color:var(--theme-text-muted)' %>">
+            <% if (u.role === 'owner') { %><%- icon('crown', { size: 9, class: 'inline-block mr-0.5' }) %><% } %>
+            <%= u.role === 'owner' ? t('ownerRole') : u.isAdmin ? t('adminRole') : t('userRole') %>
+          </span>
+        </p>
+      </div>
+      <div class="flex items-center gap-1">
+        <a href="/admin/users/view/<%= u.id %>" class="al-btn-ghost p-2 min-w-[44px] min-h-[44px] flex items-center justify-center" aria-label="<%= t('viewUser') %>">
+          <%- icon('external-link', { size: 16, class: 'shrink-0' }) %>
+        </a>
+        <a href="/admin/users/edit/<%= u.id %>" class="al-btn-ghost p-2 min-w-[44px] min-h-[44px] flex items-center justify-center" aria-label="<%= t('editUserBtn') %>">
+          <%- icon('pencil', { size: 16, class: 'shrink-0' }) %>
+        </a>
+        <button onclick="deleteUser('<%= u.id %>')" type="button" class="al-btn-ghost p-2 min-w-[44px] min-h-[44px] flex items-center justify-center" style="color:var(--theme-danger);" aria-label="<%= t('deleteUserBtn') %>">
+          <%- icon('trash-2', { size: 16, class: 'shrink-0' }) %>
+        </button>
+      </div>
+    </div>
+    <% }); %>
+  </div>
+
+  <div class="hidden lg:block overflow-x-auto shadow-sm rounded-xl border mt-5" id="userTable" style="border-color:var(--theme-border);">
+    <table class="al-table">
+      <colgroup>
+        <col style="min-width:220px">
+        <col style="min-width:100px">
+        <col style="min-width:80px">
+        <col style="min-width:200px">
+      </colgroup>
+      <thead class="al-table-head">
+        <tr>
+          <th scope="col" class="al-table-th sm:pl-6"><%= t('name') %></th>
+          <th scope="col" class="al-table-th sm:pl-6"><%= t('role') %></th>
+          <th scope="col" class="al-table-th sm:pl-6"><%= t('servers') %></th>
+          <th scope="col" class="al-table-th sm:pl-6"><%= t('actions') %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% users.forEach(function(u, idx) { %>
+          <tr style="--i:<%= idx %>" class="al-table-tr cursor-pointer" tabindex="0" role="link"
+            data-user-id="<%= u.id %>" data-admin="<%= u.isAdmin %>"
+            onclick="handleRowClick(event, '/admin/users/view/<%= u.id %>/')"
+            onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();handleRowClick(event, '/admin/users/view/<%= u.id %>/');}">
+            <td class="al-table-td sm:pl-6">
+              <div class="flex items-center gap-2">
+                <img loading="lazy" decoding="async" class="h-7 w-7 rounded-lg object-cover" src="<%= u.avatar ? u.avatar : '/avatar/' + encodeURIComponent(u.username) %>" alt="<%= u.username %>">
+                <div class="font-medium text-[13px]" style="color:var(--theme-text-strong)"><%= u.username %></div>
+              </div>
+            </td>
+            <td class="al-table-td">
+              <div class="mt-1 ml-2 inline-flex items-center rounded-md px-1.5 py-0.5 text-[11px] font-medium ring-1 ring-inset"
+                style="<%= u.role === 'owner' ? 'background:var(--theme-warning-bg);color:var(--theme-warning)' : u.isAdmin ? 'background:var(--theme-success-bg);color:var(--theme-success)' : 'background:var(--theme-bg-secondary);color:var(--theme-text-muted)' %>">
+                <% if (u.role === 'owner') { %><%- icon('crown', { size: 10, class: 'inline-block mr-0.5 -mt-0.5' }) %><% } %>
+                <%= u.role === 'owner' ? t('owner') : u.isAdmin ? t('adminRole') : t('userRole') %>
+              </div>
+            </td>
+            <td class="al-table-td text-[13px]"><%= u._count ? u._count.servers : 0 %></td>
+            <td class="al-table-td">
+              <div class="flex items-center gap-1">
+                <a href="/admin/users/view/<%= u.id %>/" onclick="event.stopPropagation()" title="<%= t('viewUser') %>" aria-label="<%= t('viewUser') %>"
+                  class="al-btn-ghost p-1.5 min-w-[36px] min-h-[36px] flex items-center justify-center">
+                  <%- icon('external-link', { size: 14, class: 'shrink-0' }) %>
+                </a>
+                <a href="/admin/users/edit/<%= u.id %>/" onclick="event.stopPropagation()" title="<%= t('editUserBtn') %>" aria-label="<%= t('editUserBtn') %>"
+                  class="al-btn-ghost p-1.5 min-w-[36px] min-h-[36px] flex items-center justify-center">
+                  <%- icon('pencil', { size: 14, class: 'shrink-0' }) %>
+                </a>
+                <button onclick="event.stopPropagation(); deleteUser('<%= u.id %>')" type="button" title="<%= t('deleteUserBtn') %>" aria-label="<%= t('deleteUserBtn') %>"
+                  class="al-btn-ghost p-1.5 min-w-[36px] min-h-[36px] flex items-center justify-center" style="color:var(--theme-danger);">
+                  <%- icon('trash-2', { size: 14, class: 'shrink-0' }) %>
+                </button>
+              </div>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+  <% } %>
+</div>
+
+<script nonce="<%- nonce %>">
+(function() {
+  window.handleRowClick = function(event, url) {
+    if (!event.target.closest('button, a')) window.location.href = url;
+  };
+
+  window.deleteUser = function(userId) {
+    window.modal.confirm({
+      title: '<%= t('deleteUser') %>',
+      body: '<%= t('areYouSureDeleteUser') %>',
+      danger: true,
+      confirmLabel: '<%= t('yeahDeleteIt') %>',
+      onConfirm: function() {
+        var csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+        fetch('/admin/users/delete/' + userId, {
+          method: 'DELETE',
+          headers: { 'x-csrf-token': csrfToken }
+        }).then(function(response) {
+          if (response.ok) {
+            window.location.reload();
+          } else {
+            showToast('<%= t('failedToDeleteUser') %>', 'error');
+          }
+        }).catch(function() {
+          showToast('<%= t('failedToDeleteUser') %>', 'error');
+        });
+      }
+    });
+  };
+})();
+</script>
+
+<%- include('../../layouts/admin-footer') %>

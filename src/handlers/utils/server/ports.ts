@@ -45,7 +45,7 @@ export function parseImagePortRequirements(
 }
 
 function isServerPortRecord(value: unknown): value is ServerPortRecord {
-  return typeof value === "object" && value !== null;
+  return typeof value === 'object' && value !== null;
 }
 
 export function parseServerPorts(raw: unknown): ServerPortAssignment[] {
@@ -58,7 +58,7 @@ export function parseServerPorts(raw: unknown): ServerPortAssignment[] {
       .filter(isServerPortRecord)
       .map((port, index) => {
         const legacyParts =
-          typeof port.Port === "string" ? port.Port.split(":") : [];
+          typeof port.Port === 'string' ? port.Port.split(':') : [];
         const externalPort = Number(
           port.externalPort ?? legacyParts[0] ?? port.Port,
         );
@@ -106,7 +106,7 @@ export function serializeServerPorts(
 export function portsToDaemonString(raw: unknown): string {
   return parseServerPorts(raw)
     .map((port) => `${port.externalPort}:${port.internalPort}`)
-    .join(",");
+    .join(',');
 }
 
 export function getPrimaryExternalPort(raw: unknown): number | undefined {
@@ -155,7 +155,7 @@ export function validatePortAssignments(
   const seen = new Set<number>();
   for (const port of ports) {
     if (!port.name.trim()) {
-      return "Each port needs a name.";
+      return 'Each port needs a name.';
     }
     if (!isValidPort(port.internalPort)) {
       return `Internal port ${port.internalPort} is invalid.`;

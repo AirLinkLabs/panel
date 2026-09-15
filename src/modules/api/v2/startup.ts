@@ -7,9 +7,9 @@
  * POST /api/v2/servers/:id/startup/variables   — Save environment variables
  */
 
-import { Router } from "express";
-import prisma from "../../../db";
-import { parseBody } from "../../../utils/validation";
+import { Router } from 'express';
+import prisma from '../../../db';
+import { parseBody } from '../../../utils/validation';
 import {
   jsonOk,
   jsonError,
@@ -18,24 +18,24 @@ import {
   checkSuspended,
   logActivity,
   getAuthenticatedUserId,
-} from "./helpers";
+} from './helpers';
 import {
   saveStartupCommandBody,
   saveDockerImageBody,
   saveVariablesBody,
-} from "./dto";
+} from './dto';
 
 const router = Router();
 
 // ---------------------------------------------------------------------------
 // GET /api/v2/servers/:id/startup — Get startup config
 // ---------------------------------------------------------------------------
-router.get("/", async (req, res) => {
+router.get('/', async (req, res) => {
   const resolved = await resolveServer(req, res);
   if (!resolved) {
     return;
   }
-  if (!requireSubUserPermission(res, resolved, "console")) {
+  if (!requireSubUserPermission(res, resolved, 'console')) {
     return;
   }
 
@@ -77,7 +77,7 @@ router.get("/", async (req, res) => {
 // ---------------------------------------------------------------------------
 // POST /api/v2/servers/:id/startup/command — Save startup command
 // ---------------------------------------------------------------------------
-router.post("/command", parseBody(saveStartupCommandBody), async (req, res) => {
+router.post('/command', parseBody(saveStartupCommandBody), async (req, res) => {
   const resolved = await resolveServer(req, res);
   if (!resolved) {
     return;
@@ -85,15 +85,15 @@ router.post("/command", parseBody(saveStartupCommandBody), async (req, res) => {
   if (checkSuspended(res, resolved)) {
     return;
   }
-  if (!requireSubUserPermission(res, resolved, "console")) {
+  if (!requireSubUserPermission(res, resolved, 'console')) {
     return;
   }
 
   if (!resolved.server.allowStartupEdit) {
     return jsonError(
       res,
-      "FORBIDDEN",
-      "Startup editing is disabled for this server",
+      'FORBIDDEN',
+      'Startup editing is disabled for this server',
       403,
     );
   }
@@ -107,7 +107,7 @@ router.post("/command", parseBody(saveStartupCommandBody), async (req, res) => {
 
   logActivity(
     getAuthenticatedUserId(req),
-    "startup.command.updated",
+    'startup.command.updated',
     resolved.server.UUID,
     { command },
     req.ip,
@@ -120,7 +120,7 @@ router.post("/command", parseBody(saveStartupCommandBody), async (req, res) => {
 // POST /api/v2/servers/:id/startup/docker-image — Save docker image
 // ---------------------------------------------------------------------------
 router.post(
-  "/docker-image",
+  '/docker-image',
   parseBody(saveDockerImageBody),
   async (req, res) => {
     const resolved = await resolveServer(req, res);
@@ -130,7 +130,7 @@ router.post(
     if (checkSuspended(res, resolved)) {
       return;
     }
-    if (!requireSubUserPermission(res, resolved, "console")) {
+    if (!requireSubUserPermission(res, resolved, 'console')) {
       return;
     }
 
@@ -142,13 +142,13 @@ router.post(
     });
     if (image?.dockerImages) {
       const allowed = (image.dockerImages as string)
-        .split(",")
+        .split(',')
         .map((s: string) => s.trim());
       if (!allowed.includes(dockerImage)) {
         return jsonError(
           res,
-          "BAD_REQUEST",
-          "Docker image is not allowed for this server",
+          'BAD_REQUEST',
+          'Docker image is not allowed for this server',
           400,
         );
       }
@@ -161,7 +161,7 @@ router.post(
 
     logActivity(
       getAuthenticatedUserId(req),
-      "startup.docker.updated",
+      'startup.docker.updated',
       resolved.server.UUID,
       { dockerImage },
       req.ip,
@@ -174,7 +174,7 @@ router.post(
 // ---------------------------------------------------------------------------
 // POST /api/v2/servers/:id/startup/variables — Save environment variables
 // ---------------------------------------------------------------------------
-router.post("/variables", parseBody(saveVariablesBody), async (req, res) => {
+router.post('/variables', parseBody(saveVariablesBody), async (req, res) => {
   const resolved = await resolveServer(req, res);
   if (!resolved) {
     return;
@@ -182,7 +182,7 @@ router.post("/variables", parseBody(saveVariablesBody), async (req, res) => {
   if (checkSuspended(res, resolved)) {
     return;
   }
-  if (!requireSubUserPermission(res, resolved, "console")) {
+  if (!requireSubUserPermission(res, resolved, 'console')) {
     return;
   }
 
@@ -202,7 +202,7 @@ router.post("/variables", parseBody(saveVariablesBody), async (req, res) => {
 
   logActivity(
     getAuthenticatedUserId(req),
-    "startup.variables.updated",
+    'startup.variables.updated',
     resolved.server.UUID,
     { count: variables.length },
     req.ip,

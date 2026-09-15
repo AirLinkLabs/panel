@@ -1,0 +1,277 @@
+<%- include('../../layouts/admin', { title: t('adminServersTitle') }) %>
+
+<%- include('../../partials/flash-messages') %>
+
+<%- include('../../partials/ui/breadcrumb', { items: [
+  { label: t('admin'), url: '/admin' },
+  { label: t('breadcrumbServers') }
+] }) %>
+
+<div class="al-page-header flex items-start justify-between gap-4">
+  <div>
+    <h1 class="al-page-title"><%= t('adminServersTitle') %></h1>
+    <p class="al-page-desc"><%= t('adminServersText') %></p>
+  </div>
+  <div class="flex gap-2 shrink-0 items-center">
+    <a href="/admin/servers/create" class="al-btn al-btn-primary inline-flex items-center gap-1.5">
+      <%- icon('plus', { class: 'size-4', strokeWidth: 1.5 }) %>
+      <%= t('createNewServer') %>
+    </a>
+  </div>
+</div>
+
+<div class="al-page-body">
+
+  <!-- Sentinel — watched to know when toolbar scrolls off screen -->
+  <div id="toolbarSentinel" class="h-px w-full" aria-hidden="true"></div>
+
+  <!-- Bulk toolbar -->
+  <div id="bulkToolbarRow" class="no-anim" style="display:grid;grid-template-rows:0fr;transition:grid-template-rows 0.36s cubic-bezier(0.16,1,0.3,1)">
+    <div style="min-height:0;overflow:hidden">
+      <div id="bulkToolbarContent" class="mb-3 pb-0.5" style="opacity:0;transition:opacity 0.28s ease">
+        <div class="al-card flex items-center gap-2 p-2.5">
+          <span class="selection-count text-[13px] font-medium mr-1" style="color:var(--theme-text);"><%= t('selected') %></span>
+          <div class="h-3.5 w-px mx-1" style="background:var(--theme-border);"></div>
+          <button type="button" onclick="bulkDelete()"
+            class="al-btn al-btn-danger text-[11px] ml-auto">
+            <%- icon('trash-2', { size: 12, class: 'shrink-0' }) %>
+            <%= t('delete') %>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating pill — fixed below topbar when toolbar scrolls off screen -->
+  <div id="floatingToolbar"
+    style="position:fixed;top:72px;left:50%;transform:translateX(-50%) translateY(-10px);z-index:40;opacity:0;pointer-events:none;transition:opacity 0.22s ease,transform 0.22s cubic-bezier(0.16,1,0.3,1)">
+    <div class="al-card flex items-center gap-2 p-2.5 shadow-xl">
+      <span class="selection-count text-[13px] font-medium mr-1" style="color:var(--theme-text);"><%= t('selected') %></span>
+      <div class="h-3.5 w-px mx-1" style="background:var(--theme-border);"></div>
+      <button type="button" onclick="bulkDelete()"
+        class="al-btn al-btn-danger text-[11px] ml-auto">
+        <%- icon('trash-2', { size: 12, class: 'shrink-0' }) %>
+        <%= t('delete') %>
+      </button>
+    </div>
+  </div>
+
+  <!-- Server table -->
+  <div class="overflow-x-auto shadow-sm rounded-xl border" id="serverTable" style="border-color:var(--theme-border);">
+    <% if (!servers || servers.length === 0) { %>
+      <div class="py-16 text-center">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4" style="background:var(--theme-bg-secondary);">
+          <%- icon('server', { class: 'w-8 h-8', style: 'color:var(--theme-text-muted);' }) %>
+        </div>
+        <h3 class="text-sm font-semibold mb-1" style="color:var(--theme-text-strong);"><%= t('noServersYet') %></h3>
+        <p class="text-xs mb-4" style="color:var(--theme-text-muted);"><%= t('createFirstServer') %></p>
+        <a href="/admin/servers/create" class="al-btn al-btn-primary"><%= t('createNewServer') %></a>
+      </div>
+    <% } else { %>
+    <table class="al-table">
+      <colgroup>
+        <col style="min-width:40px">
+        <col style="min-width:220px">
+        <col style="min-width:140px">
+        <col style="min-width:120px">
+        <col style="min-width:100px">
+        <col style="min-width:160px">
+      </colgroup>
+      <thead class="al-table-head">
+        <tr>
+          <th scope="col" class="al-table-th w-10"></th>
+          <th scope="col" class="al-table-th"><%= t('name') %></th>
+          <th scope="col" class="al-table-th"><%= t('Owner') %></th>
+          <th scope="col" class="al-table-th"><%= t('Node') %></th>
+          <th scope="col" class="al-table-th"><%= t('Status') %></th>
+          <th scope="col" class="al-table-th"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% let srvIdx = 0; servers.forEach(function(server) { %>
+        <tr style="--i:<%= srvIdx++ %>" class="al-table-tr cursor-pointer server-row" data-id="<%= server.id %>" data-uuid="<%= server.UUID %>">
+          <td class="al-table-td w-10">
+            <input type="checkbox" class="server-checkbox rounded cursor-pointer"
+              style="border-color:var(--theme-border-input);color:var(--theme-text-strong);background:var(--theme-bg-secondary)"
+              value="<%= server.id %>" data-uuid="<%= server.UUID %>" data-edit-id="<%= server.id %>" data-name="<%= server.name %>">
+          </td>
+          <td class="al-table-td">
+            <div class="flex items-center gap-2">
+              <span class="shrink-0">
+                <% if (server.Suspended) { %>
+                  <span class="al-dot-offline"></span>
+                <% } else { %>
+                  <span class="al-dot-online"></span>
+                <% } %>
+              </span>
+              <div>
+                <div class="font-medium truncate max-w-[200px] text-[13px]" style="color:var(--theme-text-strong);"><%= server.name %></div>
+                <div class="text-[10px] font-mono mt-0.5" style="color:var(--theme-text-muted);"><%= server.UUID %></div>
+              </div>
+            </div>
+          </td>
+          <td class="al-table-td">
+            <a href="/admin/users/edit/<%= server.owner.id %>" class="flex items-center gap-1.5 group" onclick="event.stopPropagation()">
+              <img loading="lazy" decoding="async" class="h-5 w-5 rounded-md object-cover shrink-0"
+                src="<%= server.owner.avatar ? server.owner.avatar : '/avatar/' + encodeURIComponent(server.owner.username) %>" alt="<%= server.owner.username %>">
+              <span class="font-medium text-[13px] group-hover:underline truncate max-w-[120px]" style="color:var(--theme-text-strong);"><%= server.owner.username %></span>
+            </a>
+          </td>
+          <td class="al-table-td">
+            <a href="/admin/nodes" class="font-medium text-[13px] hover:underline truncate max-w-[120px]" style="color:var(--theme-text-strong);" onclick="event.stopPropagation()"><%= server.node.name %></a>
+          </td>
+          <td class="al-table-td">
+            <span class="inline-flex items-center rounded-md px-1.5 py-0.5 text-[11px] font-medium ring-1 ring-inset"
+              style="<%= server.Suspended ? 'background:var(--theme-warning-bg);color:var(--theme-warning)' : 'background:var(--theme-success-bg);color:var(--theme-success)' %>">
+              <%= server.Suspended ? t('suspended') : t('enabled') %>
+            </span>
+          </td>
+          <td class="al-table-td">
+            <div class="flex items-center gap-1.5">
+              <a href="/server/<%= server.UUID %>" onclick="event.stopPropagation()" title="<%= t('openConsole') %>" aria-label="<%= t('openConsole') %>"
+                class="al-btn al-btn-ghost p-2 min-w-[44px] min-h-[44px] flex items-center justify-center">
+                <%- icon('external-link', { size: 16, class: 'shrink-0' }) %>
+              </a>
+              <a href="/admin/servers/edit/<%= server.id %>" onclick="event.stopPropagation()" title="<%= t('edit') %>" aria-label="<%= t('editServer') %>"
+                class="al-btn al-btn-ghost p-2 min-w-[44px] min-h-[44px] flex items-center justify-center">
+                <%- icon('pencil', { size: 16, class: 'shrink-0' }) %>
+              </a>
+              <button type="button" onclick="event.stopPropagation(); deleteServer('<%= server.id %>', '<%= server.name %>')" title="<%= t('delete') %>" aria-label="<%= t('deleteServer') %>"
+                class="al-btn al-btn-ghost p-2 min-w-[44px] min-h-[44px] flex items-center justify-center" style="color:var(--theme-danger);">
+                <%- icon('trash-2', { size: 16, class: 'shrink-0' }) %>
+              </button>
+            </div>
+          </td>
+        </tr>
+        <% }); %>
+      </tbody>
+    </table>
+    <% } %>
+  </div>
+
+</div>
+
+<script nonce="<%- nonce %>">
+(function() {
+  const sm = {
+    sentinelVisible: true,
+
+    init() {
+      window._smInstance = this;
+      const observer = new IntersectionObserver((entries) => {
+        this.sentinelVisible = entries[0].isIntersecting;
+        if (this.getChecked().length > 0) {
+          this.setFloatingVisible(!this.sentinelVisible);
+        }
+      }, { threshold: 0 });
+      observer.observe(document.getElementById('toolbarSentinel'));
+
+      document.querySelectorAll('.server-checkbox').forEach((cb) => {
+        cb.addEventListener('change', () => {
+          if (window.animateCheckbox) window.animateCheckbox(cb);
+          this.updateToolbar();
+        });
+      });
+
+      document.querySelectorAll('.server-row').forEach((row) => {
+        row.addEventListener('click', (e) => {
+          if (['A', 'BUTTON', 'INPUT'].includes(e.target.tagName) || e.target.closest('a, button')) return;
+          var cb = row.querySelector('.server-checkbox');
+          cb.checked = !cb.checked;
+          if (window.animateCheckbox) window.animateCheckbox(cb);
+          this.updateToolbar();
+        });
+      });
+
+      this.updateToolbar();
+      this.staggerRows();
+    },
+
+    getChecked() { return Array.from(document.querySelectorAll('.server-checkbox:checked')); },
+
+    setFloatingVisible(show) {
+      const el = document.getElementById('floatingToolbar');
+      if (show) { el.style.opacity = '1'; el.style.transform = 'translateX(-50%) translateY(0)'; el.style.pointerEvents = 'auto'; }
+      else { el.style.opacity = '0'; el.style.transform = 'translateX(-50%) translateY(-10px)'; el.style.pointerEvents = 'none'; }
+    },
+
+    showInlineToolbar() {
+      document.getElementById('bulkToolbarRow').style.gridTemplateRows = '1fr';
+      requestAnimationFrame(() => { document.getElementById('bulkToolbarContent').style.opacity = '1'; });
+    },
+
+    hideInlineToolbar() {
+      document.getElementById('bulkToolbarContent').style.opacity = '0';
+      setTimeout(() => { document.getElementById('bulkToolbarRow').style.gridTemplateRows = '0fr'; }, 80);
+    },
+
+    updateToolbar() {
+      const checked = this.getChecked();
+      document.querySelectorAll('.selection-count').forEach((el) => { el.textContent = checked.length + ' ' + (window.__i18n.selected || 'selected'); });
+      if (checked.length > 0) { this.showInlineToolbar(); this.setFloatingVisible(!this.sentinelVisible); }
+      else { this.hideInlineToolbar(); this.setFloatingVisible(false); }
+    },
+
+    bulkDelete() {
+      const checked = this.getChecked();
+      if (!checked.length) return;
+      const msg = checked.length === 1
+        ? (window.__i18n.deleteServerConfirm || 'Delete this server? All data will be permanently removed.')
+        : (window.__i18n.deleteServersConfirm || 'Delete ') + checked.length + (window.__i18n.serversConfirmSuffix || ' servers? All data will be permanently removed.');
+      window.modal.confirm({
+        title: checked.length === 1 ? (window.__i18n.deleteServer || 'Delete Server') : (window.__i18n.deleteServers || 'Delete ') + checked.length + (window.__i18n.serversSuffix || ' Servers'),
+        body: msg, danger: true, confirmLabel: window.__i18n.delete || 'Delete',
+        onConfirm: () => {
+          const ids = checked.map((cb) => cb.value);
+          let chain = Promise.resolve(), failed = false;
+          ids.forEach((id) => { chain = chain.then(() => fetch('/api/v2/admin/servers/' + id, { method: 'DELETE' }).then((r) => { if (!r.ok) failed = true; })); });
+          chain.then(() => {
+            if (failed) { showToast(window.__i18n.someServersFailedToDelete || 'Some servers failed to delete.', 'error'); return; }
+            showToast(window.__i18n.serversDeleted || 'Servers deleted.', 'success'); window.location.reload();
+          }).catch((err) => { console.error('Bulk delete error:', err); showToast(window.__i18n.failedToDeleteServers || 'Failed to delete servers.', 'error'); });
+        }
+      });
+    },
+
+    deleteServer(id, name) {
+      window.modal.confirm({
+        title: window.__i18n.deleteServer || 'Delete Server',
+        body: (window.__i18n.deleteServerConfirmName || 'Delete "') + name + (window.__i18n.deleteServerConfirmSuffix || '"? All data will be permanently removed.'),
+        danger: true, confirmLabel: window.__i18n.delete || 'Delete',
+        onConfirm: async () => {
+          try {
+            const r = await fetch('/api/v2/admin/servers/' + id, { method: 'DELETE' });
+            if (!r.ok) throw new Error('Failed');
+            showToast(window.__i18n.serverDeleted || 'Server deleted.', 'success');
+            window.location.reload();
+          } catch (err) {
+            showToast(window.__i18n.failedToDeleteServer || 'Failed to delete server.', 'error');
+          }
+        }
+      });
+    },
+
+    staggerRows() {
+      var _rootStyle = getComputedStyle(document.documentElement);
+      var _dur = _rootStyle.getPropertyValue('--dur-default').trim() || '0.22s';
+      var _ease = _rootStyle.getPropertyValue('--ease-standard').trim() || 'ease';
+      const rows = document.querySelectorAll('#serverTable tbody tr');
+      rows.forEach((row, i) => {
+        row.style.opacity = '0'; row.style.transform = 'translateY(4px)'; row.style.transition = 'none';
+        setTimeout(() => {
+          row.style.transition = 'opacity ' + _dur + ' ' + _ease + ', transform ' + _dur + ' ' + _ease;
+          row.style.opacity = '1'; row.style.transform = 'translateY(0)';
+          setTimeout(() => { row.style.transition = ''; row.style.opacity = ''; row.style.transform = ''; }, 240);
+        }, 60 + i * 28);
+      });
+    },
+  };
+
+  sm.init();
+
+  window.bulkDelete = function() { sm.bulkDelete(); };
+  window.deleteServer = function(id, name) { sm.deleteServer(id, name); };
+})();
+</script>
+
+<%- include('../../layouts/admin-footer') %>

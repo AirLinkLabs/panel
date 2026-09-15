@@ -1,4 +1,4 @@
-declare module "@lingui/core" {
+declare module '@lingui/core' {
   export interface I18n {
     _: (
       descriptor: MessageDescriptor,

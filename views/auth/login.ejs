@@ -15,17 +15,31 @@
       </p>
     </div>
 
-    <form method="POST" action="/auth/login" class="space-y-4">
+    <% if (req.query.err) { %>
+    <div class="rounded-xl px-4 py-3 mb-5" style="background:var(--theme-danger-bg);border:1px solid var(--theme-danger)" role="alert" aria-live="assertive">
+      <p class="text-sm font-medium" style="color:var(--theme-danger)">
+        <% if (req.query.err === 'missing_credentials') { %><%= t('errorMissingCredentials') %>
+        <% } else if (['invalid_credentials','incorrect_password','user_not_found'].includes(req.query.err)) { %><%= t('errorInvalidCredentials') %>
+        <% } else if (req.query.err === 'account_locked') { %><%= t('errorAccountLocked', { wait: req.query.wait || 'a few' }) %>
+        <% } else if (req.query.err === 'reset_email_sent') { %><%= t('errorResetEmailSent') %>
+        <% } else if (req.query.err === 'password_reset') { %><%= t('errorPasswordReset') %>
+        <% } else if (req.query.err === 'registration_disabled') { %><%= t('errorRegistrationDisabled') %>
+        <% } else { %><%= t('errorGeneric') %><% } %>
+      </p>
+    </div>
+    <% } %>
+
+    <form method="POST" action="/login" class="space-y-4">
       <%- include('../partials/csrf') %>
 
       <%- include('../partials/ui/form-field', {
-        type: 'email',
-        name: 'email',
-        label: t('fieldEmail'),
+        type: 'text',
+        name: 'identifier',
+        label: t('fieldEmailOrUsername'),
         id: 'login-email',
-        placeholder: t('fieldEmailPlaceholder'),
+        placeholder: t('fieldEmailOrUsernamePlaceholder'),
         required: true,
-        autocomplete: 'email'
+        autocomplete: 'username'
       }) %>
 
       <%- include('../partials/ui/form-field', {
@@ -41,12 +55,12 @@
       <div class="flex items-center justify-between">
         <%- include('../partials/ui/form-field', {
           type: 'checkbox',
-          name: 'remember',
+          name: 'remember-me',
           id: 'remember',
           label: t('rememberMe'),
           checked: false
         }) %>
-        <a href="/auth/forgot-password" class="text-sm hover:underline" style="color:var(--theme-primary);">
+        <a href="/forgot-password" class="text-sm hover:underline" style="color:var(--theme-primary);">
           <%= t('forgotPassword') %>
         </a>
       </div>
@@ -61,7 +75,7 @@
 
     <p class="text-center text-sm mt-6" style="color:var(--theme-text-muted);">
       <%= t('noAccount') %>
-      <a href="/auth/register" class="font-medium hover:underline" style="color:var(--theme-primary);">
+      <a href="/register" class="font-medium hover:underline" style="color:var(--theme-primary);">
         <%= t('register') %>
       </a>
     </p>

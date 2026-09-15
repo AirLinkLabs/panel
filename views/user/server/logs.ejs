@@ -1,0 +1,77 @@
+<%- include('../../layouts/user', { title: t('logs') }) %>
+
+<div id="page-content" class="flex-1 min-w-0 overflow-y-auto pt-0 pb-12 lg:pb-12">
+  <%- include('../../partials/ui/breadcrumb', { items: [
+    { label: t('dashboard'), url: '/' },
+    { label: server.name, url: '/server/' + server.UUID },
+    { label: t('logs') }
+  ] }) %>
+
+  <!-- Page Header -->
+  <div class="px-6 sm:px-8 pt-4 pb-2 sm:pb-6">
+    <div class="flex flex-wrap items-start justify-between gap-4">
+      <div class="flex-1 min-w-0">
+        <h1 class="text-lg font-semibold" style="color:var(--theme-text-strong)"><%= t('logs') %></h1>
+        <div class="flex items-center gap-3 mt-1.5 flex-wrap">
+          <div class="flex items-center gap-1.5">
+            <%- icon('box', { class: 'h-3 w-3 shrink-0' }) %>
+            <span class="text-[11px] truncate max-w-[140px]" style="color:var(--theme-text-muted)"><%= server.image?.name %></span>
+          </div>
+          <span class="text-[11px]" style="color:var(--theme-text-muted)">·</span>
+          <div class="flex items-center gap-1.5">
+            <%- icon('server', { class: 'h-3 w-3 shrink-0' }) %>
+            <span class="text-[11px] truncate max-w-[100px]" style="color:var(--theme-text-muted)"><%= server.node?.name %></span>
+          </div>
+          <span class="text-[11px]" style="color:var(--theme-text-muted)">·</span>
+          <div class="flex items-center gap-1.5">
+            <%- icon('hash', { class: 'h-3 w-3 shrink-0' }) %>
+            <span class="text-[11px] font-mono" style="color:var(--theme-text-muted)"><%= server.UUID.split('-')[0] %></span>
+          </div>
+        </div>
+      </div>
+      <div class="flex gap-2 shrink-0">
+        <a href="/server/<%= server.UUID %>" class="al-btn-ghost inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-center text-sm font-medium transition duration-300">
+          <%- icon('terminal', { class: 'size-4', strokeWidth: 1.5 }) %>
+          <%= t('backToConsole') %>
+        </a>
+        <button id="logsRefreshBtn" type="button" class="al-btn-primary block rounded-xl px-3 py-2 text-center text-sm font-medium shadow-lg transition duration-300">
+          <%- icon('refresh-cw', { class: 'size-4 inline-flex mr-1 mb-0.5', strokeWidth: 1.5 }) %>
+          <%= t('refresh') %>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Server Logs -->
+  <div class="px-6 sm:px-8 mt-8 space-y-6">
+    <!-- Recent output viewer -->
+    <div class="al-card rounded-lg shadow overflow-hidden">
+      <div class="al-card-header">
+        <div>
+          <h2 class="text-sm font-semibold" style="color:var(--theme-text-strong)"><%= t('recentOutput') %></h2>
+          <p class="text-xs" style="color:var(--theme-text-muted)"><%= t('recentOutputDesc') %></p>
+        </div>
+      </div>
+      <div id="logsViewer" class="h-96 overflow-y-auto p-3 font-mono text-[12px] leading-relaxed whitespace-pre-wrap break-words"
+           style="background:var(--theme-bg-card);border:1px solid var(--theme-border);color:var(--theme-text-strong)"></div>
+    </div>
+
+    <!-- Saved logs -->
+    <div class="al-card rounded-lg shadow overflow-hidden">
+      <div class="al-card-header">
+        <div>
+          <h2 class="text-sm font-semibold" style="color:var(--theme-text-strong)"><%= t('savedLogs') %></h2>
+          <p class="text-xs" style="color:var(--theme-text-muted)"><%= t('savedLogsDesc') %></p>
+        </div>
+      </div>
+      <ul id="logsArchiveList" class="divide-y" style="border-color:var(--theme-border)"></ul>
+    </div>
+  </div>
+</div>
+
+<script nonce="<%- nonce %>">
+  window.__serverUUID = '<%= server.UUID %>';
+</script>
+<script nonce="<%- nonce %>" src="<%= assetUrl('/javascript/user/server/logs.js') %>"></script>
+
+<%- include('../../layouts/user-footer') %>

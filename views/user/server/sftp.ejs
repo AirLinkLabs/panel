@@ -1,0 +1,183 @@
+<%- include('../../layouts/user', { title: (server.name || 'Server') + ' — SFTP' }) %>
+
+<nav aria-label="Breadcrumb" class="al-breadcrumb mb-6">
+  <ol class="flex items-center text-sm gap-1">
+    <li class="flex items-center">
+      <a href="/" class="transition-colors hover:underline" style="color:var(--theme-text-muted);"><%= t('dashboard') %></a>
+    </li>
+    <li class="flex items-center">
+      <span class="mx-1.5" style="color:var(--theme-text-muted);"><%- icon('chevron-right', { class: 'w-3.5 h-3.5' }) %></span>
+      <a href="/server/<%= server.UUID %>" class="transition-colors hover:underline" style="color:var(--theme-text-muted);"><%= server.name %></a>
+    </li>
+    <li class="flex items-center">
+      <span class="mx-1.5" style="color:var(--theme-text-muted);"><%- icon('chevron-right', { class: 'w-3.5 h-3.5' }) %></span>
+      <span style="color:var(--theme-text);">SFTP</span>
+    </li>
+  </ol>
+</nav>
+
+<div class="px-6 sm:px-8 pb-12" data-server-uuid="<%= server.UUID %>">
+
+  <h1 class="text-xl font-semibold mb-6" style="color:var(--theme-text);">SFTP</h1>
+
+  <!-- Connection Info Card -->
+  <div class="al-card p-6 mb-6">
+    <div class="flex items-center gap-2 mb-4">
+      <%- icon('globe', { class: 'w-5 h-5', strokeWidth: 1.5, style: 'color:var(--theme-primary);' }) %>
+      <h2 class="text-sm font-semibold" style="color:var(--theme-text-strong);">Connection Information</h2>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <p class="text-[11px] font-medium uppercase tracking-wide mb-1" style="color:var(--theme-text-muted);">Host</p>
+        <div class="flex items-center gap-2">
+          <code id="sftp-host" class="text-sm px-2 py-1 rounded-lg" style="background:var(--theme-bg-secondary);color:var(--theme-text-strong);">—</code>
+          <button type="button" class="copy-btn text-xs px-2 py-1 rounded-lg transition-colors" style="color:var(--theme-text-muted);" data-copy-from="#sftp-host">Copy</button>
+        </div>
+      </div>
+      <div>
+        <p class="text-[11px] font-medium uppercase tracking-wide mb-1" style="color:var(--theme-text-muted);">Port</p>
+        <div class="flex items-center gap-2">
+          <code id="sftp-port" class="text-sm px-2 py-1 rounded-lg" style="background:var(--theme-bg-secondary);color:var(--theme-text-strong);">—</code>
+          <button type="button" class="copy-btn text-xs px-2 py-1 rounded-lg transition-colors" style="color:var(--theme-text-muted);" data-copy-from="#sftp-port">Copy</button>
+        </div>
+      </div>
+      <div>
+        <p class="text-[11px] font-medium uppercase tracking-wide mb-1" style="color:var(--theme-text-muted);">Username</p>
+        <div class="flex items-center gap-2">
+          <code id="sftp-username" class="text-sm px-2 py-1 rounded-lg" style="background:var(--theme-bg-secondary);color:var(--theme-text-strong);">—</code>
+          <button type="button" class="copy-btn text-xs px-2 py-1 rounded-lg transition-colors" style="color:var(--theme-text-muted);" data-copy-from="#sftp-username">Copy</button>
+        </div>
+      </div>
+      <div>
+        <p class="text-[11px] font-medium uppercase tracking-wide mb-1" style="color:var(--theme-text-muted);">Password</p>
+        <div class="flex items-center gap-2">
+          <code id="sftp-password" class="text-sm px-2 py-1 rounded-lg" style="background:var(--theme-bg-secondary);color:var(--theme-text-strong);">—</code>
+          <button type="button" class="copy-btn text-xs px-2 py-1 rounded-lg transition-colors" style="color:var(--theme-text-muted);" data-copy-from="#sftp-password">Copy</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions Card -->
+  <div class="al-card p-6 mb-6">
+    <div class="flex items-center gap-2 mb-4">
+      <%- icon('key', { class: 'w-5 h-5', strokeWidth: 1.5, style: 'color:var(--theme-primary);' }) %>
+      <h2 class="text-sm font-semibold" style="color:var(--theme-text-strong);">Credentials</h2>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <button id="generatePasswordBtn" type="button" class="al-btn-primary px-4 py-2 rounded-xl text-sm font-medium inline-flex items-center gap-1.5">
+        <%- icon('key', { class: 'w-4 h-4', strokeWidth: 2 }) %> <%= t('generatePassword') %>
+      </button>
+      <button id="deletePasswordBtn" type="button" class="al-btn-danger px-4 py-2 rounded-xl text-sm font-medium inline-flex items-center gap-1.5">
+        <%- icon('trash-2', { class: 'w-4 h-4', strokeWidth: 2 }) %> <%= t('deletePassword') %>
+      </button>
+    </div>
+  </div>
+
+  <!-- Recent Activity Card -->
+  <div class="al-card p-6">
+    <div class="flex items-center gap-2 mb-4">
+      <%- icon('activity', { class: 'w-5 h-5', strokeWidth: 1.5, style: 'color:var(--theme-primary);' }) %>
+      <h2 class="text-sm font-semibold" style="color:var(--theme-text-strong);">Recent Activity</h2>
+    </div>
+    <div id="sftp-activity">
+      <p class="text-xs" style="color:var(--theme-text-muted);">Loading activity...</p>
+    </div>
+  </div>
+
+</div>
+
+<script type="module" nonce="<%- nonce %>">
+  const serverUUID = document.querySelector('[data-server-uuid]')?.dataset.serverUuid;
+
+  // Load credentials
+  async function loadCredentials() {
+    try {
+      const res = await fetch(`/server/${serverUUID}/sftp/credentials`);
+      const data = await res.json();
+      const d = data.data || data;
+      document.getElementById('sftp-host').textContent = d.host || '—';
+      document.getElementById('sftp-port').textContent = d.port || '22';
+      document.getElementById('sftp-username').textContent = d.username || '—';
+      document.getElementById('sftp-password').textContent = d.password || '—';
+    } catch (e) {
+      console.error('Failed to load SFTP credentials', e);
+    }
+  }
+
+  // Load activity
+  async function loadActivity() {
+    try {
+      const res = await fetch(`/server/${serverUUID}/sftp/activity`);
+      const data = await res.json();
+      const activities = data.data || data || [];
+      const el = document.getElementById('sftp-activity');
+      if (!activities.length) {
+        el.innerHTML = '<p class="text-xs" style="color:var(--theme-text-muted);">No recent activity</p>';
+        return;
+      }
+      el.innerHTML = activities.slice(0, 10).map(a => `
+        <div class="flex items-center justify-between py-2 border-b" style="border-color:var(--theme-border);">
+          <div class="flex items-center gap-2">
+            <span class="text-xs" style="color:var(--theme-text-strong);">${a.action || '—'}</span>
+            <span class="text-xs" style="color:var(--theme-text-muted);">${a.path || ''}</span>
+          </div>
+          <span class="text-[10px]" style="color:var(--theme-text-muted);">${a.timestamp ? new Date(a.timestamp).toLocaleString() : ''}</span>
+        </div>
+      `).join('');
+    } catch (e) {
+      console.error('Failed to load SFTP activity', e);
+    }
+  }
+
+  // Generate password
+  document.getElementById('generatePasswordBtn')?.addEventListener('click', async () => {
+    try {
+      const res = await fetch(`/server/${serverUUID}/sftp/credentials`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const data = await res.json();
+      if (data.success !== false) {
+        loadCredentials();
+        if (window.showToast) window.showToast('Password generated', 'success');
+      }
+    } catch (e) {
+      console.error('Failed to generate password', e);
+    }
+  });
+
+  // Delete password
+  document.getElementById('deletePasswordBtn')?.addEventListener('click', async () => {
+    if (!confirm('Delete your SFTP password? You will lose access.')) return;
+    try {
+      const res = await fetch(`/server/${serverUUID}/sftp/credentials`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (data.success !== false) {
+        loadCredentials();
+        if (window.showToast) window.showToast('Password deleted', 'success');
+      }
+    } catch (e) {
+      console.error('Failed to delete password', e);
+    }
+  });
+
+  // Copy buttons
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = document.querySelector(btn.dataset.copyFrom);
+      if (target) {
+        navigator.clipboard.writeText(target.textContent);
+        btn.textContent = 'Copied!';
+        setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
+      }
+    });
+  });
+
+  loadCredentials();
+  loadActivity();
+</script>
+
+<%- include('../../layouts/user-footer') %>

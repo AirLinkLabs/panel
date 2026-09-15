@@ -1,27 +1,30 @@
-import { Router } from "express";
-import { isAuthenticated } from "../../../handlers/utils/auth/authUtil";
-import { apiGet, apiPost } from "../../../handlers/internalApiClient";
-import type { Module } from "../../../handlers/moduleInit";
+import { Router } from 'express';
+import { isAuthenticated } from '../../../handlers/utils/auth/authUtil';
+import { apiGet } from '../../../handlers/internalApiClient';
+import type { Module } from '../../../handlers/moduleInit';
 
 const module: Module = {
   info: {
-    name: "Admin Analytics Page",
-    version: "2.0.0",
-    moduleVersion: "1.0.0",
-    author: "AirLinkLab",
-    license: "MIT",
-    description: "",
+    name: 'Admin Analytics Page',
+    version: '2.0.0',
+    moduleVersion: '1.0.0',
+    author: 'AirLinkLab',
+    license: 'MIT',
+    description: '',
   },
   router: () => {
     const router = Router();
 
     router.get(
-      "/admin/analytics",
-      isAuthenticated(true, "airlink.admin.analytics.view"),
+      '/admin/analytics',
+      isAuthenticated(true, 'airlink.admin.analytics.view'),
       async (req, res, next) => {
         try {
-          const data = await apiGet(req, "/api/v2/admin/analytics");
-          res.render("admin/analytics/analytics", {
+          const data = (await apiGet(req, '/admin/analytics')) as Record<
+            string,
+            unknown
+          >;
+          res.render('admin/analytics/index', {
             ...data,
             user: req.session?.user,
             req,
@@ -33,11 +36,11 @@ const module: Module = {
     );
 
     router.get(
-      "/admin/analytics/servers",
-      isAuthenticated(true, "airlink.admin.analytics.view"),
+      '/admin/analytics/servers',
+      isAuthenticated(true, 'airlink.admin.analytics.view'),
       async (req, res, next) => {
         try {
-          const data = await apiGet(req, "/api/v2/admin/analytics/servers");
+          const data = await apiGet(req, '/admin/analytics');
           res.json(data);
         } catch (err) {
           next(err);
@@ -46,11 +49,11 @@ const module: Module = {
     );
 
     router.get(
-      "/admin/analytics/users",
-      isAuthenticated(true, "airlink.admin.analytics.view"),
+      '/admin/analytics/users',
+      isAuthenticated(true, 'airlink.admin.analytics.view'),
       async (req, res, next) => {
         try {
-          const data = await apiGet(req, "/api/v2/admin/analytics/users");
+          const data = await apiGet(req, '/admin/analytics');
           res.json(data);
         } catch (err) {
           next(err);
@@ -59,11 +62,11 @@ const module: Module = {
     );
 
     router.get(
-      "/admin/analytics/network",
-      isAuthenticated(true, "airlink.admin.analytics.view"),
+      '/admin/analytics/network',
+      isAuthenticated(true, 'airlink.admin.analytics.view'),
       async (req, res, next) => {
         try {
-          const data = await apiGet(req, "/api/v2/admin/analytics/network");
+          const data = await apiGet(req, '/admin/analytics');
           res.json(data);
         } catch (err) {
           next(err);
@@ -72,11 +75,11 @@ const module: Module = {
     );
 
     router.get(
-      "/admin/analytics/hardware",
-      isAuthenticated(true, "airlink.admin.analytics.view"),
+      '/admin/analytics/hardware',
+      isAuthenticated(true, 'airlink.admin.analytics.view'),
       async (req, res, next) => {
         try {
-          const data = await apiGet(req, "/api/v2/admin/analytics/hardware");
+          const data = await apiGet(req, '/admin/analytics');
           res.json(data);
         } catch (err) {
           next(err);
