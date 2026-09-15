@@ -1,7 +1,7 @@
 {
   "name": "airlink-panel",
   "version": "2.6.0",
-  "description": "Airlink Panel — game server management panel for Minecraft, Palworld, Rust, and more",
+  "description": "Airlink, Open-source game server management that actually works.",
   "keywords": [
     "game-server",
     "minecraft",
