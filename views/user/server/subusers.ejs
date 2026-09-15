@@ -161,7 +161,7 @@ function subusersPage() {
 
     async confirmAdd() {
       if (this.saving) return;
-      if (!this.addEmail.trim()) { showToast('<%= window.__i18n.enterUserEmail || "Enter the user email." %>', 'error'); return; }
+      if (!this.addEmail.trim()) { showToast(window.__i18n.enterUserEmail || "Enter the user email.", 'error'); return; }
       this.saving = true;
       try {
         const result = await api('/api/v2/servers/' + serverId + '/subusers', { method: 'POST', body: {
@@ -169,11 +169,11 @@ function subusersPage() {
           permissions: [...this.addPerms]
         } });
         if (result) {
-          showToast('<%= window.__i18n.subuserAdded || "Subuser added." %>', 'success');
+          showToast(window.__i18n.subuserAdded || "Subuser added.", 'success');
           this.showAdd = false;
           window.location.reload();
         }
-      } catch (e) { showToast('<%= window.__i18n.failedToAddSubuser || "Failed to add subuser." %>', 'error'); }
+      } catch (e) { showToast(window.__i18n.failedToAddSubuser || "Failed to add subuser.", 'error'); }
       finally { this.saving = false; }
     },
 
@@ -185,24 +185,24 @@ function subusersPage() {
           permissions: [...this.editPerms]
         } });
         if (result) {
-          showToast('<%= window.__i18n.permissionsUpdated || "Permissions updated." %>', 'success');
+          showToast(window.__i18n.permissionsUpdated || "Permissions updated.", 'success');
           this.showEdit = false;
           window.location.reload();
         }
-      } catch (e) { showToast('<%= window.__i18n.failedToUpdatePermissions || "Failed to update permissions." %>', 'error'); }
+      } catch (e) { showToast(window.__i18n.failedToUpdatePermissions || "Failed to update permissions.", 'error'); }
       finally { this.saving = false; }
     },
 
     async removeSubUser(id, name) {
       window.modal.confirm({
-        title: '<%= window.__i18n.removeSubuser || "Remove subuser" %>',
-        body: '<%= window.__i18n.removeSubuserConfirm || "Remove" %> ' + name + ' <%= window.__i18n.removeSubuserWarning || "from this server? They will lose access immediately." %>',
+        title: window.__i18n.removeSubuser || "Remove subuser",
+        body: (window.__i18n.removeSubuserConfirm || "Remove") + ' ' + name + ' ' + (window.__i18n.removeSubuserWarning || "from this server? They will lose access immediately."),
         danger: true,
-        confirmLabel: '<%= window.__i18n.remove || "Remove" %>',
+        confirmLabel: window.__i18n.remove || "Remove",
         onConfirm: async () => {
           const result = await api('/api/v2/servers/' + serverId + '/subusers/' + id, { method: 'DELETE' });
           if (result) {
-            showToast('<%= window.__i18n.subuserRemoved || "Subuser removed." %>', 'success');
+            showToast(window.__i18n.subuserRemoved || "Subuser removed.", 'success');
             window.location.reload();
           }
         }

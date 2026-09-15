@@ -214,14 +214,14 @@
     const confirmPassword = document.getElementById('editConfirmPassword').value;
 
     if (password && password !== confirmPassword) {
-      errorEl.textContent = '<%= window.__i18n.passwordsDoNotMatch || 'Passwords do not match' %>';
+      errorEl.textContent = window.__i18n.passwordsDoNotMatch || 'Passwords do not match';
       errorEl.classList.remove('hidden');
       return;
     }
 
     saving = true;
-    const loader = showProgressToast('<%= window.__i18n.processingUserUpdate || 'Processing user update...' %>');
-    loader.setStage('<%= window.__i18n.sendingUserInformation || 'Sending user information...' %>');
+    const loader = showProgressToast(window.__i18n.processingUserUpdate || 'Processing user update...');
+    loader.setStage(window.__i18n.sendingUserInformation || 'Sending user information...');
 
     try {
       const maxMemoryDisplay = document.getElementById('editMaxMemoryDisplay').value;
@@ -256,12 +256,12 @@
         errorEl.textContent = result.error;
         errorEl.classList.remove('hidden');
       } else {
-        loader.complete(true, '<%= window.__i18n.userUpdatedSuccessfully || 'User updated successfully!' %>');
+        loader.complete(true, window.__i18n.userUpdatedSuccessfully || 'User updated successfully!');
         setTimeout(() => { window.location.href = '/admin/users'; }, 1000);
       }
     } catch (e) {
       loader.close();
-      errorEl.textContent = '<%= window.__i18n.errorUpdatingUser || 'Error updating user' %>';
+      errorEl.textContent = window.__i18n.errorUpdatingUser || 'Error updating user';
       errorEl.classList.remove('hidden');
     } finally {
       saving = false;
@@ -270,12 +270,12 @@
 
   window.transferOwner = function() {
     window.modal.confirm({
-      title: '<%= window.__i18n.transferOwnerTitle || 'Transfer ownership?' %>',
-      body: '<%= window.__i18n.transferOwnerConfirm || 'This will make the current owner an admin. Continue?' %>',
+      title: window.__i18n.transferOwnerTitle || 'Transfer ownership?',
+      body: window.__i18n.transferOwnerConfirm || 'This will make the current owner an admin. Continue?',
       danger: true,
       confirmLabel: 'Transfer',
       onConfirm: async () => {
-        const loader = showProgressToast('<%= window.__i18n.transferringOwnership || 'Transferring ownership...' %>');
+        const loader = showProgressToast(window.__i18n.transferringOwnership || 'Transferring ownership...');
         try {
           const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
           const res = await fetch('/api/v2/admin/users/' + userId + '/transfer', {
@@ -287,12 +287,12 @@
           if (result.error) {
             showToast(result.error, 'error');
           } else {
-            showToast(result.message || '<%= window.__i18n.transferringOwnership || 'Transferring ownership...' %>', 'success');
+            showToast(result.message || window.__i18n.transferringOwnership || 'Transferring ownership...', 'success');
             setTimeout(() => { window.location.href = '/admin/users'; }, 1000);
           }
         } catch (e) {
           loader.close();
-          showToast('<%= window.__i18n.errorUpdatingUser || 'Error updating user' %>', 'error');
+          showToast(window.__i18n.errorUpdatingUser || 'Error updating user', 'error');
         }
       }
     });

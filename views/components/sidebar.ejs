@@ -458,7 +458,7 @@
         const isCollapsed = sidebar.classList.toggle('collapsed');
         localStorage.setItem(COLLAPSED_KEY, String(isCollapsed));
         collapseBtn.setAttribute('aria-expanded', String(!isCollapsed));
-        const label = isCollapsed ? '<%= (window.__i18n && window.__i18n.expandSidebar) || "Expand sidebar" %>' : '<%= (window.__i18n && window.__i18n.collapseSidebar) || "Collapse sidebar" %>';
+        const label = isCollapsed ? (window.__i18n && window.__i18n.expandSidebar) || "Expand sidebar" : (window.__i18n && window.__i18n.collapseSidebar) || "Collapse sidebar";
         collapseBtn.setAttribute('aria-label', label);
         updateContentPadding(isCollapsed);
       });

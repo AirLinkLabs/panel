@@ -508,28 +508,28 @@ function escJS(val) {
 
   function deletefile(fileName, filePath) {
     window.modal.confirm({
-      title: '<%= window.__i18n.deleteFileTitle || "Delete File" %>',
-      body: '<%= window.__i18n.deleteFileBody || "Are you sure you want to delete \\"{fileName}\\"? This cannot be undone." %>'.replace('{fileName}', fileName),
+      title: window.__i18n.deleteFileTitle || "Delete File",
+      body: (window.__i18n.deleteFileBody || "Are you sure you want to delete \\"{fileName}\\"? This cannot be undone.").replace('{fileName}', fileName),
       danger: true,
-      confirmLabel: '<%= window.__i18n.delete || "Delete" %>',
+      confirmLabel: window.__i18n.delete || "Delete",
       onConfirm: () => {
-      const loader = showProgressToast('<%= window.__i18n.removingFileFromServer || "Removing file from server..." %>');
+      const loader = showProgressToast(window.__i18n.removingFileFromServer || "Removing file from server...");
       fetch('/api/v2/servers/<%= server.UUID %>/files?path=' + encodeURIComponent(filePath), {
         method: 'DELETE'
       })
       .then(response => {
         loader.close();
         if (response.ok) {
-           showToast(fileName + '<%= window.__i18n.fileDeletedSuffix || " deleted." %>', 'success');
+           showToast(fileName + (window.__i18n.fileDeletedSuffix || " deleted."), 'success');
           refreshFileList();
         } else {
-          showToast('<%= window.__i18n.failedToDeleteFile || "Failed to delete file" %>', 'error');
+          showToast(window.__i18n.failedToDeleteFile || "Failed to delete file", 'error');
         }
       })
       .catch(error => {
         loader.close();
         console.error('Error:', error);
-        showToast('<%= window.__i18n.somethingWentWrong || "Something went wrong." %>', 'error');
+        showToast(window.__i18n.somethingWentWrong || "Something went wrong.", 'error');
       });
       }
     });
@@ -573,7 +573,7 @@ function escJS(val) {
       const row = checkbox.closest('tr');
       if (row) row.classList.toggle('is-selected', checkbox.checked);
     });
-    document.getElementById('selectedFilesCount').innerText = selectedCount + ' <%= window.__i18n.filesCountSuffix || "file(s) selected" %>';
+    document.getElementById('selectedFilesCount').innerText = selectedCount + ' ' + (window.__i18n.filesCountSuffix || "file(s) selected");
 
     document.getElementById('massDeleteBtn').disabled = selectedCount === 0;
     document.getElementById('massArchiveBtn').disabled = selectedCount === 0;
@@ -582,10 +582,10 @@ function escJS(val) {
 document.getElementById('massArchiveBtn').addEventListener('click', () => {
     if (selectedFiles.length > 0) {
         window.modal.confirm({
-          title: '<%= window.__i18n.confirmArchiveTitle || "Confirm Archive" %>',
-          body: '<%= window.__i18n.confirmArchiveBody || "Archive {count} selected file(s)?" %>'.replace('{count}', selectedFiles.length),
+          title: window.__i18n.confirmArchiveTitle || "Confirm Archive",
+          body: (window.__i18n.confirmArchiveBody || "Archive {count} selected file(s)?").replace('{count}', selectedFiles.length),
           danger: false,
-          confirmLabel: '<%= window.__i18n.archiveLabel || "Archive" %>',
+          confirmLabel: window.__i18n.archiveLabel || "Archive",
           onConfirm: () => archiveFiles(selectedFiles)
         });
     }
@@ -639,8 +639,8 @@ document.querySelectorAll('.file-checkbox').forEach(checkbox => {
 });
 
 function archiveFiles(files) {
-    const loader = showProgressToast('<%= window.__i18n.preparingFilesForArchive || "Preparing files for archiving..." %>');
-    loader.setStage('<%= window.__i18n.compressingFiles || "Compressing files..." %>');
+    const loader = showProgressToast(window.__i18n.preparingFilesForArchive || "Preparing files for archiving...");
+    loader.setStage(window.__i18n.compressingFiles || "Compressing files...");
 
     fetch('/api/v2/servers/<%= server.UUID %>/files/zip', {
         method: 'POST',
@@ -654,26 +654,26 @@ function archiveFiles(files) {
     })
     .then(response => response.json())
     .then(data => {
-        loader.complete(true, '<%= window.__i18n.archiveCreated || "Archive created!" %>');
+        loader.complete(true, window.__i18n.archiveCreated || "Archive created!");
         setTimeout(() => {
             if (data.success) {
                 selectedFiles = [];
                 updateSelectedFiles();
                 refreshFileList();
             } else {
-                showToast('<%= window.__i18n.failedToArchiveFiles || "Failed to archive files" %>', 'error');
+                showToast(window.__i18n.failedToArchiveFiles || "Failed to archive files", 'error');
             }
         }, 500);
     })
     .catch(error => {
         loader.close();
         console.error('Error:', error);
-        showToast('<%= window.__i18n.somethingWentWrong || "Something went wrong." %>', 'error');
+        showToast(window.__i18n.somethingWentWrong || "Something went wrong.", 'error');
     });
 }
 
 massDeleteBtn.addEventListener('click', function() {
-  massDeleteMessage.textContent = '<%= window.__i18n.massDeleteBody || "Are you sure you want to delete {count} file(s)? This is a permanent action and cannot be reversed." %>'.replace('{count}', selectedFiles.length);
+  massDeleteMessage.textContent = (window.__i18n.massDeleteBody || "Are you sure you want to delete {count} file(s)? This is a permanent action and cannot be reversed.").replace('{count}', selectedFiles.length);
   const panel = document.getElementById('massDeleteModalPanel');
   massDeleteModal.classList.remove('opacity-0', 'pointer-events-none');
   massDeleteModal.classList.add('open'); panel.classList.add('open');
@@ -690,8 +690,8 @@ function closeMassDeleteModal() {
 confirmMassDeleteBtn.addEventListener('click', async function() {
   closeMassDeleteModal();
 
-  const loader = showProgressToast('<%= window.__i18n.removingFilesCount || "Removing {count} files..." %>'.replace('{count}', selectedFiles.length));
-  loader.setStage('<%= window.__i18n.processingDeletionRequests || "Processing deletion requests..." %>');
+  const loader = showProgressToast((window.__i18n.removingFilesCount || "Removing {count} files...").replace('{count}', selectedFiles.length));
+  loader.setStage(window.__i18n.processingDeletionRequests || "Processing deletion requests...");
 
   const deletePromises = selectedFiles.map(fileName =>
     fetch('/api/v2/servers/<%= server.UUID %>/files?path=' + encodeURIComponent(fileName), {
@@ -701,14 +701,14 @@ confirmMassDeleteBtn.addEventListener('click', async function() {
 
   try {
     await Promise.all(deletePromises);
-    loader.complete(true, '<%= window.__i18n.filesDeleted || "Files deleted." %>');
+    loader.complete(true, window.__i18n.filesDeleted || "Files deleted.");
     setTimeout(() => {
       refreshFileList();
     }, 500);
   } catch (error) {
     loader.close();
     console.error('Error deleting files:', error);
-    showToast('<%= window.__i18n.failedToDeleteFiles || "Failed to delete files" %>', 'error');
+    showToast(window.__i18n.failedToDeleteFiles || "Failed to delete files", 'error');
   }
 });
 
@@ -782,8 +782,8 @@ function openCreateFileModal() {
 
   async function extractZip(fileName, filePath) {
     try {
-        const loader = showProgressToast('<%= window.__i18n.preparingToExtract || "Preparing to extract files..." %>');
-        loader.setStage('<%= window.__i18n.extractingFiles || "Extracting files..." %>');
+        const loader = showProgressToast(window.__i18n.preparingToExtract || "Preparing to extract files...");
+        loader.setStage(window.__i18n.extractingFiles || "Extracting files...");
 
         const parentPath = filePath.substring(0, filePath.lastIndexOf('/'));
 
@@ -799,25 +799,25 @@ function openCreateFileModal() {
         });
 
         if (response.ok) {
-            loader.complete(true, '<%= window.__i18n.filesExtractedSuccess || "Files extracted successfully!" %>');
+            loader.complete(true, window.__i18n.filesExtractedSuccess || "Files extracted successfully!");
             setTimeout(() => {
                 refreshFileList();
             }, 500);
         } else {
             loader.close();
             const error = await response.json();
-            showToast(error.error || '<%= window.__i18n.failedToExtractFile || "Failed to extract file" %>', 'error');
+            showToast(error.error || window.__i18n.failedToExtractFile || "Failed to extract file", 'error');
         }
     } catch (error) {
         console.error('Error extracting file:', error);
-        showToast('<%= window.__i18n.failedToExtractFile || "Failed to extract file" %>', 'error');
+        showToast(window.__i18n.failedToExtractFile || "Failed to extract file", 'error');
     }
   }
 
   // File Upload Functions — uses shared upload modal from footer
   function openUploadFileModal() {
     openUploadModal({
-      title: '<%= window.__i18n.uploadFile || "Upload file" %>',
+      title: window.__i18n.uploadFile || "Upload file",
       onFile: confirmFileUpload,
     });
   }
@@ -828,7 +828,7 @@ function openCreateFileModal() {
 
   async function confirmFileUpload(file) {
     if (!(file instanceof File)) {
-      showToast('<%= window.__i18n.invalidFileSelected || "Invalid file selected" %>', 'error');
+      showToast(window.__i18n.invalidFileSelected || "Invalid file selected", 'error');
       return;
     }
 
@@ -853,7 +853,7 @@ function openCreateFileModal() {
       if (fileSize > MAX_FILE_SIZE) {
         uploadToast.close();
         uploadToast = null;
-        showToast('<%= window.__i18n.fileTooLarge || "File is too large. Maximum size is 100MB" %>', 'error');
+        showToast(window.__i18n.fileTooLarge || "File is too large. Maximum size is 100MB", 'error');
         return;
       }
 
@@ -893,7 +893,7 @@ function openCreateFileModal() {
               const errorData = JSON.parse(xhr.responseText);
               console.error('Upload error response:', errorData);
 
-              let errorMessage = '<%= window.__i18n.failedToUploadFile || "Failed to upload file" %>';
+              let errorMessage = window.__i18n.failedToUploadFile || "Failed to upload file";
               if (errorData.error) {
                 errorMessage = errorData.error;
               } else if (errorData.details && errorData.details.error) {
@@ -907,7 +907,7 @@ function openCreateFileModal() {
               console.error('Error parsing error response:', e);
               uploadFailToast.close();
               uploadFailToast = null;
-              showToast(`<%= window.__i18n.failedToUploadFileStatus || "Failed to upload file" %>: ${xhr.status} ${xhr.statusText}`, 'error');
+              showToast((window.__i18n.failedToUploadFileStatus || "Failed to upload file") + ': ' + xhr.status + ' ' + xhr.statusText, 'error');
             }
           }
         };
@@ -918,7 +918,7 @@ function openCreateFileModal() {
             uploadToast = null;
           }
           console.error('XHR error during upload');
-          showToast('<%= window.__i18n.connectionErrorUpload || "Connection error during file upload" %>', 'error');
+          showToast(window.__i18n.connectionErrorUpload || "Connection error during file upload", 'error');
         };
 
         xhr.ontimeout = function() {
@@ -927,7 +927,7 @@ function openCreateFileModal() {
             uploadToast = null;
           }
           console.error('XHR timeout during upload');
-          showToast('<%= window.__i18n.uploadTimedOut || "Upload timed out. Try a smaller file." %>', 'error');
+          showToast(window.__i18n.uploadTimedOut || "Upload timed out. Try a smaller file.", 'error');
         };
 
         xhr.timeout = <%= FILE_UPLOAD_TIMEOUT_MS %>;
@@ -939,7 +939,7 @@ function openCreateFileModal() {
           uploadToast = null;
         }
         console.error('Error uploading file:', error);
-         showToast('<%= window.__i18n.errorOccurred || "Something went wrong." %>', 'error');
+         showToast(window.__i18n.errorOccurred || "Something went wrong.", 'error');
       }
     } catch (error) {
       if (uploadToast) {
@@ -947,7 +947,7 @@ function openCreateFileModal() {
         uploadToast = null;
       }
       console.error('Error uploading file:', error);
-      showToast('<%= window.__i18n.errorUploadingFile || "An error occurred while uploading the file" %>', 'error');
+      showToast(window.__i18n.errorUploadingFile || "An error occurred while uploading the file", 'error');
     }
   }
 
@@ -957,8 +957,8 @@ function openCreateFileModal() {
     document.getElementById('FileName').value = '';
     document.getElementById('fileNamePreview').textContent = '';
     document.getElementById('fileNamePreview').classList.add('hidden');
-    document.getElementById('createModalTitle').textContent = '<%= window.__i18n.newFolder || "New Folder" %>';
-    document.getElementById('createModalHint').textContent = '<%= window.__i18n.folderNameHint || "Folder name. Use / to create nested folders." %>';
+    document.getElementById('createModalTitle').textContent = window.__i18n.newFolder || "New Folder";
+    document.getElementById('createModalHint').textContent = window.__i18n.folderNameHint || "Folder name. Use / to create nested folders.";
     document.getElementById('FileName').setAttribute('data-mode', 'folder');
     openCreateFileModal();
   }
@@ -977,7 +977,7 @@ function openCreateFileModal() {
     previewEl.textContent = '';
     const span1 = document.createElement('span');
     span1.style.color = 'var(--theme-text-muted)';
-    span1.textContent = '<%= window.__i18n.willCreate || "Will create: " %>';
+    span1.textContent = window.__i18n.willCreate || "Will create: ";
     const span2 = document.createElement('span');
     span2.style.color = 'var(--theme-accent)';
     span2.textContent = folders + '/';
@@ -1017,7 +1017,7 @@ function openCreateFileModal() {
       // Prefer the daemon mkdir endpoint (capability-detected via fallback):
       // on failure, fall back to the keep-file trick so old daemons keep working.
       closeCreateFileModal();
-      const loader = showProgressToast('<%= window.__i18n.creatingFolder || "Creating folder..." %>');
+      const loader = showProgressToast(window.__i18n.creatingFolder || "Creating folder...");
       try {
         const parts = finalPath.split('/');
         const name = parts.pop();
@@ -1029,10 +1029,10 @@ function openCreateFileModal() {
         });
         loader.close();
         if (res.ok) {
-          showToast(raw + '<%= window.__i18n.createdSuffix || " created" %>', 'success');
+          showToast(raw + (window.__i18n.createdSuffix || " created"), 'success');
           refreshFileList();
         } else {
-          showToast('<%= window.__i18n.folderCreateFailedFallback || "Failed to create folder, retrying with fallback" %>', 'error');
+          showToast(window.__i18n.folderCreateFailedFallback || "Failed to create folder, retrying with fallback", 'error');
           tryCreateFolderViaFile(finalPath, raw);
         }
       } catch {
@@ -1041,7 +1041,7 @@ function openCreateFileModal() {
       }
       return;
     }
-    const label = mode === 'folder' ? ('<%= window.__i18n.creatingFolder || "Creating folder..." %>') : ('<%= window.__i18n.creatingFile || "Creating file..." %>');
+    const label = mode === 'folder' ? (window.__i18n.creatingFolder || "Creating folder...") : (window.__i18n.creatingFile || "Creating file...");
     const loader = showProgressToast(label);
 
     const hasSlash = finalPath.includes('/');
@@ -1056,12 +1056,12 @@ function openCreateFileModal() {
           body: JSON.stringify({ content: '' }),
         });
         if (res.ok) {
-          loader.complete(true, raw + '<%= window.__i18n.createdSuffix || " created" %>');
+          loader.complete(true, raw + (window.__i18n.createdSuffix || " created"));
           setTimeout(() => { refreshFileList(); }, 500);
         } else {
-          loader.close(); showToast('<%= window.__i18n.fileCreateFailed || "Failed to create file" %>', 'error');
+          loader.close(); showToast(window.__i18n.fileCreateFailed || "Failed to create file", 'error');
         }
-      } catch { loader.close(); showToast('<%= window.__i18n.fileCreateError || "Error creating file" %>', 'error'); }
+      } catch { loader.close(); showToast(window.__i18n.fileCreateError || "Error creating file", 'error'); }
       return;
     }
 
@@ -1076,9 +1076,9 @@ function openCreateFileModal() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content: '' }),
       });
-      if (!res1.ok) { loader.close(); showToast('<%= window.__i18n.fileCreateFailed || "Failed to create file" %>', 'error'); return; }
+      if (!res1.ok) { loader.close(); showToast(window.__i18n.fileCreateFailed || "Failed to create file", 'error'); return; }
 
-          loader.setStage('<%= window.__i18n.movingToTarget || "Moving to target path..." %>');
+          loader.setStage(window.__i18n.movingToTarget || "Moving to target path...");
 
       const res2 = await fetch('/api/v2/servers/<%= server.UUID %>/files/rename', {
         method: 'POST',
@@ -1086,12 +1086,12 @@ function openCreateFileModal() {
         body: JSON.stringify({ path: tempPath, newName: finalPath }),
       });
       if (res2.ok) {
-        loader.complete(true, raw + '<%= window.__i18n.createdSuffix || " created" %>');
+        loader.complete(true, raw + (window.__i18n.createdSuffix || " created"));
         setTimeout(() => { refreshFileList(); }, 500);
       } else {
-        loader.close(); showToast('<%= window.__i18n.moveToTargetFailed || "Failed to move to target path" %>', 'error');
+        loader.close(); showToast(window.__i18n.moveToTargetFailed || "Failed to move to target path", 'error');
       }
-    } catch { loader.close(); showToast('<%= window.__i18n.fileCreateError || "Error creating file" %>', 'error'); }
+    } catch { loader.close(); showToast(window.__i18n.fileCreateError || "Error creating file", 'error'); }
   }
 
   // Fallback for daemons without /fs/mkdir — create a .airlink_keep file inside.
@@ -1105,13 +1105,13 @@ function openCreateFileModal() {
         body: JSON.stringify({ content: '' }),
       });
       if (res.ok) {
-        showToast(raw + '<%= window.__i18n.createdSuffix || " created" %>', 'success');
+        showToast(raw + (window.__i18n.createdSuffix || " created"), 'success');
         refreshFileList();
       } else {
-        showToast('<%= window.__i18n.folderCreateFailed || "Failed to create folder" %>', 'error');
+        showToast(window.__i18n.folderCreateFailed || "Failed to create folder", 'error');
       }
     } catch {
-      showToast('<%= window.__i18n.folderCreateError || "Error creating folder" %>', 'error');
+      showToast(window.__i18n.folderCreateError || "Error creating folder", 'error');
     }
   }
 
@@ -1122,7 +1122,7 @@ function openCreateFileModal() {
     if (!newPath || newPath === filePath) { closeRenameModal(); return; }
 
     closeRenameModal();
-    const loader = showProgressToast('<%= window.__i18n.processingEllipsis || "Processing..." %>');
+    const loader = showProgressToast(window.__i18n.processingEllipsis || "Processing...");
 
     try {
       const res = await fetch('/api/v2/servers/<%= server.UUID %>/files/rename', {
@@ -1132,17 +1132,17 @@ function openCreateFileModal() {
       });
       loader.close();
       if (res.ok) {
-        showToast('<%= window.__i18n.renamedSuccess || "Renamed." %>', 'success');
+        showToast(window.__i18n.renamedSuccess || "Renamed.", 'success');
         refreshFileList();
       } else {
-        showToast('<%= window.__i18n.failedToRename || "Failed to rename" %>', 'error');
+        showToast(window.__i18n.failedToRename || "Failed to rename", 'error');
       }
-    } catch { loader.close(); showToast('<%= window.__i18n.failedToRename || "Failed to rename" %>', 'error'); }
+    } catch { loader.close(); showToast(window.__i18n.failedToRename || "Failed to rename", 'error'); }
   }
 
   // ── Copy path ─────────────────────────────────────────────────────────────
   function copyFilePath(path) {
-    navigator.clipboard.writeText(path).then(() => showToast('<%= window.__i18n.copiedExcl || "Copied!" %>', 'success'));
+    navigator.clipboard.writeText(path).then(() => showToast(window.__i18n.copiedExcl || "Copied!", 'success'));
   }
 
   // ── Dismiss selection ────────────────────────────────────────────────────
@@ -1239,7 +1239,7 @@ function openCreateFileModal() {
   async function confirmMove() {
     const src  = document.getElementById('moveSourcePath').value;
     const dest = document.getElementById('moveDestPath').value.trim();
-    if (!dest) { showToast('<%= window.__i18n.enterDestinationPath || "Enter a destination path." %>', 'error'); return; }
+    if (!dest) { showToast(window.__i18n.enterDestinationPath || "Enter a destination path.", 'error'); return; }
     try {
       const res = await fetch(`/api/v2/servers/<%- server.UUID %>/files/move`, {
         method:  'POST',
@@ -1248,10 +1248,10 @@ function openCreateFileModal() {
       });
       if (!res.ok) throw new Error('Move failed');
       closeMoveModal();
-      showToast('<%= window.__i18n.fileMoved || "File moved." %>', 'success');
+      showToast(window.__i18n.fileMoved || "File moved.", 'success');
       refreshFileList();
     } catch {
-      showToast('<%= window.__i18n.moveFailedCheckPath || "Move failed — check the destination path." %>', 'error');
+      showToast(window.__i18n.moveFailedCheckPath || "Move failed — check the destination path.", 'error');
     }
   }
 
@@ -1267,10 +1267,10 @@ function openCreateFileModal() {
         body:    JSON.stringify({ location: path }),
       });
       if (!res.ok) throw new Error('Copy failed');
-      showToast('<%= window.__i18n.duplicatedAs || "Duplicated as" %> ' + name.split('/').pop() + '.', 'success');
+      showToast((window.__i18n.duplicatedAs || "Duplicated as") + ' ' + name.split('/').pop() + '.', 'success');
       refreshFileList();
     } catch {
-      showToast('<%= window.__i18n.duplicateFailed || "Duplicate failed." %>', 'error');
+      showToast(window.__i18n.duplicateFailed || "Duplicate failed.", 'error');
     }
   }
 
@@ -1281,7 +1281,7 @@ function openCreateFileModal() {
   // Rename from action bar — only works when exactly 1 file selected
   document.getElementById('massRenameBtn').addEventListener('click', () => {
     if (selectedFiles.length !== 1) {
-      showToast('<%= window.__i18n.selectOneFileToRename || "Select exactly one file to rename" %>', 'error');
+      showToast(window.__i18n.selectOneFileToRename || "Select exactly one file to rename", 'error');
       return;
     }
     const fullPath = selectedFiles[0];
@@ -1347,7 +1347,7 @@ function openCreateFileModal() {
       } catch (e) { /* invalid URL, skip preview */ }
       if (!name) { preview.classList.add('hidden'); return; }
       const base = '<%= currentPath ? currentPath.replace(new RegExp("^/+", "g"), "") : "" %>';
-      preview.textContent = '<%= window.__i18n.willSaveAs || "Will save as: " %>' + (base ? base + '/' : '/') + name;
+      preview.textContent = (window.__i18n.willSaveAs || "Will save as: ") + (base ? base + '/' : '/') + name;
       preview.classList.remove('hidden');
     });
     pullUrlInput.addEventListener('keydown', (e) => {
@@ -1357,16 +1357,16 @@ function openCreateFileModal() {
 
   document.getElementById('pullButton')?.addEventListener('click', async () => {
     const url = document.getElementById('pullUrlInput').value.trim();
-    if (!url) { showToast('<%= window.__i18n.enterFileUrl || "Enter a file URL." %>', 'error'); return; }
+    if (!url) { showToast(window.__i18n.enterFileUrl || "Enter a file URL.", 'error'); return; }
     let parsed;
-    try { parsed = new URL(url); } catch { showToast('<%= window.__i18n.invalidUrl || "Invalid URL." %>', 'error'); return; }
+    try { parsed = new URL(url); } catch { showToast(window.__i18n.invalidUrl || "Invalid URL.", 'error'); return; }
     if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
-      showToast('<%= window.__i18n.onlyHttpAllowed || "Only http(s) URLs are allowed." %>', 'error');
+      showToast(window.__i18n.onlyHttpAllowed || "Only http(s) URLs are allowed.", 'error');
       return;
     }
 
     closePullFileModal();
-    const loader = showProgressToast('<%= window.__i18n.downloadingFromUrl || "Downloading from URL..." %>');
+    const loader = showProgressToast(window.__i18n.downloadingFromUrl || "Downloading from URL...");
     try {
       const res = await fetch('/api/v2/servers/<%= server.UUID %>/files/pull', {
         method: 'POST',
@@ -1376,14 +1376,14 @@ function openCreateFileModal() {
       const data = await res.json();
       loader.close();
       if (res.ok && data.success) {
-        showToast(data.message || '<%= window.__i18n.filePulled || "File pulled." %>', 'success');
+        showToast(data.message || window.__i18n.filePulled || "File pulled.", 'success');
         refreshFileList();
       } else {
-        showToast(data.error || '<%= window.__i18n.failedToPullFile || "Failed to pull file." %>', 'error');
+        showToast(data.error || window.__i18n.failedToPullFile || "Failed to pull file.", 'error');
       }
     } catch {
       loader.close();
-      showToast('<%= window.__i18n.failedToPullFileCheckUrl || "Failed to pull file — check the URL and try again." %>', 'error');
+      showToast(window.__i18n.failedToPullFileCheckUrl || "Failed to pull file — check the URL and try again.", 'error');
     }
   });
 

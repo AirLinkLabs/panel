@@ -185,7 +185,7 @@
 const serverUUID = '<%= server.UUID %>';
 
 function showConfirmation(title, message, onConfirm) {
-  window.modal.confirm({ title, body: message, danger: true, confirmLabel: '<%= window.__i18n.confirm || "Confirm" %>', onConfirm });
+  window.modal.confirm({ title, body: message, danger: true, confirmLabel: window.__i18n.confirm || "Confirm", onConfirm });
 }
 
 // Modal functions
@@ -223,7 +223,7 @@ async function confirmCreateBackup() {
   const name = document.getElementById('backupName').value.trim();
 
   if (!name) {
-     showToast('<%= window.__i18n.enterBackupName || "Enter a backup name." %>', 'error');
+     showToast(window.__i18n.enterBackupName || "Enter a backup name.", 'error');
     return;
   }
 
@@ -231,11 +231,11 @@ async function confirmCreateBackup() {
   // Persisted progress toast — it survives page changes (and keeps making
   // progress via the /backups/progress job) if the user navigates while the
   // daemon is still compressing the backup.
-  const loading = window.showProgressToast ? window.showProgressToast('<%= window.__i18n.creatingBackup || "Creating backup\u2026" %>', {
+  const loading = window.showProgressToast ? window.showProgressToast(window.__i18n.creatingBackup || "Creating backup\u2026", {
     group: 'backup:' + serverUUID,
     autoCompleteAt100: false,
     job: { url: '/server/' + serverUUID + '/backups/progress', intervalMs: 2000 },
-  }) : window.showLoadingToast('<%= window.__i18n.creatingBackup || "Creating backup..." %>');
+  }) : window.showLoadingToast(window.__i18n.creatingBackup || "Creating backup...");
 
   try {
     const response = await fetch(`/api/v2/servers/${serverUUID}/backups`, {
@@ -250,17 +250,17 @@ async function confirmCreateBackup() {
 
     if (data.success) {
       // Complete the progress toast with the server's result message.
-      loading.complete(true, data.message || '<%= window.__i18n.backupCreated || "Backup created." %>');
+      loading.complete(true, data.message || window.__i18n.backupCreated || "Backup created.");
       // Reload page to show new backup
       window.location.reload();
     } else {
       loading.close();
-      showToast(data.error || '<%= window.__i18n.failedToCreateBackup || "Failed to create backup" %>', 'error');
+      showToast(data.error || window.__i18n.failedToCreateBackup || "Failed to create backup", 'error');
     }
   } catch (error) {
     loading.close();
     console.error('Failed to create backup:', error);
-    showToast('<%= window.__i18n.failedToCreateBackupRetry || "Failed to create backup. Try again." %>', 'error');
+    showToast(window.__i18n.failedToCreateBackupRetry || "Failed to create backup. Try again.", 'error');
   }
 }
 
@@ -272,15 +272,15 @@ function downloadBackup(backupId) {
 // Restore backup
 function restoreBackup(backupId, backupName) {
   showConfirmation(
-    '<%= window.__i18n.restoreBackup || "Restore Backup" %>',
-    '<%= window.__i18n.restoreBackupConfirm || "Are you sure you want to restore the backup" %> "' + backupName + '"? <%= window.__i18n.restoreBackupWarning || "This will replace all current server files and cannot be undone." %>',
+    window.__i18n.restoreBackup || "Restore Backup",
+    (window.__i18n.restoreBackupConfirm || "Are you sure you want to restore the backup") + ' "' + backupName + '"? ' + (window.__i18n.restoreBackupWarning || "This will replace all current server files and cannot be undone."),
     async () => {
       // Persisted progress toast — survives page changes and keeps polling the
       // restore job (see /backups/restore/progress) while the daemon restores.
-      const loading = window.showProgressToast ? window.showProgressToast('<%= window.__i18n.restoringBackup || "Restoring backup\u2026" %>', {
+      const loading = window.showProgressToast ? window.showProgressToast(window.__i18n.restoringBackup || "Restoring backup\u2026", {
         group: 'restore:' + serverUUID,
         job: { url: '/server/' + serverUUID + '/backups/restore/progress', intervalMs: 2000 },
-      }) : window.showLoadingToast('<%= window.__i18n.restoringBackup || "Restoring backup..." %>');
+      }) : window.showLoadingToast(window.__i18n.restoringBackup || "Restoring backup...");
 
       try {
         const response = await fetch(`/api/v2/servers/${serverUUID}/backups/${backupId}/restore`, {
@@ -293,15 +293,15 @@ function restoreBackup(backupId, backupName) {
         const data = await response.json();
 
         if (data.success) {
-          loading.complete(true, data.message || '<%= window.__i18n.backupRestored || "Backup restored." %>');
+          loading.complete(true, data.message || window.__i18n.backupRestored || "Backup restored.");
         } else {
           loading.close();
-          showToast(data.error || '<%= window.__i18n.failedToRestoreBackup || "Failed to restore backup. Give it another try, or check that the node is online." %>', 'error');
+          showToast(data.error || window.__i18n.failedToRestoreBackup || "Failed to restore backup. Give it another try, or check that the node is online.", 'error');
         }
       } catch (error) {
         loading.close();
         console.error('Failed to restore backup:', error);
-        showToast('<%= window.__i18n.failedToRestoreBackup || "Failed to restore backup. Give it another try, or check that the node is online." %>', 'error');
+        showToast(window.__i18n.failedToRestoreBackup || "Failed to restore backup. Give it another try, or check that the node is online.", 'error');
       }
     }
   );
@@ -314,7 +314,7 @@ function addBackupRow(backup) {
     if (emptyState) {
       const card = emptyState.closest('.al-card');
       if (card) {
-        card.innerHTML = `<div class="overflow-x-auto"><table class="al-table min-w-full"><colgroup><col style="min-width:260px"><col style="min-width:100px"><col style="min-width:180px"><col style="min-width:160px"></colgroup><thead class="al-table-head"><tr><th scope="col" class="al-table-th px-6 py-3 uppercase"><%= window.__i18n.name || "Name" %></th><th scope="col" class="al-table-th px-6 py-3 uppercase"><%= window.__i18n.size || "Size" %></th><th scope="col" class="al-table-th px-6 py-3 uppercase"><%= window.__i18n.createdAt || "Created" %></th><th scope="col" class="al-table-th px-6 py-3 uppercase text-right"><%= window.__i18n.actions || "Actions" %></th></tr></thead><tbody id="backups-table-body" class="divide-y" style="border-color:var(--theme-border)"></tbody></table></div>`;
+        card.innerHTML = `<div class="overflow-x-auto"><table class="al-table min-w-full"><colgroup><col style="min-width:260px"><col style="min-width:100px"><col style="min-width:180px"><col style="min-width:160px"></colgroup><thead class="al-table-head"><tr><th scope="col" class="al-table-th px-6 py-3 uppercase">${window.__i18n.name || "Name"}</th><th scope="col" class="al-table-th px-6 py-3 uppercase">${window.__i18n.size || "Size"}</th><th scope="col" class="al-table-th px-6 py-3 uppercase">${window.__i18n.createdAt || "Created"}</th><th scope="col" class="al-table-th px-6 py-3 uppercase text-right">${window.__i18n.actions || "Actions"}</th></tr></thead><tbody id="backups-table-body" class="divide-y" style="border-color:var(--theme-border)"></tbody></table></div>`;
         tbody = document.getElementById('backups-table-body');
       }
     }
@@ -338,14 +338,14 @@ function addBackupRow(backup) {
 
   const sizeTd = document.createElement('td');
   sizeTd.className = 'px-6 py-4 whitespace-nowrap';
-  const sizeText = backup.size ? (Number(backup.size) / (1024 * 1024)).toFixed(2) + ' MB' : '<%= window.__i18n.unknown || "Unknown" %>';
+  const sizeText = backup.size ? (Number(backup.size) / (1024 * 1024)).toFixed(2) + ' MB' : (window.__i18n.unknown || "Unknown");
   const safeSizeText = escHtml(sizeText);
   sizeTd.innerHTML = `<div class="text-sm" style="color:var(--theme-text-muted)">${safeSizeText}</div>`;
   tr.appendChild(sizeTd);
 
   const createdTd = document.createElement('td');
   createdTd.className = 'px-6 py-4 whitespace-nowrap';
-  createdTd.innerHTML = `<div class="text-sm" style="color:var(--theme-text-muted)"><%= window.__i18n.now || "Now" %></div>`;
+  createdTd.innerHTML = `<div class="text-sm" style="color:var(--theme-text-muted)">${window.__i18n.now || "Now"}</div>`;
   tr.appendChild(createdTd);
 
   const actionsTd = document.createElement('td');
@@ -356,19 +356,19 @@ function addBackupRow(backup) {
   const downloadBtn = document.createElement('button');
   downloadBtn.className = 'inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2';
   downloadBtn.style.cssText = 'color:var(--theme-accent);background:var(--theme-accent-subtle)';
-  downloadBtn.textContent = '<%= window.__i18n.download || "Download" %>';
+  downloadBtn.textContent = window.__i18n.download || "Download";
   downloadBtn.addEventListener('click', () => downloadBackup(backup.UUID));
 
   const restoreBtn = document.createElement('button');
   restoreBtn.className = 'inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2';
   restoreBtn.style.cssText = 'color:var(--theme-success);background:var(--theme-success-bg)';
-  restoreBtn.textContent = '<%= window.__i18n.restore || "Restore" %>';
+  restoreBtn.textContent = window.__i18n.restore || "Restore";
   restoreBtn.addEventListener('click', () => restoreBackup(backup.UUID, backup.name));
 
   const deleteBtn = document.createElement('button');
   deleteBtn.className = 'inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2';
   deleteBtn.style.cssText = 'color:var(--theme-danger);background:var(--theme-danger-bg)';
-  deleteBtn.textContent = '<%= window.__i18n.delete || "Delete" %>';
+  deleteBtn.textContent = window.__i18n.delete || "Delete";
   deleteBtn.addEventListener('click', () => deleteBackup(backup.UUID, backup.name));
 
   actionsDiv.appendChild(downloadBtn);
@@ -394,14 +394,14 @@ async function toggleBackupLock(backupId, backupName, currentlyLocked) {
     const data = await response.json();
 
     if (data.success) {
-      showToast(currentlyLocked ? '<%= window.__i18n.backupUnlocked || "Backup unlocked." %>' : '<%= window.__i18n.backupLocked || "Backup locked." %>', 'success');
+      showToast(currentlyLocked ? window.__i18n.backupUnlocked || "Backup unlocked." : window.__i18n.backupLocked || "Backup locked.", 'success');
       window.location.reload();
     } else {
-      showToast(data.error || '<%= window.__i18n.failedToUpdateBackupLock || "Failed to update backup lock" %>', 'error');
+      showToast(data.error || window.__i18n.failedToUpdateBackupLock || "Failed to update backup lock", 'error');
     }
   } catch (error) {
     console.error('Failed to toggle backup lock:', error);
-    showToast('<%= window.__i18n.failedToUpdateBackupLockRetry || "Failed to update backup lock. Try again." %>', 'error');
+    showToast(window.__i18n.failedToUpdateBackupLockRetry || "Failed to update backup lock. Try again.", 'error');
   }
 }
 
@@ -412,7 +412,7 @@ function updateBackupLockUI(backupId, backupName, locked) {
   const lockBtn = row.querySelector('button[data-action="toggle-lock"]');
   if (lockBtn) {
     const label = lockBtn.childNodes[lockBtn.childNodes.length - 1];
-    if (label && label.nodeType === Node.TEXT_NODE) label.textContent = locked ? '<%= window.__i18n.unlock || "Unlock" %>' : '<%= window.__i18n.lock || "Lock" %>';
+    if (label && label.nodeType === Node.TEXT_NODE) label.textContent = locked ? window.__i18n.unlock || "Unlock" : window.__i18n.lock || "Lock";
     lockBtn.style.cssText = locked
       ? 'color:var(--theme-warning);background:var(--theme-warning-bg, var(--theme-bg-secondary))'
       : 'color:var(--theme-text-muted);background:var(--theme-bg-secondary)';
@@ -422,7 +422,7 @@ function updateBackupLockUI(backupId, backupName, locked) {
   if (delBtn) {
     if (locked) {
       delBtn.disabled = true;
-      delBtn.setAttribute('title', '<%= window.__i18n.lockedBackupsCannotBeDeleted || "Locked backups cannot be deleted until unlocked" %>');
+      delBtn.setAttribute('title', window.__i18n.lockedBackupsCannotBeDeleted || "Locked backups cannot be deleted until unlocked");
       delBtn.style.cssText = 'opacity:40;pointer-events:none;color:var(--theme-danger);background:var(--theme-danger-bg)';
     } else {
       delBtn.disabled = false;
@@ -441,7 +441,7 @@ function updateBackupLockUI(backupId, backupName, locked) {
     badge.style.cssText = 'background:var(--theme-warning-bg, var(--theme-bg-secondary));color:var(--theme-warning, var(--theme-text-muted))';
     const icon = lockBtn && lockBtn.querySelector('svg');
     if (icon) badge.appendChild(icon.cloneNode(true));
-    badge.appendChild(document.createTextNode(' <%= window.__i18n.locked || "locked" %>'));
+    badge.appendChild(document.createTextNode(' ' + (window.__i18n.locked || "locked")));
     nameDiv.appendChild(badge);
   } else if (!locked && badge) {
     badge.remove();
@@ -450,8 +450,8 @@ function updateBackupLockUI(backupId, backupName, locked) {
 
 // Delete backup
 function deleteBackup(backupId, backupName) {  showConfirmation(
-    '<%= window.__i18n.deleteBackup || "Delete Backup" %>',
-    '<%= window.__i18n.deleteBackupConfirm || "Are you sure you want to delete the backup" %> "' + backupName + '"? <%= window.__i18n.deleteBackupWarning || "This action cannot be undone." %>',
+    window.__i18n.deleteBackup || "Delete Backup",
+    (window.__i18n.deleteBackupConfirm || "Are you sure you want to delete the backup") + ' "' + backupName + '"? ' + (window.__i18n.deleteBackupWarning || "This action cannot be undone."),
     async () => {
       try {
         const response = await fetch(`/api/v2/servers/${serverUUID}/backups/${backupId}`, {
@@ -464,14 +464,14 @@ function deleteBackup(backupId, backupName) {  showConfirmation(
         const data = await response.json();
 
         if (data.success) {
-           showToast('<%= window.__i18n.backupDeleted || "Backup deleted." %>', 'success');
+           showToast(window.__i18n.backupDeleted || "Backup deleted.", 'success');
           window.location.reload();
         } else {
-          showToast(data.error || '<%= window.__i18n.failedToDeleteBackup || "Failed to delete backup" %>', 'error');
+          showToast(data.error || window.__i18n.failedToDeleteBackup || "Failed to delete backup", 'error');
         }
       } catch (error) {
         console.error('Failed to delete backup:', error);
-        showToast('<%= window.__i18n.failedToDeleteBackupRetry || "Failed to delete backup. Try again." %>', 'error');
+        showToast(window.__i18n.failedToDeleteBackupRetry || "Failed to delete backup. Try again.", 'error');
       }
     }
   );

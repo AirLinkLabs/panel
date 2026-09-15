@@ -384,7 +384,7 @@ function dashboard() {
           alIcon('folder', 'h-5 w-5 shrink-0', { style: 'color:var(--theme-warning);' }) +
           '<div class="min-w-0 flex-1">' +
             '<p class="text-sm font-medium truncate" style="color:var(--theme-text-strong);">' + escapeHtml(folder.name) + '</p>' +
-            '<p class="text-xs mt-0.5" style="color:var(--theme-text-muted);">' + members.length + ' ' + (members.length !== 1 ? '<%= window.__i18n.serverPlural || "servers" %>' : 'server') + '</p>' +
+            '<p class="text-xs mt-0.5" style="color:var(--theme-text-muted);">' + members.length + ' ' + (members.length !== 1 ? window.__i18n.serverPlural || "servers" : 'server') + '</p>' +
           '</div>' +
         '</div>';
       }
@@ -409,7 +409,7 @@ function dashboard() {
         folderPopupContent.innerHTML = '';
         var serversIn = allServers.filter(function (s) { return memberUUIDs.includes(s.UUID); });
         if (serversIn.length === 0) {
-          folderPopupContent.innerHTML = '<p class="text-sm text-neutral-400 col-span-2"><%= window.__i18n.noServersDragHere || "No servers — drag a card here to add one." %></p>';
+          folderPopupContent.innerHTML = '<p class="text-sm text-neutral-400 col-span-2">' + (window.__i18n.noServersDragHere || "No servers — drag a card here to add one.") + '</p>';
           return;
         }
         serversIn.forEach(function (s) {
@@ -420,10 +420,10 @@ function dashboard() {
             '<a href="/server/' + s.UUID + '" class="flex items-center gap-2 flex-1 min-w-0">' +
               '<span class="text-sm font-medium text-neutral-800 dark:text-white truncate">' + escapeHtml(s.name) + '</span>' +
               '<span class="ml-auto shrink-0 inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-md ' + (running ? 'bg-emerald-50 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400' : 'bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400') + '">' +
-                (running ? '<%= window.__i18n.running || "Running" %>' : '<%= window.__i18n.stopped || "Stopped" %>') +
+                (running ? window.__i18n.running || "Running" : window.__i18n.stopped || "Stopped") +
               '</span>' +
             '</a>' +
-            '<button data-uuid="' + s.UUID + '" class="remove-from-folder-btn shrink-0 w-10 h-10 inline-flex items-center justify-center rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500" title="<%= window.__i18n.removeFromFolder || "Remove from folder" %>" aria-label="<%= window.__i18n.removeFromFolder || "Remove from folder" %>">' +
+            '<button data-uuid="' + s.UUID + '" class="remove-from-folder-btn shrink-0 w-10 h-10 inline-flex items-center justify-center rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500" title="' + (window.__i18n.removeFromFolder || "Remove from folder") + '" aria-label="' + (window.__i18n.removeFromFolder || "Remove from folder") + '">' +
               alIcon('trash-2', 'w-4 h-4') +
             '</button>';
           row.querySelector('.remove-from-folder-btn').addEventListener('click', async function (e) {
@@ -433,13 +433,13 @@ function dashboard() {
               var r = await fetch('/api/v2/account/folders/servers/' + uuid, { method: 'DELETE' });
               var d = await r.json();
               if (d.success) {
-                showToast('<%= window.__i18n.removedFromFolder || "Removed from folder." %>', 'success');
+                showToast(window.__i18n.removedFromFolder || "Removed from folder.", 'success');
                 window.location.reload();
               }
-              else showToast((d.error?.message) || '<%= window.__i18n.somethingWentWrong || "Something went wrong." %>', 'error');
+              else showToast((d.error?.message) || window.__i18n.somethingWentWrong || "Something went wrong.", 'error');
             } catch (err) {
               console.error('Failed to remove from folder:', err);
-              showToast('<%= window.__i18n.networkErrorTryAgain || "Network error. Try again." %>', 'error');
+              showToast(window.__i18n.networkErrorTryAgain || "Network error. Try again.", 'error');
             }
           });
           folderPopupContent.appendChild(row);
@@ -454,10 +454,10 @@ function dashboard() {
         }
         if (!section) {
           var serversLabel = null;
-          document.querySelectorAll('.al-section-label').forEach(function (l) { if (l.textContent === '<%= window.__i18n.servers || "Servers" %>') serversLabel = l; });
+          document.querySelectorAll('.al-section-label').forEach(function (l) { if (l.textContent === (window.__i18n.servers || "Servers")) serversLabel = l; });
           section = document.createElement('div');
           section.className = 'mb-8';
-          section.innerHTML = '<p class="al-section-label"><%= window.__i18n.folders || "Folders" %></p><div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3" id="folderGrid"></div><p class="text-xs mt-2" style="color:var(--theme-text-muted);"><%= window.__i18n.dragServerToFolder || "Drag a server card onto a folder to add it" %></p>';
+          section.innerHTML = '<p class="al-section-label">' + (window.__i18n.folders || "Folders") + '</p><div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3" id="folderGrid"></div><p class="text-xs mt-2" style="color:var(--theme-text-muted);">' + (window.__i18n.dragServerToFolder || "Drag a server card onto a folder to add it") + '</p>';
           if (serversLabel && serversLabel.parentNode) serversLabel.parentNode.insertBefore(section, serversLabel);
           else document.getElementById('page-content').appendChild(section);
         }
@@ -500,13 +500,13 @@ function dashboard() {
             });
             var d = await r.json();
             if (d.success) {
-              showToast('"' + dragName + '" <%= window.__i18n.addedToFolder || "added to folder." %>', 'success');
+              showToast('"' + dragName + '" ' + (window.__i18n.addedToFolder || "added to folder."), 'success');
               window.location.reload();
             }
-            else showToast((d.error?.message) || '<%= window.__i18n.somethingWentWrong || "Something went wrong." %>', 'error');
+            else showToast((d.error?.message) || window.__i18n.somethingWentWrong || "Something went wrong.", 'error');
           } catch (err) {
             console.error('Failed to add server to folder:', err);
-            showToast('<%= window.__i18n.networkErrorTryAgain || "Network error. Try again." %>', 'error');
+            showToast(window.__i18n.networkErrorTryAgain || "Network error. Try again.", 'error');
           }
         });
       }
@@ -581,15 +581,15 @@ function dashboard() {
           var d = await r.json();
           confirmNewFolder.disabled = false;
           if (d.success) {
-            showToast('<%= window.__i18n.folderCreated || "Folder created." %>', 'success');
+            showToast(window.__i18n.folderCreated || "Folder created.", 'success');
             closeOverlay(newFolderOverlay, newFolderPanel);
             window.location.reload();
           }
-          else showToast((d.error?.message) || '<%= window.__i18n.somethingWentWrong || "Something went wrong." %>', 'error');
+          else showToast((d.error?.message) || window.__i18n.somethingWentWrong || "Something went wrong.", 'error');
         } catch (err) {
           console.error('Failed to create folder:', err);
           confirmNewFolder.disabled = false;
-          showToast('<%= window.__i18n.networkErrorTryAgain || "Network error. Try again." %>', 'error');
+          showToast(window.__i18n.networkErrorTryAgain || "Network error. Try again.", 'error');
         }
       });
 
@@ -630,12 +630,12 @@ function dashboard() {
           if (d.success) {
             showToast('Folder deleted.', 'success');
             window.location.reload();
-          } else showToast((d.error?.message) || '<%= window.__i18n.couldntDeleteFolder || "Couldn\u0027t delete the folder." %>', 'error');
+          } else showToast((d.error?.message) || window.__i18n.couldntDeleteFolder || "Couldn\u0027t delete the folder.", 'error');
         } catch (err) {
           console.error('Failed to delete folder:', err);
           confirmDeleteFolder.disabled = false;
           closeOverlay(deleteFolderOverlay, deleteFolderPanel);
-          showToast('<%= window.__i18n.networkErrorTryAgain || "Network error. Try again." %>', 'error');
+          showToast(window.__i18n.networkErrorTryAgain || "Network error. Try again.", 'error');
         }
       });
 
@@ -721,18 +721,18 @@ function dashboard() {
         btn.addEventListener('click', async function (e) {
           e.stopPropagation();
           var uuid = btn.dataset.uuid;
-          if (allFolders.length === 0) { showToast('<%= window.__i18n.createFolderFirst || "Create a folder first." %>', 'error'); return; }
+          if (allFolders.length === 0) { showToast(window.__i18n.createFolderFirst || "Create a folder first.", 'error'); return; }
           if (allFolders.length === 1) {
             try {
               var r = await fetch('/api/v2/account/folders/' + allFolders[0].id + '/servers', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ serverUUID: uuid }) });
               var d = await r.json();
               if (d.success) {
-                showToast('<%= window.__i18n.addedToFolder || "Added to folder." %>', 'success');
+                showToast(window.__i18n.addedToFolder || "Added to folder.", 'success');
                 window.location.reload();
-              } else showToast((d.error?.message) || '<%= window.__i18n.somethingWentWrong || "Something went wrong." %>', 'error');
+              } else showToast((d.error?.message) || window.__i18n.somethingWentWrong || "Something went wrong.", 'error');
             } catch (err) {
               console.error('Failed to add to folder:', err);
-              showToast('<%= window.__i18n.networkErrorTryAgain || "Network error. Try again." %>', 'error');
+              showToast(window.__i18n.networkErrorTryAgain || "Network error. Try again.", 'error');
             }
             return;
           }
@@ -747,12 +747,12 @@ function dashboard() {
             var r = await fetch('/api/v2/account/folders/servers/' + btn.dataset.uuid, { method: 'DELETE' });
             var d = await r.json();
             if (d.success) {
-              showToast('<%= window.__i18n.removedFromFolder || "Removed from folder." %>', 'success');
+              showToast(window.__i18n.removedFromFolder || "Removed from folder.", 'success');
               window.location.reload();
-            } else showToast((d.error?.message) || '<%= window.__i18n.somethingWentWrong || "Something went wrong." %>', 'error');
+            } else showToast((d.error?.message) || window.__i18n.somethingWentWrong || "Something went wrong.", 'error');
           } catch (err) {
             console.error('Failed to remove from folder:', err);
-            showToast('<%= window.__i18n.networkErrorTryAgain || "Network error. Try again." %>', 'error');
+            showToast(window.__i18n.networkErrorTryAgain || "Network error. Try again.", 'error');
           }
         });
       });
@@ -771,12 +771,12 @@ function dashboard() {
               var r = await fetch('/api/v2/account/folders/' + f.id + '/servers', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ serverUUID: serverUUID }) });
               var d = await r.json();
               if (d.success) {
-                showToast('<%= window.__i18n.addedToFolder || "Added to folder." %>', 'success');
+                showToast(window.__i18n.addedToFolder || "Added to folder.", 'success');
                 window.location.reload();
-              } else showToast((d.error?.message) || '<%= window.__i18n.somethingWentWrong || "Something went wrong." %>', 'error');
+              } else showToast((d.error?.message) || window.__i18n.somethingWentWrong || "Something went wrong.", 'error');
             } catch (err) {
               console.error('Failed to add to folder:', err);
-              showToast('<%= window.__i18n.networkErrorTryAgain || "Network error. Try again." %>', 'error');
+              showToast(window.__i18n.networkErrorTryAgain || "Network error. Try again.", 'error');
             }
           });
           folderPopupContent.appendChild(btn);
@@ -813,20 +813,20 @@ function dashboard() {
         if (!card) return;
         var badge = card.querySelector('.al-badge-online, .al-badge-offline, .al-badge-warning, .al-badge-info');
         if (!badge) return;
-        var liveTitle = '<%= window.__i18n.live || "Live" %>';
+        var liveTitle = window.__i18n.live || "Live";
         if (status.updatedAt) liveTitle += ' · ' + new Date(status.updatedAt).toLocaleTimeString();
-        if (status.daemonOffline) { badge.className = 'al-badge-offline'; badge.innerHTML = '<span class="al-dot-offline"></span> <%= window.__i18n.daemonOffline || "Daemon offline" %>'; badge.title = status.error || '<%= window.__i18n.daemonUnreachable || "Daemon unreachable" %>'; return; }
-        if (status.starting) { badge.className = 'al-badge-warning'; badge.innerHTML = '<span class="al-dot-warning"></span> <%= window.__i18n.serverStarting || "Starting" %>'; badge.title = liveTitle; return; }
-        if (status.stopping) { badge.className = 'al-badge-warning'; badge.innerHTML = '<span class="al-dot-warning"></span> <%= window.__i18n.serverStopping || "Stopping" %>'; badge.title = liveTitle; return; }
+        if (status.daemonOffline) { badge.className = 'al-badge-offline'; badge.innerHTML = '<span class="al-dot-offline"></span> ' + (window.__i18n.daemonOffline || "Daemon offline"); badge.title = status.error || (window.__i18n.daemonUnreachable || "Daemon unreachable"); return; }
+        if (status.starting) { badge.className = 'al-badge-warning'; badge.innerHTML = '<span class="al-dot-warning"></span> ' + (window.__i18n.serverStarting || "Starting"); badge.title = liveTitle; return; }
+        if (status.stopping) { badge.className = 'al-badge-warning'; badge.innerHTML = '<span class="al-dot-warning"></span> ' + (window.__i18n.serverStopping || "Stopping"); badge.title = liveTitle; return; }
         if (status.online) {
           var uptime = fmtUptime(status.uptime);
           badge.className = 'al-badge-online';
-          badge.innerHTML = '<span class="al-dot-online"></span> <%= window.__i18n.online || "Online" %>' + (uptime ? ' · ' + uptime : '');
-          badge.title = liveTitle + (uptime ? ' · <%= window.__i18n.upFor || "Up for" %> ' + uptime : '');
+          badge.innerHTML = '<span class="al-dot-online"></span> ' + (window.__i18n.online || "Online") + (uptime ? ' · ' + uptime : '');
+          badge.title = liveTitle + (uptime ? ' · ' + (window.__i18n.upFor || "Up for") + ' ' + uptime : '');
           return;
         }
         badge.className = 'al-badge-offline';
-        badge.innerHTML = '<span class="al-dot-offline"></span> <%= window.__i18n.offline || "Offline" %>';
+        badge.innerHTML = '<span class="al-dot-offline"></span> ' + (window.__i18n.offline || "Offline");
         badge.title = liveTitle;
       }
 
@@ -896,7 +896,7 @@ function dashboard() {
         var btn = this;
         var original = btn.innerHTML;
         btn.disabled = true;
-        btn.textContent = '<%= window.__i18n.checking || "Checking\u2026" %>';
+        btn.textContent = window.__i18n.checking || "Checking\u2026";
         fetch(window.location.pathname, { headers: { 'X-Requested-With': 'fetch' } })
           .then(function (r) { return r.text(); })
           .then(function (html) {
@@ -905,15 +905,15 @@ function dashboard() {
             if (html.indexOf('retryDaemonCheck') === -1) {
               var banner = btn.closest('.al-alert-danger');
               if (banner) banner.style.display = 'none';
-              showToast('<%= window.__i18n.allNodesOnline || "All nodes are online." %>', 'success');
+              showToast(window.__i18n.allNodesOnline || "All nodes are online.", 'success');
             } else {
-              showToast('<%= window.__i18n.nodesStillOffline || "Nodes are still offline." %>', 'error');
+              showToast(window.__i18n.nodesStillOffline || "Nodes are still offline.", 'error');
             }
           })
           .catch(function () {
             btn.disabled = false;
             btn.innerHTML = original;
-            showToast('<%= window.__i18n.recheckFailed || "Re-check failed. Try again." %>', 'error');
+            showToast(window.__i18n.recheckFailed || "Re-check failed. Try again.", 'error');
           });
       });
     }

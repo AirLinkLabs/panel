@@ -42,7 +42,7 @@ const wallpaperExcluded = req && req.path && (
     <% if (typeof csrfToken !== 'undefined') { %>
     <meta name="csrf-token" content="<%= csrfToken %>">
     <% } %>
-    <script nonce="<%- nonce %>">window.__sessionExpiredMsg = '<%= (window.__i18n && window.__i18n.sessionExpired) || "Your session expired. Please sign in again." %>';</script>
+    <script nonce="<%- nonce %>">window.__sessionExpiredMsg = '<%= (req.translations && req.translations.sessionExpired) || "Your session expired. Please sign in again." %>';</script>
     <script nonce="<%- nonce %>" defer src="<%= assetUrl('/javascript/shared/csrf.js') %>?v=8"></script>
     <script nonce="<%- nonce %>" defer src="<%= assetUrl('/javascript/shared/al-icon.js') %>?v=8"></script>
 
@@ -115,7 +115,7 @@ const wallpaperExcluded = req && req.path && (
 
 <!-- Theme initialization: external module replaces inline script -->
 <script nonce="<%- nonce %>" src="<%= assetUrl('/javascript/shared/theme-init.js') %>?v=1"></script>
-    <script nonce="<%- nonce %>">window.__i18n = <%- JSON.stringify(window.__i18n || {}) %>;</script>
+    <script nonce="<%- nonce %>">window.__i18n = <%- JSON.stringify(req.translations || {}) %>;</script>
     <script nonce="<%- nonce %>" src="<%= assetUrl('/javascript/shared/escape.js') %>?v=1"></script>
     <%- include("./bottom-nav") %>
 <%- include("./modal") %>

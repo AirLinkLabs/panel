@@ -458,7 +458,7 @@
       });
       const result = await res.json();
       if (!res.ok) {
-        showToast(result.error || result.message || '<%= window.__i18n.failedToSaveField || "Failed to save" %> ' + field, 'error');
+        showToast(result.error || result.message || (window.__i18n.failedToSaveField || "Failed to save") + ' ' + field, 'error');
         return null;
       }
       // Update sidebar username if changed
@@ -477,7 +477,7 @@
       }
       return result;
     } catch (err) {
-      showToast('<%= window.__i18n.failedToSaveField || "Failed to save" %> ' + field, 'error');
+      showToast((window.__i18n.failedToSaveField || "Failed to save") + ' ' + field, 'error');
       return null;
     }
   };
@@ -494,7 +494,7 @@
       try {
         const res = await fetch(`/api/v2/account/check-username?username=${encodeURIComponent(val)}`);
         const { exists } = await res.json();
-        usernameFb.textContent = exists ? '<%= window.__i18n.usernameTaken || "Username taken" %>' : '<%= window.__i18n.usernameIsNotTaken || "Username available" %>';
+        usernameFb.textContent = exists ? window.__i18n.usernameTaken || "Username taken" : window.__i18n.usernameIsNotTaken || "Username available";
         usernameFb.style.color = exists ? 'var(--theme-danger)' : 'var(--theme-success)';
         usernameFb.classList.remove('hidden');
       } catch (err) { console.error('Username check failed:', err); }
@@ -518,7 +518,7 @@
           body: JSON.stringify({ currentPassword: val }),
         });
         const { valid } = await res.json();
-        if (pwFeedback) pwFeedback.textContent = valid ? '<%= window.__i18n.correctPassword || "Correct" %>' : '<%= window.__i18n.incorrectPassword || "Incorrect password" %>';
+        if (pwFeedback) pwFeedback.textContent = valid ? window.__i18n.correctPassword || "Correct" : window.__i18n.incorrectPassword || "Incorrect password";
         newPwInput.disabled = !valid;
       } catch (err) { console.error('Password validation failed:', err); if (pwFeedback) pwFeedback.textContent = 'Could not validate'; newPwInput.disabled = true; }
     }, 500);
@@ -586,11 +586,11 @@
   document.querySelector('label[for="avatar-input"]')?.addEventListener('click', (e) => {
     e.preventDefault();
     openUploadModal({
-      title: '<%= window.__i18n.uploadProfilePhoto || "Upload profile photo" %>',
+      title: window.__i18n.uploadProfilePhoto || "Upload profile photo",
       accept: 'image/*',
       onFile: async (file) => {
         const MAX_AVATAR_SIZE = 2 * 1024 * 1024;
-        if (file.size > MAX_AVATAR_SIZE) { showToast('<%= window.__i18n.imageMustBeUnder2mb || "Image must be under 2 MB" %>', 'error'); return; }
+        if (file.size > MAX_AVATAR_SIZE) { showToast(window.__i18n.imageMustBeUnder2mb || "Image must be under 2 MB", 'error'); return; }
         const reader = new FileReader();
         reader.onload = evt => openCropPopup(evt.target.result, csrfToken);
         reader.readAsDataURL(file);
@@ -604,14 +604,14 @@
       avatarPreview.src = '/avatar/<%= encodeURIComponent(user.username) %>';
       const removeAvatarBtn = document.getElementById('remove-avatar-btn');
       if (removeAvatarBtn) removeAvatarBtn.style.display = 'none';
-      showToast('<%= window.__i18n.profilePictureRemoved || "Profile picture removed." %>', 'success');
-    } else showToast('<%= window.__i18n.errorOccurred || "Something went wrong." %>', 'error');
+      showToast(window.__i18n.profilePictureRemoved || "Profile picture removed.", 'success');
+    } else showToast(window.__i18n.errorOccurred || "Something went wrong.", 'error');
   });
 
   // Disable 2FA (requires current password)
   document.getElementById('disable2faBtn')?.addEventListener('click', async () => {
     const password = document.getElementById('disable2faPassword')?.value || '';
-    if (!password) { showToast('<%= window.__i18n.enterPasswordToDisable2fa || "Enter your current password to disable 2FA." %>', 'error'); return; }
+    if (!password) { showToast(window.__i18n.enterPasswordToDisable2fa || "Enter your current password to disable 2FA.", 'error'); return; }
     const btn = document.getElementById('disable2faBtn');
     btn.disabled = true;
     try {
@@ -622,15 +622,15 @@
       });
       const data = await res.json();
       if (res.ok && data.success) {
-        showToast('<%= window.__i18n.twoFactorDisabled || "Two-factor authentication disabled." %>', 'success');
+        showToast(window.__i18n.twoFactorDisabled || "Two-factor authentication disabled.", 'success');
         const twofaStatus = document.getElementById('twofa-status');
         window.location.reload();
       } else {
-        showToast(data.error || '<%= window.__i18n.failedToDisable2fa || "Failed to disable 2FA." %>', 'error');
+        showToast(data.error || window.__i18n.failedToDisable2fa || "Failed to disable 2FA.", 'error');
       }
     } catch (err) {
       console.error('Failed to disable 2FA:', err);
-      showToast('<%= window.__i18n.errorOccurred || "Something went wrong." %>', 'error');
+      showToast(window.__i18n.errorOccurred || "Something went wrong.", 'error');
     }
     btn.disabled = false;
   });
@@ -644,7 +644,7 @@
       const passkeys = data.passkeys || [];
       const el = document.getElementById('passkey-count-info');
       if (el && passkeys.length > 0) {
-        el.textContent = passkeys.length + ' <%= window.__i18n.passkeyCount || "passkey" %>' + (passkeys.length !== 1 ? 's' : '') + ' <%= window.__i18n.registered || "registered" %> · ';
+        el.textContent = passkeys.length + ' ' + (window.__i18n.passkeyCount || "passkey") + (passkeys.length !== 1 ? 's' : '') + ' ' + (window.__i18n.registered || "registered") + ' · ';
       }
     } catch (e) {}
   })();
@@ -656,8 +656,8 @@
       <div class="al-sheet-panel rounded-2xl shadow-lg border w-full max-w-lg overflow-hidden" style="background:var(--theme-bg-card);border-color:var(--theme-border);">
         <div class="flex items-center justify-between px-5 pt-5 pb-3 border-b" style="border-color:var(--theme-border);">
           <div>
-            <p class="text-sm font-semibold" style="color:var(--theme-text-strong);"><%= window.__i18n.positionYourPhoto || "Position your photo" %></p>
-            <p class="text-xs mt-0.5" style="color:var(--theme-text-muted);"><%= window.__i18n.dragResizeSelection || "Drag and resize the selection box." %></p>
+            <p class="text-sm font-semibold" style="color:var(--theme-text-strong);">${window.__i18n.positionYourPhoto || "Position your photo"}</p>
+            <p class="text-xs mt-0.5" style="color:var(--theme-text-muted);">${window.__i18n.dragResizeSelection || "Drag and resize the selection box."}</p>
           </div>
           <button type="button" id="crop-cancel" class="w-9 h-9 flex items-center justify-center rounded-lg hover:opacity-75 transition" style="color:var(--theme-text-muted);">
             <%- icon('x', { class: 'w-4 h-4', strokeWidth: 2 }) %>
@@ -756,10 +756,10 @@
           if (res.ok) {
             const { avatar } = await res.json();
             avatarPreview.src = avatar + '?t=' + Date.now();
-            showToast('<%= window.__i18n.profilePictureUpdated || "Profile picture updated." %>', 'success');
+            showToast(window.__i18n.profilePictureUpdated || "Profile picture updated.", 'success');
             close();
-          } else showToast('<%= window.__i18n.failedToUpload || "Failed to upload" %>', 'error');
-        } catch (err) { console.error('Avatar upload failed:', err); showToast('<%= window.__i18n.failedToUpload || "Failed to upload" %>', 'error'); }
+          } else showToast(window.__i18n.failedToUpload || "Failed to upload", 'error');
+        } catch (err) { console.error('Avatar upload failed:', err); showToast(window.__i18n.failedToUpload || "Failed to upload", 'error'); }
       }, 'image/png');
     });
   }
@@ -817,7 +817,7 @@ function loader() {
 
   function goToMyImages() {
     closeModal();
-    showToast('<%= window.__i18n.imageSubmitted || "Image submitted. It will appear in the table below once processed." %>', 'success');
+    showToast(window.__i18n.imageSubmitted || "Image submitted. It will appear in the table below once processed.", 'success');
   }
 
   document.getElementById('openSubmitBtn')?.addEventListener('click', openModal);
@@ -856,7 +856,7 @@ function loader() {
       if (result.error && !result.success) {
         showToast(result.error, 'error');
       } else {
-        showToast(result.message || '<%= window.__i18n.submitted || "Submitted" %>', 'success');
+        showToast(result.message || window.__i18n.submitted || "Submitted", 'success');
         goToMyImages();
       }
     } catch (error) {
@@ -868,12 +868,12 @@ function loader() {
 
   document.getElementById('imSubmitJsonBtn').addEventListener('click', async function() {
     const raw = document.getElementById('imJsonInput').value;
-    if (!raw.trim()) { showToast('<%= window.__i18n.pasteEggJsonFirst || "Paste an egg JSON first." %>', 'error'); return; }
+    if (!raw.trim()) { showToast(window.__i18n.pasteEggJsonFirst || "Paste an egg JSON first.", 'error'); return; }
     let payload;
     try {
       payload = JSON.parse(raw);
     } catch {
-      showToast('<%= window.__i18n.invalidJson || "Invalid JSON." %>', 'error');
+      showToast(window.__i18n.invalidJson || "Invalid JSON.", 'error');
       return;
     }
     const l = loader();
@@ -888,7 +888,7 @@ function loader() {
       if (result.error && !result.success) {
         showToast(result.error, 'error');
       } else {
-        showToast(result.message || '<%= window.__i18n.submitted || "Submitted" %>', 'success');
+        showToast(result.message || window.__i18n.submitted || "Submitted", 'success');
         goToMyImages();
       }
     } catch (error) {
@@ -900,7 +900,7 @@ function loader() {
 
   document.getElementById('imSubmitUrlBtn').addEventListener('click', async function() {
     const url = document.getElementById('imUrlInput').value;
-    if (!url.trim()) { showToast('<%= window.__i18n.enterImageUrl || "Please enter an image URL." %>', 'error'); return; }
+    if (!url.trim()) { showToast(window.__i18n.enterImageUrl || "Please enter an image URL.", 'error'); return; }
     const l = loader();
     try {
       const response = await fetch('/api/v2/account/images/import-url', {
@@ -913,7 +913,7 @@ function loader() {
       if (result.error && !result.success) {
         showToast(result.error, 'error');
       } else {
-        showToast(result.message || '<%= window.__i18n.imported || "Imported" %>', 'success');
+        showToast(result.message || window.__i18n.imported || "Imported", 'success');
         goToMyImages();
       }
     } catch (error) {
@@ -946,7 +946,7 @@ function loader() {
   document.querySelectorAll('[data-delete-image]').forEach(function(btn) {
       btn.addEventListener('click', async function() {
         const id = btn.dataset.deleteImage;
-        const msg = '<%= window.__i18n.deleteImageConfirm || "Delete this image?" %>';
+        const msg = window.__i18n.deleteImageConfirm || "Delete this image?";
         if (!confirm(msg)) return;
         const row = btn.closest('[data-image-id]');
         try {
@@ -955,12 +955,12 @@ function loader() {
           if (data.error) {
             showToast(data.error, 'error');
           } else {
-            showToast('<%= window.__i18n.imageDeleted || "Image deleted." %>', 'success');
+            showToast(window.__i18n.imageDeleted || "Image deleted.", 'success');
             window.location.reload();
           }
         } catch (error) {
           console.error('Failed to delete image:', error);
-          showToast('<%= window.__i18n.errorOccurred || "Something went wrong." %>', 'error');
+          showToast(window.__i18n.errorOccurred || "Something went wrong.", 'error');
         }
       });
     });

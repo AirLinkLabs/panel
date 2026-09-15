@@ -264,7 +264,7 @@
     fetch('/api/v2/servers/' + SERVER_ID + '/sftp')
       .then(function (resp) {
         if (resp.status === 404) {
-          document.getElementById('sftpErrorTitle').textContent = '<%= (window.__i18n && window.__i18n.sftpNoCredentialsTitle) || "No SFTP credentials yet." %>';
+          document.getElementById('sftpErrorTitle').textContent = (window.__i18n && window.__i18n.sftpNoCredentialsTitle) || "No SFTP credentials yet.";
           document.getElementById('sftpErrorMsg').textContent = '';
           showSftpState('error');
           return;
@@ -277,7 +277,7 @@
         return resp.json().then(fillCredentials);
       })
       .catch(function (err) {
-        document.getElementById('sftpErrorTitle').textContent = '<%= (window.__i18n && window.__i18n.sftpCredLoadError) || "Couldn\'t load credentials — maybe generate a fresh set?" %>';
+        document.getElementById('sftpErrorTitle').textContent = (window.__i18n && window.__i18n.sftpCredLoadError) || "Couldn\'t load credentials — maybe generate a fresh set?";
         document.getElementById('sftpErrorMsg').textContent = err.message || (window.__i18n.unknownError || 'Unknown error.');
         showSftpState('error');
       });
@@ -305,11 +305,11 @@
       .then(function (data) {
         if (btn) btn.disabled = false;
         fillCredentials(data);
-        showToast('<%= (window.__i18n && window.__i18n.freshCredentialsReady) || "Fresh credentials ready." %>', 'success');
+        showToast((window.__i18n && window.__i18n.freshCredentialsReady) || "Fresh credentials ready.", 'success');
       })
       .catch(function (err) {
         if (btn) btn.disabled = false;
-        document.getElementById('sftpErrorTitle').textContent = '<%= (window.__i18n && window.__i18n.sftpCredGenError) || "Couldn\'t generate credentials — please try again." %>';
+        document.getElementById('sftpErrorTitle').textContent = (window.__i18n && window.__i18n.sftpCredGenError) || "Couldn\'t generate credentials — please try again.";
         document.getElementById('sftpErrorMsg').textContent = err.message || (window.__i18n.unknownError || 'Unknown error.');
         showSftpState('error');
       });
@@ -329,11 +329,11 @@
         sftpPlainPassword = null;
         sftpExpired = false;
         closeSftpModal();
-        showToast('<%= (window.__i18n && window.__i18n.sftpAccessRevoked) || "SFTP access revoked." %>', 'success');
+        showToast((window.__i18n && window.__i18n.sftpAccessRevoked) || "SFTP access revoked.", 'success');
       })
       .catch(function (err) {
         console.error('Failed to revoke SFTP credentials:', err);
-        showToast(err && err.message ? err.message : '<%= (window.__i18n && window.__i18n.failedToRevokeCredentials) || "Failed to revoke credentials. Try again." %>', 'error');
+        showToast(err && err.message ? err.message : (window.__i18n && window.__i18n.failedToRevokeCredentials) || "Failed to revoke credentials. Try again.", 'error');
       });
   };
 
@@ -359,12 +359,12 @@
       } finally {
         document.body.removeChild(ta);
       }
-      showToast(ok ? '<%= (window.__i18n && window.__i18n.copied) || "Copied!" %>' : '<%= (window.__i18n && window.__i18n.copyFailedTryManually) || "Copy failed — try selecting and copying manually." %>', ok ? 'success' : 'error');
+      showToast(ok ? (window.__i18n && window.__i18n.copied) || "Copied!" : (window.__i18n && window.__i18n.copyFailedTryManually) || "Copy failed — try selecting and copying manually.", ok ? 'success' : 'error');
     };
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(text).then(function () {
-        showToast('<%= (window.__i18n && window.__i18n.copied) || "Copied!" %>', 'success');
+        showToast((window.__i18n && window.__i18n.copied) || "Copied!", 'success');
       }).catch(fallbackCopy);
     } else {
       fallbackCopy();
